@@ -20,7 +20,10 @@ export const COMPETITION_DIVISIONS: Division[] = [
     hasSubCategory: true,
     subCategories: ['RC', 'Autonomous'],
     hasLevels: false,
-    hasLecturer: false
+    hasLecturer: false,
+    price: 'Rp. 225,000',
+    priceUSD: '$14.00',
+    whatsappGroup: 'https://chat.whatsapp.com/HSFpgkTQjbJKNbmyzXeefT'
   },
   {
     id: 'sumobot-3kg',
@@ -36,7 +39,10 @@ export const COMPETITION_DIVISIONS: Division[] = [
     hasSubCategory: true,
     subCategories: ['RC'],
     hasLevels: false,
-    hasLecturer: false
+    hasLecturer: false,
+    price: 'Rp. 250,000',
+    priceUSD: '$20.00',
+    whatsappGroup: 'https://chat.whatsapp.com/GX3rv5PKbbp3fKB66FlwnJ'
   },
   {
     id: 'mini-soccer',
@@ -51,7 +57,10 @@ export const COMPETITION_DIVISIONS: Division[] = [
     maxStaff: 2,
     hasSubCategory: false,
     hasLevels: false,
-    hasLecturer: false
+    hasLecturer: false,
+    price: 'Rp. 250,000',
+    priceUSD: '$20.00',
+    whatsappGroup: 'https://chat.whatsapp.com/K1oLVvfu38NHNV41KjqaZA'
   },
   {
     id: 'line-follower',
@@ -67,7 +76,10 @@ export const COMPETITION_DIVISIONS: Division[] = [
     hasSubCategory: false,
     hasLevels: true,
     levels: ['Mahasiswa', 'Pelajar'],
-    hasLecturer: false
+    hasLecturer: false,
+    price: 'Rp. 250,000',
+    priceUSD: '$20.00',
+    whatsappGroup: 'https://chat.whatsapp.com/HNXtjsKC5g50PZzuPt7NOq'
   },
   {
     id: 'plc-industrial',
@@ -83,7 +95,10 @@ export const COMPETITION_DIVISIONS: Division[] = [
     hasSubCategory: false,
     hasLevels: true,
     levels: ['Mahasiswa'],
-    hasLecturer: true
+    hasLecturer: true,
+    price: 'Rp. 280,000',
+    priceUSD: '$26.00',
+    whatsappGroup: 'https://chat.whatsapp.com/B8RMDu9uJ3tIQBgcbcx4NL'
   },
   {
     id: 'collaborative-robot',
@@ -99,7 +114,10 @@ export const COMPETITION_DIVISIONS: Division[] = [
     hasSubCategory: false,
     hasLevels: true,
     levels: ['SMK'],
-    hasLecturer: false
+    hasLecturer: false,
+    price: 'Rp. 500,000',
+    priceUSD: '$30.00',
+    whatsappGroup: 'https://chat.whatsapp.com/HHKWkVk3oA8DwMNBTE2LpU'
   },
   {
     id: 'research-innovation',
@@ -115,7 +133,10 @@ export const COMPETITION_DIVISIONS: Division[] = [
     hasSubCategory: false,
     hasLevels: true,
     levels: ['Mahasiswa'],
-    hasLecturer: false
+    hasLecturer: false,
+    price: 'Rp. 120,000',
+    priceUSD: '$7.50',
+    whatsappGroup: 'https://chat.whatsapp.com/Jp5VNTCxXgGFP3RNZCLI6z'
   },
   {
     id: 'creative-innovation',
@@ -131,7 +152,10 @@ export const COMPETITION_DIVISIONS: Division[] = [
     hasSubCategory: false,
     hasLevels: true,
     levels: ['Junior SD', 'Senior SMP Sederajat', 'SMA Sederajat'],
-    hasLecturer: true
+    hasLecturer: true,
+    price: 'Rp. 120,000',
+    priceUSD: '$7.50',
+    whatsappGroup: 'https://chat.whatsapp.com/LwWIV0GAElF1DbT2nmn6Ug'
   },
   {
     id: 'drone-innovation',
@@ -146,7 +170,10 @@ export const COMPETITION_DIVISIONS: Division[] = [
     maxStaff: 2,
     hasSubCategory: false,
     hasLevels: false,
-    hasLecturer: false
+    hasLecturer: false,
+    price: 'Rp. 120,000',
+    priceUSD: '$7.50',
+    whatsappGroup: 'https://chat.whatsapp.com/D4Gr6PaoSzI2ZI4gTiRYnZ'
   }
 ];
 
@@ -262,7 +289,7 @@ export const TIMELINE_EVENTS: TimelineEvent[] = [
   {
     phase: 'JANUARY - JUNE',
     title: 'Socialization Campaign',
-    date: 'January - June 2026',
+    date: '1 January-30 June 2026',
     description: 'Interactive info-sessions, campus tours, and rulebook socialization across leading institutions in Indonesia.',
     details: 'Kampanye sosialisasi regulasi kompetisi, buku panduan peserta, dan pengenalan divisi luring/daring ke kampus seluruh Indonesia.',
     status: 'completed'
@@ -278,15 +305,15 @@ export const TIMELINE_EVENTS: TimelineEvent[] = [
   {
     phase: 'SEPTEMBER',
     title: 'Technical Meeting',
-    date: 'First Week of September 2026',
+    date: '15 September 2026',
     description: 'Unveiling active arena dimensions, rules clarification, and code frequency locks with the engineering board.',
     details: 'Pemberian arahan teknis arena, pengundian nomor urut tanding, dan sinkronisasi frekuensi radio kendali.',
     status: 'upcoming'
   },
   {
-    phase: '22–24 SEPTEMBER',
+    phase: 'SEPTEMBER',
     title: 'Championship Matches',
-    date: '22 - 24 September 2026',
+    date: '22-24 September 2026',
     description: 'High stakes combat, real-time autonomous racing, and mechatonics pitching at the grand sports arena.',
     details: 'Pertarungan puncak tiga hari penuh aksi di bawah sorot lampu panggung bergengsi Universitas Negeri Jakarta.',
     status: 'upcoming'
@@ -295,7 +322,7 @@ export const TIMELINE_EVENTS: TimelineEvent[] = [
     phase: 'SEPTEMBER GALA',
     title: 'Grand Victory Awards',
     date: 'September 24, 2026',
-    description: 'Dispensing the Rp 250,000,000+ prize support pool, project scale-up funding, and corporate developer contracts.',
+    description: 'Dispensing the Rp 60,000,000+ prize support pool, project scale-up funding, and corporate developer contracts.',
     details: 'Malam penganugerahan piala kejuaraan, penyaluran opsi inkubasi, dan kontrak kemitraan laboratorium nasional.',
     status: 'upcoming'
   }
@@ -333,39 +360,37 @@ export const GALLERY_ITEMS: GalleryItem[] = [
 ];
 
 export const CORE_VISION_MISSION = {
-  aboutTitle: 'MORE THAN A COMPETITION.',
-  latarBelakang: 'Organized by the Electronics Engineering Education Program, Faculty of Engineering, Universitas Negeri Jakarta, ERIC 2026 (Electronics and Robotics Innovation Competition) serves as the ultimate national stage. Designed as an elite platform for rapid mechanical prototyping, embedded software design, and high-impact micro-automation, ERIC coordinates the brightest minds to dictate Indonesia’s advanced engineering trajectory.',
-  latarBelakangID: 'Diselenggarakan oleh Program Studi Pendidikan Teknik Elektronika, Fakultas Teknik, Universitas Negeri Jakarta, ERIC 2026 merupakan panggung nasional tertinggi. Didesain sebagai wadah elit untuk manufaktur mekatronika instan, desain mikrokontroler tertanam, dan otomatisasi mikro, ERIC mengoordinasikan talenta terbaik guna menggerakkan arah kemajuan teknologi nasional Indonesia.',
-  tujuan: 'To stimulate industrial hardware breakthroughs, accelerate national artificial intelligence integration on physical nodes, and synthesize a high-octane engineering community matching F1 standards of mechanical discipline.',
-  tujuanID: 'Menstimulasi terobosan perangkat keras industri, mempercepat integrasi kecerdasan buatan nasional pada node fisik, dan menyintesis komunitas teknik berkecepatan tinggi yang menyamai disiplin profesional khas arena balap F1.',
-  vision: 'To build Indonesia’s ultimate engineering nursery, forging creators who don’t just use technology, but dictate the dynamic architecture of robotics worldwide.',
-  visionID: 'Menjadi inkubator utama pembibitan teknik Indonesia, mencetak inovator yang tidak sekadar memanfaatkan teknologi, tetapi mendikte arah arsitektur robotika otonom di kancah dunia.',
-  mission: [
-    'Unify elite tech-focused universities and industrial developers under a single competitive framework.',
-    'Expose contestants to strict telemetry audits, simulating high-pressure development sprints.',
-    'Synthesize enterprise bridges ensuring winning architectural designs transition directly to funded startups.'
+  aboutTitle: 'Beyond the Horizon, Be the Best Beat the Rest',
+  latarBelakang: 'Electronics & Robotics Innovation Competition (ERIC) 2026 is a global competition that brings together students, researchers, and innovators from diverse backgrounds. This event serves as a platform for exchanging ideas, fostering creativity, and developing innovations in the fields of electronics and robotics. Through this competition, participants are expected to develop critical thinking and problem-solving skills that are essential in the Society 5.0 era.',
+  latarBelakangID: 'Electronics & Robotics Innovation Competition (ERIC) 2026 adalah kompetisi global yang mempertemukan mahasiswa, peneliti, dan inovator dari berbagai latar belakang. Kegiatan ini menjadi wadah untuk bertukar ide, mendorong kreativitas, dan mengembangkan inovasi di bidang elektronika serta robotika. Melalui kompetisi ini, peserta diharapkan mengembangkan kemampuan berpikir kritis dan pemecahan masalah yang sangat dibutuhkan pada era Society 5.0.',
+  tujuan: [
+    'Organize a competitive and challenging electronics and robotics competition to drive innovation and provide solutions for real-world technology challenges in the Industry 4.0 and Society 5.0 era.',
+    'Encourage participants to develop creativity, innovation, and critical thinking skills through a fair, professional, and structured competitive environment.',
+    'Provide a collaborative platform for students and young innovators to compete, exchange ideas, and showcase their best potential in electronics and robotics at national and international levels.',
+    'Encourage the creation of practical, solution-oriented technology projects that have a positive impact on industry, education, and community needs.',
+    'Instill values of sportsmanship, integrity, teamwork, and excellence throughout the entire competition process, from preparation to final evaluation.'
   ],
-  missionID: [
-    'Menyatukan universitas teknologi elit dan manufaktur elektronika dalam satu liga kompetisi terpusat.',
-    'Menerapkan audit telemetri ketat, melatih ketahanan pengembang dalam tenggat waktu produksi.',
-    'Menjembatani karya juara agar langsung bertransisi menjadi startup yang didukung pendanaan inkubasi.'
+  tujuanID: [
+    'Menyelenggarakan kompetisi elektronika dan robotika yang kompetitif dan menantang untuk mendorong inovasi serta memberikan solusi atas tantangan teknologi nyata di era Industri 4.0 dan Society 5.0.',
+    'Mendorong peserta mengembangkan kreativitas, inovasi, dan kemampuan berpikir kritis melalui lingkungan kompetisi yang adil, profesional, dan terstruktur.',
+    'Menyediakan wadah kolaboratif bagi mahasiswa dan inovator muda untuk berkompetisi, bertukar ide, dan menampilkan potensi terbaik di bidang elektronika dan robotika pada tingkat nasional maupun internasional.',
+    'Mendorong lahirnya proyek teknologi yang praktis dan berorientasi solusi, yang memberi dampak positif bagi kebutuhan industri, pendidikan, dan masyarakat.',
+    'Menanamkan nilai sportivitas, integritas, kerja sama tim, dan keunggulan selama seluruh proses kompetisi, mulai dari persiapan hingga penilaian akhir.'
   ]
 };
 
 export const STATISTICS = [
-  { value: 'Rp 250M+', label: 'Cash Prize & Incubation' },
-  { value: '9 Arenas', label: 'Competition Divisions' },
-  { value: '180+ Teams', label: 'Registered Elite Roster' },
+  { value: 'Rp 62M+', label: 'Cash Prize & Incubation' },
+  { value: '12 Arenas', label: 'Competition Divisions' },
+  { value: '900+ People', label: 'Registered' },
   { value: '25+ Partners', label: 'Venture & Tech Networks' }
 ];
 
 export const SPONSORS = [
-  { name: 'Kementerian Pendidikan, Kebudayaan, Riset, dan Teknologi', initials: 'KMD' },
-  { name: 'Universitas Negeri Jakarta (Host & Organizer)', initials: 'UNJ' },
-  { name: 'Indesian Robotics Association', initials: 'IRA' },
-  { name: 'TV Edukasi Berita Nasional', initials: 'TVE' },
-  { name: 'UNJ TV Media Group', initials: 'UTV' },
-  { name: 'Teknologi Mechatronics.ID', initials: 'MID' }
+  { name: 'PDP Comon & fuel injection Pump', initials: 'PDP', logo: '/images/sponsors/pdp.png' },
+  { name: 'ALPHA MECHATRONICS', initials: 'AP', logo: '/images/sponsors/ap-alpha.png' },
+  { name: 'CYTRON TECHNOLOGIES', initials: 'CT', logo: '/images/sponsors/ct-cytron.png' },
+  { name: 'iSee Electronic and robotics store', initials: 'iSee', logo: '/images/sponsors/isee.png' }
 ];
 
 // 3-Day Journey Blueprint Details
@@ -377,10 +402,11 @@ export const EVENT_DAY_JOURNEY = [
     description: 'Immersive Opening Ceremony followed by the historic Team Parade. Active robot telemetry logs initialize as Sumobots battle and Soccerbots take the turf under high-frequency radio control.',
     indonesianDescription: 'Upacara pembukaan memukau didampingi Parade Tim. Telemetri aktif mulai berjalan untuk mengawali perebutan divisi Sumobot, Mini Soccerbot, serta penyelarasan PLC & Robot Kolaboratif.',
     activities: [
-      'GALA OPENING CEREMONY & NATION WIDE TEAM PARADE',
-      'QUALIFICATION HEATS: SUMOBOT (500G & 3KG)',
-      'QUALIFICATION ROUNDS: MINI SOCCERBOT TURF ACCELERATION',
-      'PLC INDUSTRIAL LOGIC CHECKS & COBOT WORKSPACE CALIBRATIONS'
+      'OPENING CEREMONY',
+      'PLC INDUSTRY',
+      'COLLABORATIVE ROBOT',
+      'MINI SOCCER BOT',
+      'SUMOBOT 3KG'
     ]
   },
   {
@@ -390,9 +416,10 @@ export const EVENT_DAY_JOURNEY = [
     description: 'Pure high speed trajectory calculations. Line Followers race across complex layered track grids, while Research Challenge contenders present paper blueprints to our panel of judges.',
     indonesianDescription: 'Perhitungan kecepatan lintasan murni. Robot Line Follower berlomba menyusuri sirkuit berlapis, sementara finalis Research Challenge mempertahankan karya ilmiah di hadapan dewan penguji.',
     activities: [
-      'LINE FOLLOWER SPEED RACING & TRACK HEATS',
-      'RESEARCH CHALLENGE: SCIENTIFIC PRESENTATIONS & DEFENSE',
-      'ADVANCED QUALIFICATIONS & ELITE BRACKET ASSEMBLY'
+      'PLC INDUSTRI',
+      'COLLABORATIVE ROBOT',
+      'LINE FOLLOWER',
+      'RESEARCH INNOVATION CHALLENGE'
     ]
   },
   {
@@ -402,10 +429,11 @@ export const EVENT_DAY_JOURNEY = [
     description: 'Ecosystems move into the skies with Drone Obstacle flight runs. Inventions pitch in Creative Innovation, leading up to the final combat clashes and the prestigious Award Ceremony.',
     indonesianDescription: 'Ekosistem beralih ke ruang udara dengan uji halang rintang Drone Innovation. Pitching inovasi kreatif disusul babak final terpanas serta malam penganugerahan pemenang utama.',
     activities: [
-      'DRONE INNOVATION: AUTONOMOUS AERIAL FLIGHT RUNS',
-      'CREATIVE INNOVATION: PRESS SHOWCASE & VC PITCHING',
-      'GRAND FINALS CLASHES Across sumobots AND soccerbots',
-      'GRAND REVELATION AWARD GALA & TROPHY PRESENTATIONS'
+      'PLC INDUSTRI',
+      'COLLABORATIVE ROBOT',
+      'DRONE INNOVATION',
+      'SUMOBOT 500GR RC DAN AUTONOMUS',
+      'CLOSING CEREMONY'
     ]
   }
 ];

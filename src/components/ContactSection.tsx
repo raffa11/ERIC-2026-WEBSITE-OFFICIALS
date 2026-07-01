@@ -5,7 +5,7 @@
 
 import { motion } from 'motion/react';
 import { useLanguage } from './LanguageContext';
-import { Mail, MessageCircle, Instagram, Globe, MapPin, Building, ShieldAlert } from 'lucide-react';
+import { Mail, MessageCircle, Instagram, Globe, MapPin, Building, ShieldAlert, Link2 } from 'lucide-react';
 
 export default function ContactSection() {
   const { t } = useLanguage();
@@ -16,45 +16,63 @@ export default function ContactSection() {
     faculty: 'Faculty of Engineering',
     facultyID: 'Fakultas Teknik',
     university: 'Universitas Negeri Jakarta (UNJ)',
-    address: 'Kampus A Universitas Negeri Jakarta, Jl. Rawamangun Muka, Rawamangun, Pulo Gadung, Jakarta Timur, 13220, Indonesia'
+    address: 'BEM - Program Studi Pendidikan Teknik Elektronika, Fakultas Teknik - Universitas Negeri Jakarta, Kampus A (Kampus Utama), Jl. Rawamangun Muka, Jakarta Timur 13220, Indonesia'
   };
 
   const contactChannels = [
     {
-      id: 'email',
-      icon: Mail,
-      label: 'EMAIL',
-      value: 'telemetry@eric2026.or.id',
-      href: 'mailto:telemetry@eric2026.or.id',
+      id: 'website',
+      icon: Globe,
+      label: 'WEBSITE ERIC',
+      value: 'ft.unj.ac.id/elektronika/eric',
+      href: 'https://ft.unj.ac.id/elektronika/eric',
       accentColor: '#00FF88',
       hoverGlow: 'rgba(0, 255, 136, 0.15)'
-    },
-    {
-      id: 'whatsapp',
-      icon: MessageCircle,
-      label: 'WHATSAPP',
-      value: '+62 (821) 5005-2026',
-      href: 'https://wa.me/6282150052026',
-      accentColor: '#4DFFB8',
-      hoverGlow: 'rgba(77, 255, 184, 0.15)'
     },
     {
       id: 'instagram',
       icon: Instagram,
       label: 'INSTAGRAM',
-      value: '@eric.unj',
-      href: 'https://instagram.com/eric2026',
+      value: '@ericunj.official',
+      href: 'https://instagram.com/ericunj.official',
       accentColor: '#0047AB',
       hoverGlow: 'rgba(0, 71, 171, 0.15)'
     },
     {
-      id: 'website',
-      icon: Globe,
-      label: 'OFFICIAL WEBSITE',
-      value: 'eric2026.or.id',
-      href: 'https://eric2026.or.id',
+      id: 'whatsapp',
+      icon: MessageCircle,
+      label: 'WHATSAPP ADMIN',
+      value: 'wa.me/+6285176706421 (Ariful)',
+      href: 'https://wa.me/6285176706421',
+      accentColor: '#4DFFB8',
+      hoverGlow: 'rgba(77, 255, 184, 0.15)'
+    },
+    {
+      id: 'email-resmi',
+      icon: Mail,
+      label: 'EMAIL RESMI',
+      value: 'ericunj@gmail.com',
+      href: 'mailto:ericunj@gmail.com',
       accentColor: '#C5A059',
       hoverGlow: 'rgba(197, 160, 89, 0.15)'
+    },
+    {
+      id: 'linktree',
+      icon: Link2,
+      label: 'LINKTREE',
+      value: 'linktr.ee/ERICUNJ',
+      href: 'https://linktr.ee/ERICUNJ',
+      accentColor: '#C5A059',
+      hoverGlow: 'rgba(197, 160, 89, 0.15)'
+    },
+    {
+      id: 'hotel',
+      icon: Building,
+      label: 'HOTEL INFO',
+      value: 'Hotel Information',
+      href: 'https://drive.google.com/drive/folders/1WWtwQr2UulH9DyvNvscbGtvGo9_Q-oLl',
+      accentColor: '#4DFFB8',
+      hoverGlow: 'rgba(77, 255, 184, 0.15)'
     }
   ];
 
@@ -69,12 +87,15 @@ export default function ContactSection() {
         <div className="mb-16 select-none">
           <div className="flex items-center gap-3 text-xs font-mono text-[#00FF88] tracking-[0.4em] uppercase mb-4">
             <ShieldAlert className="w-4 h-4 text-[#00FF88]" />
-            <span>CONTACT US</span>
+            <span>INFORMASI KOMPETISI</span>
           </div>
           <h2 className="text-4xl md:text-7xl font-sans font-black tracking-tighter text-white uppercase leading-none">
-            LET'S BUILD <br />
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#00FF88] to-[#4DFFB8]">THE FUTURE TOGETHER</span>
+            PUNYA PERTANYAAN? <br />
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#00FF88] to-[#4DFFB8]">KAMI SIAP MEMBANTU!</span>
           </h2>
+          <p className="text-zinc-400 font-mono text-sm uppercase tracking-wider mt-4 max-w-2xl leading-relaxed">
+            Gunakan kontak berikut untuk menghubungi tim yang tepat
+          </p>
         </div>
 
         {/* Left-Right Dual Column Editorial Grid Layout */}

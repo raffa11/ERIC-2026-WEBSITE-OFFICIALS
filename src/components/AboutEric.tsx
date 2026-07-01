@@ -7,16 +7,15 @@ import { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { useLanguage } from './LanguageContext';
 import { CORE_VISION_MISSION, STATISTICS } from '../data';
-import { BookOpen, Target, Sparkles, Navigation, Send, ArrowRight } from 'lucide-react';
+import { BookOpen, Target, ArrowRight } from 'lucide-react';
 
 export default function AboutEric() {
   const { t } = useLanguage();
-  const [activeTab, setActiveTab] = useState<'latar' | 'tujuan' | 'visi'>('latar');
+  const [activeTab, setActiveTab] = useState<'latar' | 'tujuan'>('latar');
 
   const tabs = [
-    { id: 'latar', label: t('LATAR BELAKANG', 'LATAR BELAKANG'), icon: BookOpen },
-    { id: 'tujuan', label: t('TUJUAN', 'TUJUAN'), icon: Target },
-    { id: 'visi', label: t('VISION & MISSION', 'VISI & MISI'), icon: Sparkles },
+    { id: 'latar', label: t('BACKGROUND', 'LATAR BELAKANG'), icon: BookOpen },
+    { id: 'tujuan', label: t('OBJECTIVES', 'TUJUAN'), icon: Target },
   ] as const;
 
   return (
@@ -129,41 +128,26 @@ export default function AboutEric() {
                   className="space-y-4"
                 >
                   {activeTab === 'latar' && (
-                    <p className="text-zinc-300 text-sm md:text-base leading-relaxed uppercase">
-                      {t(CORE_VISION_MISSION.latarBelakang, CORE_VISION_MISSION.latarBelakangID)}
-                    </p>
+                    <div className="space-y-4">
+                      <p className="text-zinc-300 text-sm md:text-base leading-relaxed uppercase">
+                        {t(CORE_VISION_MISSION.latarBelakang, CORE_VISION_MISSION.latarBelakangID)}
+                      </p>
+                    </div>
                   )}
 
                   {activeTab === 'tujuan' && (
-                    <p className="text-zinc-300 text-sm md:text-base leading-relaxed uppercase">
-                      {t(CORE_VISION_MISSION.tujuan, CORE_VISION_MISSION.tujuanID)}
-                    </p>
-                  )}
-
-                  {activeTab === 'visi' && (
-                    <div className="space-y-4">
-                      <div>
-                        <div className="text-[10px] font-mono text-[#00FF88] uppercase tracking-widest mb-1">
-                          {t('THE GLOBAL VISION', 'VISI UTAMA')}
-                        </div>
-                        <p className="text-zinc-300 text-sm leading-relaxed uppercase">
-                          {t(CORE_VISION_MISSION.vision, CORE_VISION_MISSION.visionID)}
-                        </p>
+                    <div className="space-y-3">
+                      <div className="text-[10px] font-mono text-[#00FF88] uppercase tracking-widest mb-1">
+                        {t('OBJECTIVES', 'TUJUAN')}
                       </div>
-
-                      <div className="border-t border-white/5 pt-4">
-                        <div className="text-[10px] font-mono text-[#C5A059] uppercase tracking-widest mb-2.5">
-                          {t('MISSION BLUEPRINTS', 'MISI STRATEGIS')}
-                        </div>
-                        <ul className="space-y-2.5">
-                          {t(CORE_VISION_MISSION.mission, CORE_VISION_MISSION.missionID).map((m: string, i: number) => (
-                            <li key={i} className="text-zinc-400 text-xs flex items-start gap-2.5 uppercase font-mono">
-                              <span className="text-[#00FF88]">0{i + 1}.</span>
-                              <span className="text-zinc-300">{m}</span>
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
+                      <ul className="space-y-2.5">
+                        {(t(CORE_VISION_MISSION.tujuan as any, CORE_VISION_MISSION.tujuanID as any) as string[]).map((m: string, i: number) => (
+                          <li key={i} className="text-zinc-400 text-xs flex items-start gap-2.5 uppercase font-mono">
+                            <span className="text-[#00FF88]">0{i + 1}.</span>
+                            <span className="text-zinc-300">{m}</span>
+                          </li>
+                        ))}
+                      </ul>
                     </div>
                   )}
                 </motion.div>

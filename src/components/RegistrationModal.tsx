@@ -11,7 +11,7 @@ import { Member, Registration } from '../types';
 import { 
   Trophy, User, Code, Terminal, Sparkles, Send, CheckCircle2, 
   Plus, Trash2, ArrowRight, ArrowLeft, CreditCard, 
-  QrCode, AlertCircle, X, Check, Globe, Upload, Copy
+  QrCode, AlertCircle, X, Check, Globe, Upload, Copy, MessageCircle
 } from 'lucide-react';
 import { syncToGoogleSheet } from '../lib/googleSheet';
 
@@ -376,7 +376,7 @@ export default function RegistrationModal({
       paymentMethod: displayMethodName,
       paymentStatus: 'PAID',
       refCode: generatedPin,
-      amount: 'IDR 150,000',
+      amount: divisionObj.price,
       subCategory: divisionObj.hasSubCategory ? subCategory : undefined,
       level: divisionObj.hasLevels ? level : undefined,
       lecturerName: divisionObj.hasLecturer ? lecturerName : undefined,
@@ -479,6 +479,28 @@ export default function RegistrationModal({
                       {t('Save or copy this registration code to manage rosters and unlock access locks.', 'Simpan atau salin kode registrasi ini untuk mengelola roster dan membuka kunci akses.')}
                     </p>
                   </div>
+
+                  <a
+                    href={(() => {
+                      const div = COMPETITION_DIVISIONS.find(d => d.id === successPopup.divisionId);
+                      return div?.whatsappGroup || '#';
+                    })()}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="block bg-emerald-950/20 border border-emerald-500/20 hover:border-emerald-400/40 rounded-2xl p-4 transition-all duration-300 group cursor-pointer"
+                  >
+                    <div className="flex items-center justify-center gap-3">
+                      <MessageCircle className="w-5 h-5 text-emerald-400 group-hover:scale-110 transition-transform" />
+                      <div className="text-left">
+                        <div className="text-[9px] font-mono text-emerald-400 uppercase tracking-widest font-bold">
+                          {t('JOIN WHATSAPP GROUP', 'GABUNG GROUP WHATSAPP')}
+                        </div>
+                        <div className="text-xs font-sans font-black text-white group-hover:text-emerald-300 transition-colors uppercase tracking-tight">
+                          {t('Click to join your division group', 'Klik untuk gabung group divisi Anda')}
+                        </div>
+                      </div>
+                    </div>
+                  </a>
 
                   <p className="text-xs text-zinc-400 font-mono uppercase leading-relaxed text-center px-4">
                     {t('Thank you', 'Terima kasih')}, <span className="text-white font-bold">{successPopup.leader.name}</span>. {t('Your team', 'Tim Anda')} <span className="text-[#00FF88] font-bold">"{successPopup.teamName}"</span> {t('is registered. A confirmation has been logged.', 'telah terdaftar. Konfirmasi telah dicatat.')}
@@ -1111,7 +1133,10 @@ export default function RegistrationModal({
                               {t('ALL INCLUSIVE', 'BIAYA TETAP')}
                             </span>
                             <span className="text-xl font-mono text-[#00FF88] font-black tracking-tight block">
-                              IDR 150,000
+                              {divisionObj.price}
+                            </span>
+                            <span className="text-[10px] font-mono text-zinc-500 tracking-tight block">
+                              {divisionObj.priceUSD} {t('USD', 'USD')}
                             </span>
                           </div>
                         </div>

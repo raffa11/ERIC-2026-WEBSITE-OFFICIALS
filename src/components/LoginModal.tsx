@@ -6,7 +6,8 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { useLanguage } from './LanguageContext';
-import { X, LogIn, AlertCircle, Sparkles, Terminal } from 'lucide-react';
+import { X, LogIn, AlertCircle, Sparkles } from 'lucide-react';
+import { getSupabaseAuth } from '../lib/supabase';
 
 interface LoginModalProps {
   isOpen: boolean;
@@ -21,55 +22,114 @@ export default function LoginModal({ isOpen, onClose, onLoginSuccess }: LoginMod
   const [authPassword, setAuthPassword] = useState('');
   const [authName, setAuthName] = useState('');
   const [authError, setAuthError] = useState('');
+  const [authLoading, setAuthLoading] = useState(false);
 
   // Sign In Trigger
-  const handleSignIn = (e: React.FormEvent) => {
+  const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!authEmail || !authPassword) {
-      setAuthError('Please fill out all login files.');
+      setAuthError('Please fill out all login fields.');
       return;
     }
     setAuthError('');
-    const userSession = {
-      name: authEmail.split('@')[0].toUpperCase(),
+    setAuthLoading(true);
+
+    const auth = getSupabaseAuth();
+    if (!auth) {
+      setAuthError('Supabase not configured. Set VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY in .env');
+      setAuthLoading(false);
+      return;
+    }
+
+    const { data, error } = await auth.signInWithPassword({
       email: authEmail,
+      password: authPassword,
+    });
+
+    setAuthLoading(false);
+
+    if (error) {
+      setAuthError(error.message);
+      return;
+    }
+
+    const user = data.user;
+    onLoginSuccess({
+      name: user?.user_metadata?.full_name || user?.email?.split('@')[0].toUpperCase() || '',
+      email: user?.email || authEmail,
       method: 'email'
-    };
-    onLoginSuccess(userSession);
+    });
     onClose();
   };
 
   // Sign Up Trigger
-  const handleSignUp = (e: React.FormEvent) => {
+  const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!authName || !authEmail || !authPassword) {
       setAuthError('All registration items are mandatory.');
       return;
     }
     setAuthError('');
-    const userSession = {
+    setAuthLoading(true);
+
+    const auth = getSupabaseAuth();
+    if (!auth) {
+      setAuthError('Supabase not configured. Set VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY in .env');
+      setAuthLoading(false);
+      return;
+    }
+
+    const { data, error } = await auth.signUp({
+      email: authEmail,
+      password: authPassword,
+      options: {
+        data: { full_name: authName },
+      }
+    });
+
+    setAuthLoading(false);
+
+    if (error) {
+      setAuthError(error.message);
+      return;
+    }
+
+    if (data.user?.identities?.length === 0) {
+      setAuthError('Email ini sudah terdaftar. Silakan login.');
+      return;
+    }
+
+    onLoginSuccess({
       name: authName,
       email: authEmail,
       method: 'email'
-    };
-    onLoginSuccess(userSession);
+    });
     onClose();
   };
 
-  // Google SSO Simulation
-  const handleGoogleLogin = () => {
+  // Google SSO with Supabase
+  const handleGoogleLogin = async () => {
     setAuthMode('google-loading');
     setAuthError('');
-    setTimeout(() => {
-      const googleSession = {
-        name: 'ALFARIZI MUHAMMAD RAFFA',
-        email: 'alfarizimuhammadraffa@gmail.com',
-        method: 'google'
-      };
-      onLoginSuccess(googleSession);
+
+    const auth = getSupabaseAuth();
+    if (!auth) {
+      setAuthError('Supabase not configured.');
       setAuthMode('signin');
-      onClose();
-    }, 1500);
+      return;
+    }
+
+    const { error } = await auth.signInWithOAuth({
+      provider: 'google',
+      options: {
+        redirectTo: window.location.origin,
+      }
+    });
+
+    if (error) {
+      setAuthError(error.message);
+      setAuthMode('signin');
+    }
   };
 
   return (
@@ -203,9 +263,14 @@ export default function LoginModal({ isOpen, onClose, onLoginSuccess }: LoginMod
 
                       <button
                         type="submit"
-                        className="w-full py-3 bg-gradient-to-r from-[#00FF88] to-[#4DFFB8] text-black font-sans font-black text-xs tracking-wider uppercase rounded-xl hover:scale-101 transition-all cursor-pointer flex justify-center items-center gap-2 shadow-[0_0_15px_rgba(0,255,136,0.15)]"
+                        disabled={authLoading}
+                        className="w-full py-3 bg-gradient-to-r from-[#00FF88] to-[#4DFFB8] text-black font-sans font-black text-xs tracking-wider uppercase rounded-xl hover:scale-101 transition-all cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed flex justify-center items-center gap-2 shadow-[0_0_15px_rgba(0,255,136,0.15)]"
                       >
-                        <LogIn className="w-4 h-4 text-black" />
+                        {authLoading ? (
+                          <span className="w-4 h-4 border-2 border-black border-t-transparent rounded-full animate-spin" />
+                        ) : (
+                          <LogIn className="w-4 h-4 text-black" />
+                        )}
                         <span>{t('SECURE LOGIN', 'MASUK SEKARANG')}</span>
                       </button>
                     </form>
@@ -249,9 +314,14 @@ export default function LoginModal({ isOpen, onClose, onLoginSuccess }: LoginMod
 
                       <button
                         type="submit"
-                        className="w-full py-3 bg-zinc-900 text-[#00FF88] border border-[#00FF88]/30 font-sans font-black text-xs tracking-wider uppercase rounded-xl hover:bg-zinc-950 hover:border-[#00FF88]/50 transition-colors cursor-pointer flex justify-center items-center gap-2"
+                        disabled={authLoading}
+                        className="w-full py-3 bg-zinc-900 text-[#00FF88] border border-[#00FF88]/30 font-sans font-black text-xs tracking-wider uppercase rounded-xl hover:bg-zinc-950 hover:border-[#00FF88]/50 transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed flex justify-center items-center gap-2"
                       >
-                        <LogIn className="w-4 h-4" />
+                        {authLoading ? (
+                          <span className="w-4 h-4 border-2 border-[#00FF88] border-t-transparent rounded-full animate-spin" />
+                        ) : (
+                          <LogIn className="w-4 h-4" />
+                        )}
                         <span>{t('CREATE ACCOUNT', 'DAFTAR SEKARANG')}</span>
                       </button>
                     </form>

@@ -3,7 +3,25 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-export default function EricLogo({ className = 'w-10 h-10', showText = true }: { className?: string; showText?: boolean }) {
+export default function EricLogo({ className = 'w-10 h-10', showText = true, src }: { className?: string; showText?: boolean; src?: string }) {
+  if (src) {
+    return (
+      <div className="flex items-center gap-3 select-none">
+        <img src={src} alt="ERIC Logo" className={`${className} object-contain`} />
+        {showText && (
+          <div className="flex flex-col">
+            <span className="text-xl font-sans font-black tracking-tighter text-white leading-none">
+              ERIC <span className="text-[#FFEAA7]">2026</span>
+            </span>
+            <span className="text-[7.5px] font-mono text-zinc-400 tracking-[0.15em] uppercase leading-none mt-1">
+              ROBOTICS LIGA
+            </span>
+          </div>
+        )}
+      </div>
+    );
+  }
+
   return (
     <div className="flex items-center gap-3 select-none">
       <svg

@@ -6,7 +6,7 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { TIMELINE_EVENTS } from '../data';
-import { Calendar, Layers, ChevronRight, CornerDownRight, CheckCircle2 } from 'lucide-react';
+import { Calendar, Layers, ChevronRight, CornerDownRight, CheckCircle2, ExternalLink } from 'lucide-react';
 
 export default function TimelineSection() {
   const [activeIdx, setActiveIdx] = useState(0);
@@ -165,6 +165,25 @@ export default function TimelineSection() {
                     {activeEvent.description}
                   </p>
                 </div>
+
+                {/* Event Schedule Button */}
+                <a
+                  href="https://drive.google.com/drive/folders/1RPDtOuZvIp4wUPghS5LrQXQCm9JYpciU"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="group flex items-center justify-between px-5 py-4 bg-zinc-950 border border-white/10 hover:border-[#00FF88]/40 rounded-2xl transition-all duration-300 hover:scale-102 hover:shadow-[0_0_20px_rgba(0,255,136,0.1)] cursor-pointer"
+                >
+                  <div className="flex items-center gap-3">
+                    <Calendar className="w-5 h-5 text-[#00FF88]" />
+                    <div>
+                      <div className="text-[9px] font-mono text-zinc-500 uppercase tracking-widest">SCHEDULE</div>
+                      <div className="text-sm font-sans font-black text-white group-hover:text-[#00FF88] transition-colors uppercase tracking-tight">
+                        {t('View Full Event Schedule', 'Lihat Jadwal Lengkap')}
+                      </div>
+                    </div>
+                  </div>
+                  <ExternalLink className="w-4 h-4 text-zinc-500 group-hover:text-[#00FF88] transition-colors" />
+                </a>
 
                 {/* Sub Indonesian Content panel (Authentic feel) */}
                 <div className="border-t border-white/5 pt-5">

@@ -68,6 +68,81 @@ export default function Divisions({ onSelectDivision }: DivisionsProps) {
           </p>
         </div>
 
+        {/* Resource Links */}
+        <div className="flex flex-wrap justify-center gap-4 mb-16 select-none">
+          <a
+            href="https://drive.google.com/drive/folders/1co00vzy633xZzgyBG0G4dvWEtvsHenXt"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="group relative px-6 py-3.5 bg-zinc-950 border border-white/10 hover:border-[#00FF88]/40 rounded-2xl transition-all duration-300 hover:scale-102 hover:shadow-[0_0_20px_rgba(0,255,136,0.1)]"
+          >
+            <div className="flex items-center gap-3">
+              <LucideIcons.FileText className="w-4 h-4 text-[#00FF88]" />
+              <div className="text-left">
+                <div className="text-[9px] font-mono text-zinc-500 uppercase tracking-widest">INFO</div>
+                <div className="text-xs font-sans font-black text-white group-hover:text-[#00FF88] transition-colors uppercase tracking-tight">
+                  {t('All Information', 'Semua Informasi')}
+                </div>
+              </div>
+              <LucideIcons.ExternalLink className="w-3.5 h-3.5 text-zinc-500 group-hover:text-[#00FF88] transition-colors" />
+            </div>
+          </a>
+
+          <a
+            href="https://drive.google.com/drive/folders/10w9yn_Tvfa7Kw7fEdQgRgHy6ARn04N_r?usp=drive_link"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="group relative px-6 py-3.5 bg-zinc-950 border border-white/10 hover:border-[#00FF88]/40 rounded-2xl transition-all duration-300 hover:scale-102 hover:shadow-[0_0_20px_rgba(0,255,136,0.1)]"
+          >
+            <div className="flex items-center gap-3">
+              <LucideIcons.BookOpen className="w-4 h-4 text-[#00FF88]" />
+              <div className="text-left">
+                <div className="text-[9px] font-mono text-zinc-500 uppercase tracking-widest">GUIDE</div>
+                <div className="text-xs font-sans font-black text-white group-hover:text-[#00FF88] transition-colors uppercase tracking-tight">
+                  {t('Guidebook', 'Buku Panduan')}
+                </div>
+              </div>
+              <LucideIcons.ExternalLink className="w-3.5 h-3.5 text-zinc-500 group-hover:text-[#00FF88] transition-colors" />
+            </div>
+          </a>
+
+          <a
+            href="https://drive.google.com/drive/folders/1RPDtOuZvIp4wUPghS5LrQXQCm9JYpciU"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="group relative px-6 py-3.5 bg-zinc-950 border border-white/10 hover:border-[#00FF88]/40 rounded-2xl transition-all duration-300 hover:scale-102 hover:shadow-[0_0_20px_rgba(0,255,136,0.1)]"
+          >
+            <div className="flex items-center gap-3">
+              <LucideIcons.Calendar className="w-4 h-4 text-[#00FF88]" />
+              <div className="text-left">
+                <div className="text-[9px] font-mono text-zinc-500 uppercase tracking-widest">SCHEDULE</div>
+                <div className="text-xs font-sans font-black text-white group-hover:text-[#00FF88] transition-colors uppercase tracking-tight">
+                  {t('Event Schedule', 'Jadwal Acara')}
+                </div>
+              </div>
+              <LucideIcons.ExternalLink className="w-3.5 h-3.5 text-zinc-500 group-hover:text-[#00FF88] transition-colors" />
+            </div>
+          </a>
+
+          <a
+            href="https://drive.google.com/drive/folders/1aM7UBB4gHVja5UdD079kXtcBJ3001mTt"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="group relative px-6 py-3.5 bg-zinc-950 border border-white/10 hover:border-[#00FF88]/40 rounded-2xl transition-all duration-300 hover:scale-102 hover:shadow-[0_0_20px_rgba(0,255,136,0.1)]"
+          >
+            <div className="flex items-center gap-3">
+              <LucideIcons.Mail className="w-4 h-4 text-[#00FF88]" />
+              <div className="text-left">
+                <div className="text-[9px] font-mono text-zinc-500 uppercase tracking-widest">LETTERS</div>
+                <div className="text-xs font-sans font-black text-white group-hover:text-[#00FF88] transition-colors uppercase tracking-tight">
+                  {t('Official Letters', 'Surat Resmi')}
+                </div>
+              </div>
+              <LucideIcons.ExternalLink className="w-3.5 h-3.5 text-zinc-500 group-hover:text-[#00FF88] transition-colors" />
+            </div>
+          </a>
+        </div>
+
         {/* 3D Cards Grid layout */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {COMPETITION_DIVISIONS.map((division, idx) => {

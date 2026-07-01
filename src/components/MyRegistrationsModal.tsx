@@ -9,7 +9,7 @@ import { useLanguage } from './LanguageContext';
 import { COMPETITION_DIVISIONS } from '../data';
 import { Member, Registration } from '../types';
 import { 
-  Trophy, User, Trash2, Edit2, X, Plus, CreditCard, Download
+  Trophy, User, Trash2, Edit2, X, Plus, CreditCard, Download, MessageCircle
 } from 'lucide-react';
 
 interface MyRegistrationsModalProps {
@@ -205,6 +205,18 @@ export default function MyRegistrationsModal({
                         )}
                         <div>REF CODE: <span className="text-[#00FF88] select-all font-bold">{reg.refCode}</span></div>
                       </div>
+
+                      {divObj?.whatsappGroup && (
+                        <a
+                          href={divObj.whatsappGroup}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="flex items-center justify-center gap-2 px-3 py-2 bg-emerald-950/20 border border-emerald-500/20 hover:border-emerald-400/40 rounded-xl text-[10px] font-mono text-emerald-300 hover:text-emerald-200 transition-all group cursor-pointer"
+                        >
+                          <MessageCircle className="w-3.5 h-3.5" />
+                          {t('JOIN DIVISION WHATSAPP GROUP', 'GABUNG GROUP WHATSAPP DIVISI')}
+                        </a>
+                      )}
 
                       <div className="flex justify-between items-center text-[10px] font-mono">
                         <div>GATEWAY: <span className="text-white uppercase">{reg.paymentMethod}</span></div>

@@ -99,7 +99,7 @@ export default function AdminDashboard({
             'Lecturer Twibbon Link': reg.lecturerTwibbonUrl || '-',
             'Payment Gateway': reg.paymentMethod,
             'Billing Status': reg.paymentStatus,
-            'Amount Paid': reg.amount || 'IDR 150,000',
+            'Amount Paid': reg.amount || (COMPETITION_DIVISIONS.find(d => d.id === reg.divisionId)?.price || 'IDR 250,000'),
             'Payment Proof File': reg.paymentProofName || '-',
             'Payment Proof Data': reg.paymentProofUrl ? '(Base64 Data Present)' : '-',
             'Roster size': reg.members.length + 1
@@ -395,7 +395,7 @@ export default function AdminDashboard({
                         <td className="p-4">
                           <div className="flex flex-col gap-1">
                             <span className="text-[10px] text-[#00FF88] font-bold uppercase">{reg.paymentMethod}</span>
-                            <span className="text-[9px] text-zinc-500">{reg.amount || 'IDR 150,000'}</span>
+                            <span className="text-[9px] text-zinc-500">{reg.amount || COMPETITION_DIVISIONS.find(d => d.id === reg.divisionId)?.price || 'IDR 250,000'}</span>
                             {reg.paymentProofUrl ? (
                               <a
                                 href={reg.paymentProofUrl}
@@ -597,49 +597,50 @@ export default function AdminDashboard({
  */
 const SPREADSHEET_ID = "12ouLbtyguh2VWYX0_DQlJUU_KCCEZ4qQBtH0RL2UFP8";
 
+function getOrCreateFolder(name) {
+  const folders = DriveApp.getFoldersByName(name);
+  return folders.hasNext() ? folders.next() : DriveApp.createFolder(name);
+}
+
+function uploadBase64File(base64Data, filename, folder) {
+  if (!base64Data || !base64Data.startsWith("data:")) return "-";
+  try {
+    const parts = base64Data.split(",");
+    const mimeMatch = parts[0].match(/:(.*?);/);
+    const mimeType = mimeMatch ? mimeMatch[1] : "application/octet-stream";
+    const decoded = Utilities.base64Decode(parts[1]);
+    const blob = Utilities.newBlob(decoded, mimeType, filename);
+    const file = folder.createFile(blob);
+    file.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW);
+    return file.getUrl();
+  } catch (err) {
+    return "Upload Error: " + err.toString();
+  }
+}
+
 function doPost(e) {
   try {
     const data = JSON.parse(e.postData.contents);
     const ss = SpreadsheetApp.openById(SPREADSHEET_ID);
     const sheet = ss.getActiveSheet();
     
-    let uploadsFolder;
-    const folders = DriveApp.getFoldersByName("ERIC_Registrations_Uploads");
-    if (folders.hasNext()) {
-      uploadsFolder = folders.next();
-    } else {
-      uploadsFolder = DriveApp.createFolder("ERIC_Registrations_Uploads");
-    }
+    const idFolder = getOrCreateFolder("ERIC_ID_Cards");
+    const twibbonFolder = getOrCreateFolder("ERIC_Twibbons");
+    const proofFolder = getOrCreateFolder("ERIC_Payment_Proofs");
     
-    function uploadBase64File(base64Data, filename) {
-      if (!base64Data || !base64Data.startsWith("data:")) return "-";
-      try {
-        const parts = base64Data.split(",");
-        const mimeMatch = parts[0].match(/:(.*?);/);
-        const mimeType = mimeMatch ? mimeMatch[1] : "application/octet-stream";
-        const decoded = Utilities.base64Decode(parts[1]);
-        const blob = Utilities.newBlob(decoded, mimeType, filename);
-        const file = uploadsFolder.createFile(blob);
-        file.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW);
-        return file.getUrl();
-      } catch (err) {
-        return "Upload Error: " + err.toString();
-      }
-    }
+    const leaderIdUrl = uploadBase64File(data.leaderIdCardUrl, "LEADER_ID_" + data.teamName + "_" + (data.leaderIdCardName || "id_card"), idFolder);
+    const leaderTwibbonUrl = uploadBase64File(data.leaderTwibbonUrl, "LEADER_TWIBBON_" + data.teamName + "_" + (data.leaderTwibbonName || "twibbon"), twibbonFolder);
     
-    const leaderIdUrl = uploadBase64File(data.leaderIdCardUrl, "LEADER_ID_" + data.teamName + "_" + (data.leaderIdCardName || "id_card"));
-    const leaderTwibbonUrl = uploadBase64File(data.leaderTwibbonUrl, "LEADER_TWIBBON_" + data.teamName + "_" + (data.leaderTwibbonName || "twibbon"));
+    const m1IdUrl = uploadBase64File(data.m1IdCardUrl, "MEMBER1_ID_" + data.teamName + "_" + (data.m1IdCardName || "id_card"), idFolder);
+    const m1TwibbonUrl = uploadBase64File(data.m1TwibbonUrl, "MEMBER1_TWIBBON_" + data.teamName + "_" + (data.m1TwibbonName || "twibbon"), twibbonFolder);
     
-    const m1IdUrl = uploadBase64File(data.m1IdCardUrl, "MEMBER1_ID_" + data.teamName + "_" + (data.m1IdCardName || "id_card"));
-    const m1TwibbonUrl = uploadBase64File(data.m1TwibbonUrl, "MEMBER1_TWIBBON_" + data.teamName + "_" + (data.m1TwibbonName || "twibbon"));
+    const m2IdUrl = uploadBase64File(data.m2IdCardUrl, "MEMBER2_ID_" + data.teamName + "_" + (data.m2IdCardName || "id_card"), idFolder);
+    const m2TwibbonUrl = uploadBase64File(data.m2TwibbonUrl, "MEMBER2_TWIBBON_" + data.teamName + "_" + (data.m2TwibbonName || "twibbon"), twibbonFolder);
     
-    const m2IdUrl = uploadBase64File(data.m2IdCardUrl, "MEMBER2_ID_" + data.teamName + "_" + (data.m2IdCardName || "id_card"));
-    const m2TwibbonUrl = uploadBase64File(data.m2TwibbonUrl, "MEMBER2_TWIBBON_" + data.teamName + "_" + (data.m2TwibbonName || "twibbon"));
+    const lecturerIdUrl = uploadBase64File(data.lecturerIdCardUrl, "LECTURER_ID_" + data.teamName + "_" + (data.lecturerIdCardName || "id_card"), idFolder);
+    const lecturerTwibbonUrl = uploadBase64File(data.lecturerTwibbonUrl, "LECTURER_TWIBBON_" + data.teamName + "_" + (data.lecturerTwibbonName || "twibbon"), twibbonFolder);
     
-    const lecturerIdUrl = uploadBase64File(data.lecturerIdCardUrl, "LECTURER_ID_" + data.teamName + "_" + (data.lecturerIdCardName || "id_card"));
-    const lecturerTwibbonUrl = uploadBase64File(data.lecturerTwibbonUrl, "LECTURER_TWIBBON_" + data.teamName + "_" + (data.lecturerTwibbonName || "twibbon"));
-    
-    const payProofUrl = uploadBase64File(data.paymentProofUrl, "PAY_PROOF_" + data.teamName + "_" + (data.paymentProofName || "proof"));
+    const payProofUrl = uploadBase64File(data.paymentProofUrl, "PAY_PROOF_" + data.teamName + "_" + (data.paymentProofName || "proof"), proofFolder);
     
     const headers = [
       "ID", "Timestamp", "Division", "Sub Category", "Level", "Team Name",
@@ -648,7 +649,7 @@ function doPost(e) {
       "Member 1 Name", "Member 1 WhatsApp", "Member 1 Disease", "Member 1 ID Card", "Member 1 Twibbon",
       "Member 2 Name", "Member 2 WhatsApp", "Member 2 Disease", "Member 2 ID Card", "Member 2 Twibbon",
       "Lecturer Name", "Lecturer Email", "Lecturer WhatsApp", "Lecturer Disease", "Lecturer ID Card", "Lecturer Twibbon",
-      "Payment Method", "Payment Status", "Amount Paid", "Ref Code"
+      "Payment Method", "Payment Status", "Amount Paid", "Payment Proof", "Ref Code"
     ];
     
     if (sheet.getLastRow() === 0) {
@@ -666,7 +667,7 @@ function doPost(e) {
       data.m1Name || "-", data.m1WhatsApp || "-", data.m1CongenitalDisease || "-", m1IdUrl, m1TwibbonUrl,
       data.m2Name || "-", data.m2WhatsApp || "-", data.m2CongenitalDisease || "-", m2IdUrl, m2TwibbonUrl,
       data.lecturerName || "-", data.lecturerEmail || "-", data.lecturerWhatsApp || "-", data.lecturerCongenitalDisease || "-", lecturerIdUrl, lecturerTwibbonUrl,
-      data.paymentMethod, data.paymentStatus, data.amount || "IDR 150,000", data.refCode
+      data.paymentMethod, data.paymentStatus, data.amount || "IDR 250,000", payProofUrl, data.refCode
     ];
     
     sheet.appendRow(row);
@@ -686,11 +687,17 @@ function doPost(e) {
                   <pre className="p-4 bg-zinc-950 border border-white/5 rounded-2xl text-[10.5px] font-mono text-zinc-400 overflow-x-auto max-h-[180px] custom-scrollbar select-all">
 {`const SPREADSHEET_ID = "12ouLbtyguh2VWYX0_DQlJUU_KCCEZ4qQBtH0RL2UFP8";
 
+function getOrCreateFolder(name) {
+  const folders = DriveApp.getFoldersByName(name);
+  return folders.hasNext() ? folders.next() : DriveApp.createFolder(name);
+}
+
 function doPost(e) {
   try {
     const data = JSON.parse(e.postData.contents);
-    const ss = SpreadsheetApp.openById(SPREADSHEET_ID);
-    const sheet = ss.getActiveSheet();
+    const idFolder = getOrCreateFolder("ERIC_ID_Cards");
+    const twibbonFolder = getOrCreateFolder("ERIC_Twibbons");
+    const proofFolder = getOrCreateFolder("ERIC_Payment_Proofs");
     // ... complete script is copied via clipboard button above ...`}
                   </pre>
                 </div>

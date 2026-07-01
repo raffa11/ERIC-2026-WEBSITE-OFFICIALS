@@ -27,7 +27,7 @@ import {
   dbFetchRegistrations, 
   dbUpsertRegistration, 
   dbDeleteRegistration, 
-  isSupabaseConfigured 
+  getSupabaseAuth
 } from './lib/supabase';
 
 export default function App() {
@@ -46,28 +46,48 @@ export default function App() {
 
   // Load state on mount
   useEffect(() => {
-    // 1. Load active user session
-    const storedUser = localStorage.getItem('eric_active_user');
-    if (storedUser) {
-      try {
-        setCurrentUser(JSON.parse(storedUser));
-      } catch (e) {
-        localStorage.removeItem('eric_active_user');
-      }
-    }
+    const init = async () => {
+      let loggedIn = false;
 
-    // 2. Load registrations from live Supabase or LocalStorage fallback
-    const loadData = async () => {
+      // 1. Try Supabase session first
+      const auth = getSupabaseAuth();
+      if (auth) {
+        const { data: { session } } = await auth.getSession();
+        if (session?.user) {
+          const u = session.user;
+          const user = {
+            name: u.user_metadata?.full_name || u.email?.split('@')[0].toUpperCase() || '',
+            email: u.email || '',
+            method: u.app_metadata?.provider || 'email'
+          };
+          setCurrentUser(user);
+          localStorage.setItem('eric_active_user', JSON.stringify(user));
+          loggedIn = true;
+        }
+      }
+
+      // 2. Fallback to localStorage if no Supabase session
+      if (!loggedIn) {
+        const storedUser = localStorage.getItem('eric_active_user');
+        if (storedUser) {
+          try {
+            setCurrentUser(JSON.parse(storedUser));
+          } catch (e) {
+            localStorage.removeItem('eric_active_user');
+          }
+        }
+      }
+
+      // 3. Load registrations
       try {
         const data = await dbFetchRegistrations();
-        // Filter out any mock seed entries if they exist
         const filtered = data.filter((r: any) => r && r.id && !r.id.toString().startsWith('seed-'));
         setRegistrations(filtered);
       } catch (err) {
         console.error('Failed to load registrations:', err);
       }
     };
-    loadData();
+    init();
   }, []);
 
   // Login handler
@@ -78,7 +98,11 @@ export default function App() {
   };
 
   // Logout handler
-  const handleLogout = () => {
+  const handleLogout = async () => {
+    const auth = getSupabaseAuth();
+    if (auth) {
+      await auth.signOut();
+    }
     setCurrentUser(null);
     localStorage.removeItem('eric_active_user');
     setCurrentView('landing');

@@ -7,10 +7,10 @@ import { Registration } from '../types';
 
 export const getGoogleScriptUrl = (): string => {
   let storedUrl = localStorage.getItem('eric_google_script_url');
-  const oldUrl = 'https://script.google.com/macros/s/AKfycbz1n7Le9PHBi_B0SEcntIUm_fPJVIeB4Rs7sFZyuiFPmAdtd4sKPuEy0mtFFR0L9pl_/exec';
-  const newUrl = 'https://script.google.com/macros/s/AKfycbxQpLekriG8XXlM-mT9b-y2TNVAHkmSyBpT88CGYqQzG5WzYXYII5vNIn6zHz45g9dg/exec';
+  const oldUrl = 'https://script.google.com/macros/s/AKfycbzNqpRx3HP9ILYKh7FdZiXfCnKgKHCVjM9hAd_-vdRu7SGmAVsIkJrgWQI7m2BI_ykZ/exec';
+  const newUrl = 'https://script.google.com/macros/s/AKfycbywz5HaWVtC3a8GRiLAtPKl7Wgtc2hjIAHZcWW58_SQRpGDqtnbEtovWALVf1L7fgI/exec';
 
-  if (storedUrl === oldUrl || (storedUrl && storedUrl.includes('AKfycbz1n7Le9PHBi_B0SEcntIUm_fPJVIeB4Rs7sFZyuiFPmAdtd4sKPuEy0mtFFR0L9pl_'))) {
+  if (storedUrl === oldUrl || (storedUrl && storedUrl.includes('AKfycbzNqpRx3HP9ILYKh7FdZiXfCnKgKHCVjM9hAd_-vdRu7SGmAVsIkJrgWQI7m2BI_ykZ'))) {
     localStorage.setItem('eric_google_script_url', newUrl);
     storedUrl = newUrl;
   }
@@ -81,7 +81,7 @@ export const syncToGoogleSheet = async (reg: Registration): Promise<boolean> => 
 
       paymentMethod: reg.paymentMethod,
       paymentStatus: reg.paymentStatus,
-      amount: reg.amount || 'IDR 150,000',
+      amount: reg.amount || 'IDR 250,000',
       refCode: reg.refCode,
       paymentProofName: reg.paymentProofName || '',
       paymentProofUrl: reg.paymentProofUrl || ''
