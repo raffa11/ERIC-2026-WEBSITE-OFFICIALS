@@ -1,0 +1,297 @@
+/* 
+========================================================================
+   ERIC 2026 CHAMPIONSHIP PORTAL - ADVANCED WORDPRESS CUSTOM LOGIN CSS
+   Style Sheet for "Custom Login Page Customizer" or Custom CSS Plugins
+========================================================================
+*/
+
+/* 1. IMPORT ULTRA-PREMIUM SCIENCE & FUTURISTIC FONTS */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Space+Grotesk:wght@600;700;800&display=swap');
+
+/* Reset base colors & introduce grid backgrounds */
+body.login {
+    background-color: #050505 !important;
+    background-image: 
+        linear-gradient(rgba(255, 255, 255, 0.007) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.007) 1px, transparent 1px) !important;
+    background-size: 40px 40px !important;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif !important;
+    color: #f4f4f5 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    min-height: 100vh !important;
+    position: relative !important;
+}
+
+/* Ensure background covers everything */
+body.login::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: radial-gradient(circle at 50% 50%, rgba(0, 255, 136, 0.04) 0%, transparent 70%);
+    pointer-events: none;
+    z-index: 0;
+}
+
+/* 2. CHASSIS CONTAINER - MATCH PORTAL PANEL CARDS */
+#login {
+    background-color: rgba(7, 7, 8, 0.85) !important;
+    border: 1px solid #18181b !important; /* border-zinc-900 */
+    border-radius: 24px !important;
+    padding: 40px 32px !important;
+    width: 100% !important;
+    max-width: 440px !important;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5), 0 0 40px rgba(0, 255, 136, 0.03) !important;
+    backdrop-filter: blur(12px) !important;
+    -webkit-backdrop-filter: blur(12px) !important;
+    position: relative !important;
+    z-index: 10 !important;
+    margin: 0 auto !important;
+}
+
+/* 3. LOGO WORK - REMOVE DEFAULT WORDPRESS IMAGE & REPLACE WITH SCI-FI TITLE */
+#login h1 {
+    margin-bottom: 24px !important;
+    text-align: center !important;
+}
+
+#login h1 a {
+    background-image: none !important;
+    text-indent: 0 !important;
+    width: auto !important;
+    height: auto !important;
+    display: inline-block !important;
+    font-family: 'Space Grotesk', sans-serif !important;
+    font-weight: 800 !important;
+    font-size: 24px !important;
+    color: #ffffff !important;
+    text-transform: uppercase !important;
+    letter-spacing: -0.05em !important;
+    text-shadow: 0 0 15px rgba(0, 255, 136, 0.45) !important;
+    text-decoration: none !important;
+    position: relative !important;
+}
+
+#login h1 a::after {
+    content: '2026';
+    font-family: 'JetBrains Mono', monospace !important;
+    font-size: 11px !important;
+    color: #4df9a4 !important;
+    border: 1px solid rgba(0, 255, 136, 0.2) !important;
+    background: rgba(0, 255, 136, 0.08) !important;
+    padding: 1px 6px !important;
+    border-radius: 4px !important;
+    vertical-align: middle !important;
+    margin-left: 8px !important;
+    letter-spacing: 0.1em !important;
+}
+
+/* 4. FORM AND FIELDS CONTAINER */
+.login form {
+    background: transparent !important;
+    box-shadow: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+}
+
+/* Labels */
+.login label {
+    font-family: 'JetBrains Mono', monospace !important;
+    font-size: 10px !important;
+    color: #a1a1aa !important; /* text-zinc-400 */
+    text-transform: uppercase !important;
+    letter-spacing: 2px !important;
+    font-weight: 600 !important;
+    margin-bottom: 6px !important;
+    display: block !important;
+}
+
+/* Input Fields - Deep Dark, Clean, Neon border-glow on focus */
+.login input[type="text"],
+.login input[type="password"],
+.login input[type="email"] {
+    background-color: #0d0d0f !important;
+    border: 1px solid #1e1e24 !important; /* border-zinc-800 */
+    border-radius: 12px !important;
+    color: #ffffff !important;
+    font-family: 'Inter', sans-serif !important;
+    font-size: 14px !important;
+    padding: 12px 16px !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+    transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1) !important;
+    margin-bottom: 20px !important;
+}
+
+.login input[type="text"]:focus,
+.login input[type="password"]:focus,
+.login input[type="email"]:focus {
+    border-color: #00FF88 !important;
+    box-shadow: 0 0 15px rgba(0, 255, 136, 0.15) !important;
+    outline: none !important;
+}
+
+/* Checkbox (Remember Me) */
+.forgetmenot {
+    float: left !important;
+    margin-top: 4px !important;
+    margin-bottom: 20px !important;
+}
+
+.forgetmenot label {
+    display: flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+    text-transform: none !important;
+    font-family: 'Inter', sans-serif !important;
+    font-size: 12px !important;
+    letter-spacing: 0 !important;
+    color: #71717a !important; /* text-zinc-500 */
+}
+
+.forgetmenot input[type="checkbox"] {
+    background-color: #0d0d0f !important;
+    border: 1px solid #27272a !important;
+    border-radius: 4px !important;
+    width: 16px !important;
+    height: 16px !important;
+    appearance: none !important;
+    cursor: pointer !important;
+    position: relative !important;
+    transition: all 0.2s !important;
+}
+
+.forgetmenot input[type="checkbox"]:checked {
+    background-color: #00FF88 !important;
+    border-color: #00FF88 !important;
+}
+
+.forgetmenot input[type="checkbox"]:checked::after {
+    content: '✓' !important;
+    color: #000000 !important;
+    font-size: 11px !important;
+    font-weight: 900 !important;
+    position: absolute !important;
+    top: 50% !important;
+    left: 50% !important;
+    transform: translate(-50%, -50%) !important;
+}
+
+/* 5. SUBMIT BUTTON - ERIC HIGH-CONTRAST GREEN NEON BUTTON */
+.wp-submit {
+    float: none !important;
+    width: 100% !important;
+    clear: both !important;
+}
+
+.login .button-primary {
+    background: linear-gradient(135deg, #00FF88 0%, #4DFFB8 100%) !important;
+    border: none !important;
+    border-radius: 12px !important;
+    color: #000000 !important;
+    cursor: pointer !important;
+    display: block !important;
+    font-family: 'Space Grotesk', sans-serif !important;
+    font-weight: 700 !important;
+    font-size: 12px !important;
+    text-transform: uppercase !important;
+    letter-spacing: 1px !important;
+    padding: 14px 20px !important;
+    width: 100% !important;
+    height: auto !important;
+    line-height: normal !important;
+    text-shadow: none !important;
+    transition: all 0.2s ease-in-out !important;
+    box-shadow: 0 0 20px rgba(0, 255, 136, 0.3) !important;
+}
+
+.login .button-primary:hover,
+.login .button-primary:focus {
+    background: #00FF88 !important;
+    opacity: 0.95 !important;
+    transform: scale(1.01) !important;
+    box-shadow: 0 0 25px rgba(0, 255, 136, 0.45) !important;
+}
+
+.login .button-primary:active {
+    transform: scale(0.99) !important;
+}
+
+/* 6. SUB-FORM LINKS (Register, Password, Return to Blog) */
+#nav,
+#backtoblog {
+    font-family: 'JetBrains Mono', monospace !important;
+    font-size: 10px !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.5px !important;
+    text-align: center !important;
+    margin: 16px 0 0 0 !important;
+    padding: 0 !important;
+}
+
+#backtoblog {
+    margin-top: 10px !important;
+}
+
+#nav a,
+#backtoblog a {
+    color: #71717a !important; /* zinc-500 */
+    text-decoration: none !important;
+    font-weight: 500 !important;
+    transition: color 0.15s ease-in-out !important;
+}
+
+#nav a:hover,
+#backtoblog a:hover {
+    color: #00FF88 !important;
+}
+
+/* Separator between custom links */
+#nav {
+    display: flex !important;
+    justify-content: space-between !important;
+    border-top: 1px solid #18181b !important;
+    padding-top: 16px !important;
+    margin-top: 24px !important;
+}
+
+/* 7. NOTICES AND ERROR BARS */
+.login .message,
+.login .notice,
+.login #login_error {
+    background-color: rgba(9, 9, 11, 0.6) !important;
+    border-left: 4px solid #00FF88 !important;
+    border-radius: 8px !important;
+    color: #e4e4e7 !important;
+    padding: 12px 16px !important;
+    font-size: 11px !important;
+    font-family: 'JetBrains Mono', monospace !important;
+    line-height: 1.5 !important;
+    margin-bottom: 20px !important;
+    border-top: none !important;
+    border-bottom: none !important;
+    border-right: none !important;
+    box-shadow: none !important;
+    text-transform: uppercase !important;
+}
+
+.login #login_error {
+    border-left-color: #ef4444 !important; /* red */
+    color: #fca5a5 !important;
+}
+
+/* Disable default shake on error (optional premium feel) */
+.js .login_error {
+    transform: none !important;
+    animation: none !important;
+}
+
+/* Responsive Tweak */
+@media (max-width: 480px) {
+    #login {
+        border-radius: 0 !important;
+        border: none !important;
+        padding: 40px 20px !important;
+    }
+}

@@ -1,0 +1,1481 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ERIC 2026 - Registration Portal</title>
+    <!-- Import Google Fonts: Inter for UI, Space Grotesk for Heading, JetBrains Mono for Code/Telemetry -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Space+Grotesk:wght@600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Load Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Load SheetJS library for elite multi-sheet .xlsx Excel file creation in real time -->
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        display: ['Space Grotesk', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    },
+                    colors: {
+                        emerald: {
+                            400: '#10B981',
+                            500: '#00FF88', // Match ERIC's primary green glow
+                        },
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Custom scrollbar and subtle glowing animations */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #09090b;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #27272a;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #00FF88;
+        }
+        body {
+            background-color: #050505;
+            color: #f4f4f5;
+            font-family: 'Inter', sans-serif;
+            overflow-x: hidden;
+        }
+        .text-glow {
+            text-shadow: 0 0 15px rgba(0, 255, 136, 0.45);
+        }
+        .box-glow {
+            box-shadow: 0 0 30px rgba(0, 255, 136, 0.1);
+        }
+        .border-glow:focus {
+            border-color: #00FF88;
+            box-shadow: 0 0 10px rgba(0, 255, 136, 0.2);
+        }
+    </style>
+</head>
+<body class="min-h-screen relative py-12 px-4 sm:px-6 lg:px-8">
+
+    <!-- Ambient glowing backgrounds simulating the elite championship theme -->
+    <div class="absolute top-[10%] left-1/2 -translate-x-1/2 w-[600px] h-[600px] rounded-full bg-[#00FF88]/5 blur-[140px] pointer-events-none -z-10"></div>
+    <div class="absolute bottom-[10%] right-[-10%] w-[350px] h-[350px] bg-[#0047AB]/10 rounded-full blur-[120px] pointer-events-none -z-10"></div>
+
+    <!-- MAIN PORTAL WRAPPER (This is your primary Elementor container) -->
+    <div class="max-w-5xl mx-auto space-y-12">
+        
+        <!-- Header Typography -->
+        <div class="text-center select-none space-y-4">
+            <div class="inline-flex items-center gap-2 bg-[#0047AB]/10 text-[#00FF88] border border-[#00FF88]/20 px-3 py-1 rounded-full text-[10px] font-mono uppercase tracking-widest">
+                <svg class="w-3 h-3 animate-pulse" fill="currentColor" viewBox="0 0 20 20"><path d="M11.3 1.046A1 1 0 0112 2v5h4a1 1 0 01.82 1.573l-7 10A1 1 0 018 18v-5H4a1 1 0 01-.82-1.573l7-10a1 1 0 011.12-.38z"></path></svg>
+                <span>CHAMPIONSHIP HUB</span>
+            </div>
+            <h1 class="text-4xl md:text-7xl font-display font-extrabold tracking-tighter text-white uppercase leading-none">
+                REGISTRATION <br class="sm:hidden"><span class="text-transparent bg-clip-text bg-gradient-to-r from-[#00FF88] via-[#4DFFB8] to-white">PORTAL</span>
+            </h1>
+            <p class="text-zinc-400 font-mono text-xs sm:text-sm uppercase max-w-xl mx-auto leading-relaxed">
+                Register teams, build dynamic rosters, complete secure checkout, and manage your entries inside a secure client-side Participant Hub.
+            </p>
+        </div>
+
+        <!-- MAIN DYNAMIC INTERACTIVE BOX CONTAINER -->
+        <div class="bg-zinc-950 border border-zinc-800 rounded-3xl p-6 md:p-10 shadow-[0_35px_80px_rgba(0,0,0,0.9)] relative overflow-hidden box-glow">
+            
+            <!-- Technical Grid Overlay Decoration (Anti-AI-Slop Clean Design) -->
+            <div class="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.007)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.007)_1px,transparent_1px)] bg-[size:40px_40px] pointer-events-none"></div>
+
+            <!-- SECTION A: WORDPRESS SECURE AUTHENTICATION GATE (Shows if user is logged out) -->
+            <div id="auth-panel" class="hidden space-y-10 relative z-10 animate-fade-in">
+                <!-- Status Title Header -->
+                <div class="border-b border-zinc-900 pb-6 text-center lg:text-left">
+                    <div class="inline-flex items-center gap-2 px-3 py-1 bg-zinc-900 border border-zinc-800 rounded-full text-[10px] font-mono text-amber-500 uppercase tracking-widest mb-4">
+                        <span class="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse"></span>
+                        <span>WordPress Identity Sync Gate</span>
+                    </div>
+                    <h3 class="text-2xl sm:text-3xl font-display font-black text-white uppercase tracking-tight">
+                        MEMBERSHIP VERIFICATION REQUIRED
+                    </h3>
+                    <p class="text-xs font-mono text-zinc-400 uppercase mt-2 max-w-xl leading-relaxed">
+                        To register teams, view exclusive tournament sheets, modify rosters, or access custom brackets, you must log in securely via your primary WordPress platform account.
+                    </p>
+                </div>
+
+                <!-- Primary Call to Action Grid -->
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
+                    <!-- Left Side: Custom WordPress Login Redirect -->
+                    <div class="lg:col-span-12 xl:col-span-7 bg-zinc-900/20 border border-zinc-900 rounded-2xl p-6 md:p-8 flex flex-col justify-between space-y-6">
+                        <div class="space-y-4">
+                            <span class="text-[9px] font-mono text-zinc-500 uppercase tracking-widest block font-bold">Standard Endpoint Redirect</span>
+                            <h4 class="text-xl font-display font-black text-white uppercase tracking-tight">WordPress SSO Authorization</h4>
+                            <p class="text-xs font-mono text-zinc-400 uppercase leading-relaxed">
+                                Clicking below will route you to your WordPress secure login client. Once authenticated, your session credentials will dynamically populate in this customized championship portal workspace.
+                            </p>
+                        </div>
+                        
+                        <div class="space-y-4">
+                            <!-- Direct WP login route trigger button -->
+                            <a href="/wp-login.php" class="w-full py-4 bg-[#00FF88] text-black font-semibold text-xs tracking-wider uppercase rounded-xl hover:opacity-90 hover:scale-[1.01] active:scale-[0.99] transition-all text-glow font-extrabold flex justify-center items-center gap-2">
+                                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 2a8 8 0 100 16 8 8 0 000-16zm.707 10.707a1 1 0 01-1.414 0l-3-3a1 1 0 011.414-1.414L9 10.586V7a1 1 0 112 0v3.586l1.293-1.293a1 1 0 111.414 1.414l-3 3z" clip-rule="evenodd"></path></svg>
+                                <span>AUTHORIZE VIA WORDPRESS ACCOUNT</span>
+                            </a>
+                            <p class="text-[9.5px] font-mono text-zinc-500 uppercase text-center leading-relaxed">
+                                Connection Key: <span class="text-zinc-400">wp_user={user_name}&wp_email={user_email}</span>
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Right Side: Integration Guide & Dynamic Debug Simulator Option -->
+                    <div class="lg:col-span-12 xl:col-span-5 flex flex-col justify-between space-y-6">
+                        <!-- Dev/Tester Multi-Device Quick Simulator (CRITICAL TO SOLVE MULTI DEVICE TESTING QUESTIONS) -->
+                        <div class="p-6 bg-zinc-900/30 border border-dashed border-zinc-800 rounded-2xl space-y-4">
+                            <div class="flex items-center gap-2 text-[10px] font-mono text-[#00FF88]">
+                                <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
+                                <span class="font-bold tracking-wider">DEV MULTI-DEVICE SIMULATOR BYPASS</span>
+                            </div>
+                            <p class="text-[10px] font-mono text-zinc-400 uppercase leading-relaxed">
+                                Testing on an alternative phone or computer? Use this bypass matrix to simulate any specific tester session profile instantly without accessing WordPress code endpoints.
+                            </p>
+
+                            <!-- Simple bypass form -->
+                            <form id="form-dev-mock" onsubmit="executeDeveloperMockLogin(event)" class="space-y-3 pt-1">
+                                <div>
+                                    <input type="text" id="dev-login-name" placeholder="TEST USER NAME (e.g. John Doe)" required class="w-full bg-[#0d0d0f] border border-zinc-900 focus:border-[#00FF88] rounded-lg px-3 py-2 text-xs text-white focus:outline-none transition-colors uppercase font-mono">
+                                </div>
+                                <div class="flex gap-2">
+                                    <input type="email" id="dev-login-email" placeholder="test@email.com" required class="w-full bg-[#0d0d0f] border border-zinc-900 focus:border-[#00FF88] rounded-lg px-3 py-2 text-xs text-white focus:outline-none transition-colors font-mono">
+                                    <button type="submit" class="bg-[#00FF88]/10 hover:bg-[#00FF88]/20 border border-[#00FF88]/20 text-[#00FF88] px-3.5 rounded-lg text-[10px] font-mono font-bold uppercase transition-all whitespace-nowrap active:scale-95 animate-pulse">
+                                        Simulate
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+
+                        <!-- Technical Information Panel -->
+                        <div class="p-5 bg-black border border-zinc-900 rounded-xl space-y-2.5 font-mono text-[9.5px] text-zinc-500 select-none">
+                            <div class="text-white font-bold uppercase text-[10px] tracking-widest flex items-center gap-1.5">
+                                <svg class="w-3.5 h-3.5 text-[#00FF88]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                <span>Integration Architecture</span>
+                            </div>
+                            <div>• <span class="text-zinc-400">Dynamic Synchronization</span>: Handled fully automatically on router redirection query strings.</div>
+                            <div>• <span class="text-zinc-400">Roster DB Persistence</span>: Managed in local storage on user devices.</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SECTION B: USER DASHBOARD PANEL (Shows when logged in, lists entries) -->
+            <div id="dashboard-panel" class="hidden space-y-8 relative z-10">
+                <!-- User Welcome Badge bar -->
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-center p-6 bg-zinc-900/40 border border-zinc-900 rounded-2xl gap-4">
+                    <div class="flex items-center gap-4">
+                        <div id="user-avatar" class="w-12 h-12 rounded-full bg-gradient-to-tr from-[#0047AB] to-[#00FF88] flex items-center justify-center font-display font-extrabold text-white text-lg tracking-tight shadow-md">
+                            A
+                        </div>
+                        <div>
+                            <div class="text-[9px] font-mono text-zinc-500 uppercase tracking-widest">WordPress Synced Account</div>
+                            <h3 id="user-display-name" class="text-xl font-display font-extrabold text-white uppercase tracking-tight">
+                                Loading Profile...
+                            </h3>
+                            <span id="user-display-email" class="text-xs font-mono text-[#00FF88]">
+                                loading@domain.com
+                            </span>
+                        </div>
+                    </div>
+                    <!-- WordPress Authenticated Badge Info Block & Session Disconnect Option -->
+                    <div class="flex flex-col sm:flex-row items-center gap-3 w-full md:w-auto">
+                        <div class="px-4 py-2 bg-emerald-950/45 border border-emerald-800/40 text-[11px] font-mono text-[#00FF88] rounded-xl flex items-center gap-2 select-none justify-center">
+                            <span class="w-2 h-2 rounded-full bg-[#00FF88] shadow-[0_0_10px_rgba(0,255,136,0.8)] animate-pulse"></span>
+                            <span class="uppercase font-bold tracking-wider">WORDPRESS SECURE SESSION ACTIVE</span>
+                        </div>
+                        <button onclick="executeLogOut()" class="px-4 py-2 bg-black border border-zinc-900 hover:border-red-500/20 text-[11px] font-mono text-zinc-500 hover:text-red-400 rounded-xl transition-all flex items-center gap-1.5 justify-center cursor-pointer select-none focus:outline-none">
+                            <svg class="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
+                            <span>LOG OUT</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Active Registrations list -->
+                <div class="space-y-4 animate-fade-in">
+                    <div class="flex justify-between items-center pb-2 border-b border-zinc-900">
+                        <h4 class="font-display font-black text-sm text-white uppercase tracking-wider">
+                            My Active Registrations (<span id="reg-count">0</span>)
+                        </h4>
+                        <button onclick="startWizardNewReg()" class="px-4 py-2 bg-[#00FF88]/10 hover:bg-[#00FF88]/15 border border-[#00FF88]/30 hover:border-[#00FF88] text-[10px] font-mono text-[#00FF88] font-bold rounded-full transition-all flex items-center gap-1.5 focus:outline-none">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+                            <span>REGISTER IN ARENA</span>
+                        </button>
+                    </div>
+
+                    <!-- Container for dynamically rendered registration cards -->
+                    <div id="registrations-grid" class="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
+                        <!-- Dynamic content injected here by JavaScript -->
+                    </div>
+
+                    <!-- Placeholder if no entries -->
+                    <div id="no-regs-placeholder" class="text-center py-12 border border-dashed border-zinc-800 rounded-2xl space-y-4 hidden">
+                        <svg class="w-12 h-12 text-zinc-700 mx-auto animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 113.536 0V21h2v-2.172a5 5 0 003.536-3.536L12 3z"></path></svg>
+                        <div class="space-y-1">
+                            <p class="text-sm font-display font-extrabold text-white/80 uppercase">No Active Registrations Registered</p>
+                            <p class="text-[11px] font-mono text-zinc-500 max-w-xs mx-auto uppercase">Secure your spot for the upcoming live robotic automation finals before the submission gate closes.</p>
+                        </div>
+                        <button onclick="startWizardNewReg()" class="px-6 py-2.5 bg-[#00FF88] text-black font-display text-xs font-black tracking-wider uppercase rounded-full shadow-[0_0_15px_rgba(0,255,136,0.25)] hover:scale-102 transition-all">
+                            REGISTER TEAM ROSTER
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SECTION C: REGISTRATION WIZARD (The Multi-Stage Form Container) -->
+            <div id="wizard-panel" class="hidden space-y-8 relative z-10">
+                <!-- Header with Cancel & Stepper UI -->
+                <div class="flex justify-between items-center border-b border-zinc-900 pb-4 select-none">
+                    <button onclick="confirmCancelWizard()" class="text-xs font-mono text-zinc-500 hover:text-zinc-300 flex items-center gap-1.5 transition-all">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+                        <span>CANCEL</span>
+                    </button>
+
+                    <div class="flex items-center gap-3 font-mono text-[10px] text-zinc-500">
+                        <span id="step-label-1" class="text-zinc-500 font-bold">1. DIVISION</span>
+                        <span>/</span>
+                        <span id="step-label-2" class="text-zinc-500">2. LEADER</span>
+                        <span>/</span>
+                        <span id="step-label-3" class="text-zinc-500">3. MEMBERS</span>
+                        <span>/</span>
+                        <span id="step-label-4" class="text-zinc-500">4. INVOICE</span>
+                    </div>
+                </div>
+
+                <!-- STEP 1: CHOOSE COMPETITION DIVISIONS (Dynamic HTML Buttons grid) -->
+                <div id="wizard-step-1" class="space-y-6">
+                    <div class="space-y-1 select-none">
+                        <h4 class="text-xl sm:text-2xl font-display font-extrabold text-white uppercase tracking-tight">Select Target Competition Arena</h4>
+                        <p class="text-xs font-mono text-zinc-500 uppercase">Identify the scientific or physical division matching your hardware tolerances.</p>
+                    </div>
+
+                    <!-- Arena Grid -->
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4" id="arenas-selector-container">
+                        <!-- Rendered dynamically below for bulletproof accuracy -->
+                    </div>
+
+                    <div class="pt-4 flex justify-end">
+                        <button type="button" onclick="goToWizardStep(2)" class="px-6 py-3.5 bg-[#00FF88] text-black font-semibold text-xs tracking-wider uppercase rounded-xl flex items-center gap-1.5 hover:scale-101 transition-all text-glow">
+                            <span>Continue to Leader Details</span>
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- STEP 2: LEADER SPECIFICS AND TEAM IDENTITY -->
+                <div id="wizard-step-2" class="hidden space-y-6">
+                    <div class="space-y-1 select-none">
+                        <h4 class="text-xl sm:text-2xl font-display font-extrabold text-white uppercase tracking-tight">Main Team Leader Telemetry</h4>
+                        <p class="text-xs font-mono text-zinc-500 uppercase">Input the official team name designation and the primary point of contact.</p>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 bg-zinc-900/20 border border-zinc-900 p-6 rounded-2xl">
+                        <div class="space-y-1.5 md:col-span-2">
+                            <label class="text-[10px] font-mono text-zinc-400 uppercase tracking-widest block font-bold">Designated Team Name</label>
+                            <input type="text" id="wiz-team-name" required placeholder="e.g. TEAM ATLAS UNJ" class="w-full bg-[#121212] border border-zinc-800 focus:border-[#00FF88] rounded-xl px-4 py-3.5 text-sm text-white focus:outline-none transition-colors border-glow">
+                        </div>
+                        <div class="space-y-1.5">
+                            <label class="text-[10px] font-mono text-zinc-400 uppercase tracking-widest block">Leader Full Name</label>
+                            <input type="text" id="wiz-leader-name" required placeholder="e.g. Alfarizi Muhammad Raffa" class="w-full bg-[#121212] border border-zinc-800 focus:border-[#00FF88] rounded-xl px-4 py-3.5 text-sm text-white focus:outline-none transition-colors border-glow">
+                        </div>
+                        <div class="space-y-1.5">
+                            <label class="text-[10px] font-mono text-zinc-400 uppercase tracking-widest block">Leader Email Address</label>
+                            <input type="email" id="wiz-leader-email" required placeholder="e.g. alfarizi@unj.ac.id" class="w-full bg-[#121212] border border-zinc-800 focus:border-[#00FF88] rounded-xl px-4 py-3.5 text-sm text-white focus:outline-none transition-colors border-glow">
+                        </div>
+                        <div class="space-y-1.5">
+                            <label class="text-[10px] font-mono text-zinc-400 uppercase tracking-widest block">Leader WhatsApp No</label>
+                            <input type="tel" id="wiz-leader-whatsapp" required placeholder="e.g. 082150059902" class="w-full bg-[#121212] border border-zinc-800 focus:border-[#00FF88] rounded-xl px-4 py-3.5 text-sm text-white focus:outline-none transition-colors border-glow">
+                        </div>
+                        <div class="space-y-1.5">
+                            <label class="text-[10px] font-mono text-zinc-400 uppercase tracking-widest block">Origin School / Institution</label>
+                            <input type="text" id="wiz-leader-institution" required placeholder="e.g. Universitas Negeri Jakarta" class="w-full bg-[#121212] border border-zinc-800 focus:border-[#00FF88] rounded-xl px-4 py-3.5 text-sm text-white focus:outline-none transition-colors border-glow">
+                        </div>
+                    </div>
+
+                    <div class="pt-2 flex justify-between">
+                        <button type="button" onclick="goToWizardStep(1)" class="px-5 py-3 border border-zinc-800 text-zinc-400 hover:text-white rounded-xl text-xs uppercase font-mono tracking-wider transition-all">
+                            Back
+                        </button>
+                        <button type="button" onclick="validateStep2AndProceed()" class="px-6 py-3.5 bg-[#00FF88] text-black font-semibold text-xs tracking-wider uppercase rounded-xl flex items-center gap-1.5 hover:scale-101 transition-all text-glow">
+                            <span>Roster Members Builders</span>
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- STEP 3: INTERACTIVE TEAM ROSTER LIST (Add/Remove members dynamically) -->
+                <div id="wizard-step-3" class="hidden space-y-6">
+                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 select-none">
+                        <div>
+                            <h4 class="text-xl sm:text-2xl font-display font-extrabold text-white uppercase tracking-tight">Roster Co-Workers & Team Members</h4>
+                            <p class="text-xs font-mono text-zinc-500 uppercase">Add coworkers or engineers accompanying your team platform. Leave empty if solo.</p>
+                        </div>
+                        <button type="button" onclick="addWizardMemberInput()" class="px-4 py-2 border border-[#00FF88]/30 hover:border-[#00FF88] text-[#00FF88] hover:bg-[#00FF88]/5 rounded-xl font-mono text-xs flex items-center gap-1.5 focus:outline-none transition-all">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+                            <span>ADD MEMBER</span>
+                        </button>
+                    </div>
+
+                    <!-- Roster Cards Container -->
+                    <div id="wizard-members-list-container" class="space-y-4">
+                        <!-- Injected dynamically by JAVASCRIPT when "ADD MEMBER" is clicked -->
+                    </div>
+
+                    <div id="no-members-tag" class="text-center py-8 bg-zinc-900/10 border border-zinc-900 rounded-2xl select-none">
+                        <span class="text-xs font-mono text-zinc-600 uppercase">NO EXTRA TEAM MEMBERS ADDED (SOLO ENTRY SLOTS CHOSEN)</span>
+                    </div>
+
+                    <div class="pt-2 flex justify-between">
+                        <button type="button" onclick="goToWizardStep(2)" class="px-5 py-3 border border-zinc-800 text-zinc-400 hover:text-white rounded-xl text-xs uppercase font-mono tracking-wider transition-all">
+                            Back
+                        </button>
+                        <button type="button" onclick="goToWizardStep(4)" class="px-6 py-3.5 bg-[#00FF88] bg-opacity-100 text-black font-semibold text-xs tracking-wider uppercase rounded-xl flex items-center gap-1.5 hover:scale-101 transition-all text-glow">
+                            <span>Proceed to Checkout Invoice</span>
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- STEP 4: CHECKOUT BILLING & SECURE INVOICE INTEGRATION -->
+                <div id="wizard-step-4" class="hidden space-y-6">
+                    <div class="space-y-1 select-none">
+                        <h4 class="text-xl sm:text-2xl font-display font-extrabold text-white uppercase tracking-tight">Verified Checkout & Safe Billing</h4>
+                        <p class="text-xs font-mono text-zinc-500 uppercase">Complete simulated payment with real gateways to finalize your slot in the UNJ arenas.</p>
+                    </div>
+
+                    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+                        <!-- Invoice Breakdown summary -->
+                        <div class="lg:col-span-5 bg-[#09090b] border border-zinc-900 p-6 rounded-2xl space-y-6">
+                            <h5 class="text-xs font-mono text-zinc-500 tracking-widest uppercase">Invoice Brief</h5>
+                            
+                            <div class="space-y-4">
+                                <div class="pb-4 border-b border-zinc-900">
+                                    <div class="text-[10px] font-mono text-zinc-500 uppercase">TARGET ARENA</div>
+                                    <div id="checkout-arena-title" class="text-base text-white font-extrabold uppercase mt-1">Sumobot 500g</div>
+                                </div>
+                                <div class="pb-4 border-b border-zinc-900">
+                                    <div class="text-[10px] font-mono text-zinc-500 uppercase">DESIGNATED SYSTEM TEAM</div>
+                                    <div id="checkout-team-name" class="text-base text-white font-extrabold uppercase mt-1">TEAM ALPHA UNJ</div>
+                                </div>
+                                <div class="flex justify-between items-center py-2 text-xs font-mono text-zinc-400">
+                                    <span>Registration Fee</span>
+                                    <span class="text-white font-bold">IDR 150,000</span>
+                                </div>
+                                <div class="flex justify-between items-center py-2 text-xs font-mono text-zinc-400">
+                                    <span>Roster Logistics Processing</span>
+                                    <span class="text-white font-bold">FREE</span>
+                                </div>
+                                <div class="flex justify-between items-center pt-4 border-t border-zinc-900 text-sm font-mono font-bold text-[#00FF88]">
+                                    <span>TOTAL DUE</span>
+                                    <span class="text-base">IDR 150,000</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Integrated safe payment selector details -->
+                        <div class="lg:col-span-7 bg-zinc-900/20 border border-zinc-900 p-6 rounded-2xl space-y-6">
+                            <h5 class="text-xs font-mono text-zinc-500 uppercase">Choose Payment Gateway</h5>
+
+                            <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                                <div onclick="selectPaymentGateway('qris')" id="pay-qris" class="p-3 bg-zinc-950 border border-[#00FF88] rounded-xl text-center cursor-pointer transition-all select-none">
+                                    <div class="text-xs font-mono text-white font-bold tracking-tight">QRIS SPEED</div>
+                                    <div class="text-[8px] font-mono text-[#00FF88] mt-1">Scan Immediate</div>
+                                </div>
+                                <div onclick="selectPaymentGateway('bca')" id="pay-bca" class="p-3 bg-[#0a0a0c]/40 border border-zinc-800 rounded-xl text-center cursor-pointer transition-all select-none">
+                                    <div class="text-xs font-mono text-white font-bold tracking-tight">BCA TRANS</div>
+                                    <div class="text-[8px] font-mono text-zinc-500 mt-1">Manual Verif</div>
+                                </div>
+                                <div onclick="selectPaymentGateway('visa')" id="pay-visa" class="p-3 bg-[#0a0a0c]/40 border border-zinc-800 rounded-xl text-center cursor-pointer transition-all select-none">
+                                    <div class="text-xs font-mono text-white font-bold tracking-tight">VISA CARD</div>
+                                    <div class="text-[8px] font-mono text-zinc-500 mt-1">Instant Strip</div>
+                                </div>
+                                <div onclick="selectPaymentGateway('paypal')" id="pay-paypal" class="p-3 bg-[#0a0a0c]/40 border border-zinc-800 rounded-xl text-center cursor-pointer transition-all select-none">
+                                    <div class="text-xs font-mono text-white font-bold tracking-tight">PAYPAL</div>
+                                    <div class="text-[8px] font-mono text-zinc-500 mt-1">International</div>
+                                </div>
+                            </div>
+
+                            <!-- Screen detail changes on select -->
+                            <div class="bg-zinc-950 border border-zinc-900 p-6 rounded-xl flex flex-col items-center text-center space-y-4" id="pay-screen-qris">
+                                <!-- Realistic Simulated interactive QR Code svg -->
+                                <div class="bg-white p-4 rounded-xl shadow-lg inline-block select-none">
+                                    <svg class="w-36 h-36" viewBox="0 0 100 100">
+                                        <!-- QR IS outer tracks -->
+                                        <rect x="5" y="5" width="25" height="25" fill="#000"/>
+                                        <rect x="8" y="8" width="19" height="19" fill="#FFF"/>
+                                        <rect x="12" y="12" width="11" height="11" fill="#000"/>
+
+                                        <rect x="70" y="5" width="25" height="25" fill="#000"/>
+                                        <rect x="73" y="8" width="19" height="19" fill="#FFF"/>
+                                        <rect x="77" y="12" width="11" height="11" fill="#000"/>
+
+                                        <rect x="5" y="70" width="25" height="25" fill="#000"/>
+                                        <rect x="8" y="73" width="19" height="19" fill="#FFF"/>
+                                        <rect x="12" y="77" width="11" height="11" fill="#000"/>
+                                        <!-- Central QR nodes -->
+                                        <rect x="35" y="35" width="15" height="15" fill="#000"/>
+                                        <rect x="38" y="38" width="9" height="9" fill="#FFF"/>
+                                        <!-- Random bit details -->
+                                        <rect x="5" y="35" width="5" height="10" fill="#000"/>
+                                        <rect x="15" y="45" width="10" height="5" fill="#000"/>
+                                        <rect x="40" y="5" width="8" height="8" fill="#000"/>
+                                        <rect x="55" y="12" width="10" height="4" fill="#000"/>
+                                        <rect x="55" y="25" width="5" height="15" fill="#000"/>
+                                        <rect x="35" y="60" width="15" height="5" fill="#000"/>
+                                        <rect x="45" y="75" width="12" height="12" fill="#000"/>
+                                        <rect x="70" y="45" width="20" height="10" fill="#000"/>
+                                        <rect x="85" y="75" width="10" height="15" fill="#000"/>
+                                    </svg>
+                                </div>
+                                <div class="space-y-1">
+                                    <div class="text-xs font-mono font-bold text-white uppercase">ERIC OFFICIAL INDONESIAN QRIS GATEWAY</div>
+                                    <p class="text-[10px] font-mono text-zinc-500 uppercase leading-relaxed max-w-xs mx-auto">Supports GoPay, OVO, ShopeePay, Dana, LinkAja and all mobile banking QR apps.</p>
+                                </div>
+                            </div>
+
+                            <div class="hidden bg-zinc-950 border border-zinc-900 p-6 rounded-xl text-left space-y-4" id="pay-screen-bca">
+                                <div class="space-y-1">
+                                    <span class="text-[9px] font-mono text-zinc-500 uppercase block">BANK CENTRAL ASIA REK. REKENING</span>
+                                    <div class="text-lg font-mono text-[#00FF88] font-bold select-all tracking-wider">829 015 2026</div>
+                                    <div class="text-xs font-mono text-white font-bold uppercase">A/N YAYASAN ROBOTIKA UNIVERSITAS NEGERI JAKARTA</div>
+                                </div>
+                                <p class="text-[9.5px] font-mono text-zinc-500 uppercase leading-normal">Transfer exactly <span class="text-white font-bold">IDR 150,000</span> to the account above, then print and keep your transfer slip for automatic hardware validation at the tournament gate.</p>
+                            </div>
+
+                            <div class="hidden bg-zinc-950 border border-zinc-900 p-6 rounded-xl text-left space-y-4" id="pay-screen-visa">
+                                <div class="space-y-3.5">
+                                    <div class="space-y-1">
+                                        <label class="text-[9px] font-mono text-zinc-500 uppercase">Card Holder Name</label>
+                                        <input type="text" placeholder="e.g. Alfarizi M Raffa" class="w-full bg-[#121212] border border-zinc-800 focus:border-[#00FF88] rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:ring-0">
+                                    </div>
+                                    <div class="space-y-1">
+                                        <label class="text-[9px] font-mono text-zinc-500 uppercase">Debit / Visa Number</label>
+                                        <input type="text" placeholder="e.g. 4000 1234 5678 9010" class="w-full bg-[#121212] border border-zinc-800 focus:border-[#00FF88] rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:ring-0">
+                                    </div>
+                                    <div class="grid grid-cols-2 gap-4">
+                                        <div class="space-y-1">
+                                            <label class="text-[9px] font-mono text-zinc-500 uppercase">Expiry Date</label>
+                                            <input type="text" placeholder="MM/YY" class="w-full bg-[#121212] border border-zinc-800 focus:border-[#00FF88] rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:ring-0">
+                                        </div>
+                                        <div class="space-y-1">
+                                            <label class="text-[9px] font-mono text-zinc-500 uppercase">CVV Code</label>
+                                            <input type="text" placeholder="123" class="w-full bg-[#121212] border border-zinc-800 focus:border-[#00FF88] rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:ring-0">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="hidden bg-zinc-950 border border-zinc-900 p-6 rounded-xl text-center space-y-3" id="pay-screen-paypal">
+                                <svg class="w-10 h-10 mx-auto text-[#0047AB]" fill="currentColor" viewBox="0 0 24 24"><path d="M7.076 21.337L9.202 7.8H14c3.313 0 5.2 1.583 5.2 4.416 0 3.064-1.921 5.3-4.938 5.3H10.12l-1.042 6.6H7.076zm1.758-11.137L7.792 16.8h2.328l.842-5.32h1.666c1.616 0 2.508-.85 2.508-2.48s-.892-2.128-2.508-2.128H8.834z"/></svg>
+                                <p class="text-xs font-mono text-zinc-400 uppercase leading-relaxed max-w-xs mx-auto">Click "SUBMIT TOTAL PAY" below to redirect handshake to the secure international service api.paypal.com sandbox.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Processing State Screen overlay -->
+                    <div id="processing-screen" class="hidden absolute inset-0 bg-black/90 z-50 flex flex-col items-center justify-center space-y-6">
+                        <div class="w-12 h-12 border-2 border-[#00FF88] border-t-transparent rounded-full animate-spin"></div>
+                        <div class="text-center space-y-1 select-none">
+                            <h4 class="text-sm font-mono font-bold text-white uppercase tracking-wider">EXECUTING SMART CHECKOUT BILLING</h4>
+                            <p class="text-[10px] font-mono text-zinc-500 uppercase">Encrypting team logs and printing physical secure ref IDs...</p>
+                        </div>
+                    </div>
+
+                    <div class="pt-2 flex justify-between">
+                        <button type="button" onclick="goToWizardStep(3)" class="px-5 py-3 border border-zinc-800 text-zinc-400 hover:text-white rounded-xl text-xs uppercase font-mono tracking-wider transition-all">
+                            Back
+                        </button>
+                        <button type="button" onclick="finalizeWizardCheckout()" class="px-6 py-3.5 bg-gradient-to-r from-[#00FF88] to-[#4DFFB8] text-black font-semibold text-xs tracking-wider uppercase rounded-xl flex items-center gap-1.5 hover:scale-101 transition-all text-glow">
+                            <span>SUBMIT TOTAL PAY & RETRIEVE CARD</span>
+                            <svg class="w-4 h-4 text-black" fill="currentColor" viewBox="0 0 20 20"><path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"></path><path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"></path></svg>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SECTION D: EDIT MODAL WINDOW (To customize fields of active entries) -->
+            <div id="edit-modal-panel" class="hidden space-y-8 relative z-10">
+                <div class="flex justify-between items-center border-b border-zinc-900 pb-4">
+                    <h4 class="text-lg font-display font-extrabold text-[#C5A059] uppercase tracking-tight">EDIT REGISTERED ROSTER FORM</h4>
+                    <button onclick="closeEditFormPanel()" class="text-xs font-mono text-zinc-500 hover:text-zinc-300 uppercase focus:outline-none">Close &times;</button>
+                </div>
+
+                <form onsubmit="saveRosterEditChanges(event)" class="space-y-6">
+                    <input type="hidden" id="edit-reg-id">
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 bg-zinc-900/10 border border-zinc-900 p-6 rounded-2xl">
+                        <div class="space-y-1.5">
+                            <label class="text-[10px] font-mono text-zinc-400 uppercase tracking-widest block">Team Designation Name</label>
+                            <input type="text" id="edit-team-name" required class="w-full bg-zinc-950 border border-zinc-800 focus:border-[#00FF88] rounded-xl px-4 py-3.5 text-sm text-white focus:outline-none transition-colors border-glow">
+                        </div>
+                        <div class="space-y-1.5">
+                            <label class="text-[10px] font-mono text-zinc-400 uppercase tracking-widest block">Leader Name</label>
+                            <input type="text" id="edit-leader-name" required class="w-full bg-zinc-950 border border-zinc-800 focus:border-[#00FF88] rounded-xl px-4 py-3.5 text-sm text-white focus:outline-none transition-colors border-glow">
+                        </div>
+                        <div class="space-y-1.5">
+                            <label class="text-[10px] font-mono text-zinc-400 uppercase tracking-widest block">Leader Whatsapp</label>
+                            <input type="tel" id="edit-leader-whatsapp" required class="w-full bg-zinc-950 border border-zinc-800 focus:border-[#00FF88] rounded-xl px-4 py-3.5 text-sm text-white focus:outline-none transition-colors border-glow">
+                        </div>
+                        <div class="space-y-1.5">
+                            <label class="text-[10px] font-mono text-zinc-400 uppercase tracking-widest block">Leader School/Institution</label>
+                            <input type="text" id="edit-leader-institution" required class="w-full bg-zinc-950 border border-zinc-800 focus:border-[#00FF88] rounded-xl px-4 py-3.5 text-sm text-white focus:outline-none transition-colors border-glow">
+                        </div>
+                    </div>
+
+                    <!-- Additional members list wrapper -->
+                    <div class="space-y-4">
+                        <div class="flex justify-between items-center pb-2 select-none">
+                            <h5 class="text-xs font-mono text-white/80 uppercase">Additional Team Members</h5>
+                            <button type="button" onclick="addNewMemberToEditForm()" class="px-3 py-1.5 border border-[#00FF88]/30 hover:border-[#00FF88] hover:bg-[#00FF88]/5 text-[#00FF88] rounded-lg font-mono text-xs flex items-center gap-1 cursor-pointer focus:outline-none transition-all">
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+                                <span>Add Member</span>
+                            </button>
+                        </div>
+
+                        <div id="edit-members-container" class="space-y-4">
+                            <!-- Populated with elements inside JS -->
+                        </div>
+                    </div>
+
+                    <div class="flex justify-end gap-3 pt-4">
+                        <button type="button" onclick="closeEditFormPanel()" class="px-5 py-3 border border-zinc-800 text-zinc-500 hover:text-white rounded-xl text-xs uppercase font-mono tracking-wider transition-all">
+                            Cancel
+                        </button>
+                        <button type="submit" class="px-6 py-3.5 bg-gradient-to-r from-emerald-400 to-[#10B981] text-black font-semibold text-xs tracking-wider uppercase rounded-xl flex items-center gap-1.5 hover:scale-101 transition-all">
+                            <span>Save telemetry changes</span>
+                            <svg class="w-4 h-4 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- SECTION E: SUCCESS RECEIPT MODAL (Congratulations pop-up) -->
+            <div id="success-receipt-modal" class="hidden absolute inset-0 bg-black/95 z-40 flex flex-col items-center justify-center p-6 text-center select-none">
+                <div class="max-w-md space-y-6">
+                    <div class="w-16 h-16 rounded-full bg-[#00FF88]/10 text-[#00FF88] flex items-center justify-center mx-auto text-3xl text-glow border border-[#00FF88]/30">
+                        &check;
+                    </div>
+                    <div class="space-y-2">
+                        <h3 class="text-2xl font-display font-extrabold text-white uppercase tracking-tight">TEAMS SYSTEM SYNCHRONIZED!</h3>
+                        <p class="text-xs font-mono text-zinc-400 uppercase leading-relaxed">
+                            Your competition slot has been fully authenticated in the local ledger database. A simulated reference slip is verified successfully.
+                        </p>
+                    </div>
+
+                    <!-- Receipt Spec Plate -->
+                    <div class="bg-zinc-950 border border-zinc-800 p-5 rounded-2xl font-mono text-xs text-left text-zinc-400 space-y-3 relative overflow-hidden">
+                        <div class="absolute top-[3px] right-3 text-[7px] text-white/20">LOG_OK_993</div>
+                        <div>REF ID: <span id="rec-ref-id" class="text-white font-bold select-all">ERIC-REG-XXXXXX</span></div>
+                        <div>TEAM NAME: <span id="rec-team-name" class="text-[#00FF88] font-bold">TEAM WORKER</span></div>
+                        <div>ARENA CLASS: <span id="rec-arena-class" class="text-white">Sumobot 500g</span></div>
+                        <div>STATUS: <span class="text-[#00FF88] font-bold">PAID / CONFIRMED</span></div>
+                        <div class="pt-2 border-t border-zinc-900 text-[10px] text-zinc-500 uppercase">VALID FOR ONSITE CREDENTIALS CHECKIN AT UNJ CAMPUS INDONESIA.</div>
+                    </div>
+
+                    <button onclick="dismissReceiptModal()" class="w-full py-4 bg-[#00FF88] text-black font-semibold text-xs tracking-wider uppercase rounded-xl hover:scale-101 transition-all text-glow block">
+                        ACCESS REGISTRATION DASHBOARD
+                    </button>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- OUTSIDE CONTAINER ELEMENTOR HELP GUIDE (Easy copy paste for layout widgets) -->
+        <div class="bg-zinc-900/10 border border-zinc-900 rounded-2xl p-6 space-y-4">
+            <h4 class="text-xs font-mono text-[#00FF88] uppercase tracking-widest flex items-center gap-2">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                <span>WordPress Elementor Integration Guidelines</span>
+            </h4>
+            <div class="text-xs text-zinc-400 font-mono space-y-2 leading-relaxed uppercase">
+                <p>1. Copy the entire raw code of this single file.</p>
+                <p>2. Inside Elementor, insert a <strong class="text-white font-bold">"HTML" widget</strong> or <strong class="text-white font-bold">"Code Highlight" block</strong> into a section of your landing page.</p>
+                <p>3. Choose full-width on your custom sections to display properly across Desktop, Tablet landscape and Portrait, and Mobile screens automatically.</p>
+                <p>4. No backend databases are strictly required to start with - this client-side ledger securely saves participant states in the visitor's local browser memory!</p>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- MAIN INTERACTIVE HUB LOGIC SCRIPT -->
+    <script>
+        // OFFICIAL COMPETITION DIVISIONS SPEC LIST (Identical match with React website schemas)
+        const COMPETITION_DIVISIONS = [
+            { id: 'sumobot-500g', title: 'Sumobot 500g', titleIndo: 'Robot Sumo 500g', detail: 'Micro Force & Tactical Grip' },
+            { id: 'sumobot-3kg', title: 'Sumobot 3kg', titleIndo: 'Robot Sumo 3kg', detail: 'Tractive Force & Dual Brushless' },
+            { id: 'mini-soccerbot', title: 'Mini Soccerbot', titleIndo: 'Robot Sepak Bola Mini', detail: 'Kinematics & Radio Command' },
+            { id: 'line-follower', title: 'Line Follower', titleIndo: 'Robot Pengikut Garis', detail: 'PID Control & 16-Array IR' },
+            { id: 'plc-industrial', title: 'PLC Industrial', titleIndo: 'PLC Otomasi Industri', detail: 'Liaison Relay & HMI Integration' },
+            { id: 'collaborative-robot', title: 'Collaborative Robot', titleIndo: 'Robot Kolaboratif (Cobot)', detail: 'Active Feedback & Spatial Safety' },
+            { id: 'research-challenge', title: 'Research Challenge', titleIndo: 'Tantangan Riset Inovasi', detail: 'Applied Research & Science Papers' },
+            { id: 'creative-innovation', title: 'Creative Innovation', titleIndo: 'Karya Inovasi Kreatif', detail: 'Rapid Prototyping & CAD Design' },
+            { id: 'drone-innovation', title: 'Drone Innovation', titleIndo: 'Inovasi Wahana Drone', detail: 'Lidar Distance & Optical Flow' }
+        ];
+
+        // GLOBAL PORTAL STATE
+        let currentUser = null;
+        let registrations = [];
+        let wizardCurrentStep = 1;
+        let wizardSelectedDivision = COMPETITION_DIVISIONS[0].id;
+        let wizardMembers = [];
+        let currentEditingRegId = null;
+        let activePaymentMethod = 'qris';
+        let dashboardTab = 'my-registrations'; // Active sub-panel state matching React code structure
+
+        // Hardened Seed Data representing a dynamic real-time database
+        const MOCK_DATABASE_SEEDS = [
+            {
+                id: 'seed-1',
+                divisionId: 'sumobot-500g',
+                teamName: 'GARUDA MINI-1',
+                leader: {
+                    name: 'Fauzan Lubis',
+                    email: 'fauzan.lubis@unj.ac.id',
+                    whatsapp: '+6281234567890',
+                    institution: 'Universitas Negeri Jakarta'
+                },
+                members: [
+                    { id: 'sm-1', name: 'Ahmad Riza', email: 'ahmaddr@unj.ac.id', whatsapp: '+6281234567891', institution: 'Universitas Negeri Jakarta' },
+                    { id: 'sm-2', name: 'Budi Hermawan', email: 'budih@unj.ac.id', whatsapp: '+6281234567892', institution: 'Universitas Negeri Jakarta' }
+                ],
+                paymentMethod: 'QRIS',
+                paymentStatus: 'PAID',
+                refCode: 'ERIC-REG-SUM5G',
+                amount: 'IDR 150,000'
+            },
+            {
+                id: 'seed-2',
+                divisionId: 'plc-industrial',
+                teamName: 'TRIDENT AUTOMATION',
+                leader: {
+                    name: 'Rian Hidayat',
+                    email: 'rian.hidayat@its.ac.id',
+                    whatsapp: '+6285612345678',
+                    institution: 'Institut Teknologi Sepuluh Nopember'
+                },
+                members: [
+                    { id: 'plc-1', name: 'Siti Aminah', email: 'sitia@its.ac.id', whatsapp: '+6285612345679', institution: 'Institut Teknologi Sepuluh Nopember' }
+                ],
+                paymentMethod: 'BCA',
+                paymentStatus: 'PAID',
+                refCode: 'ERIC-REG-PLC09',
+                amount: 'IDR 150,000'
+            },
+            {
+                id: 'seed-3',
+                divisionId: 'line-follower',
+                teamName: 'VEGA TRACKER',
+                leader: {
+                    name: 'Dwi Cahyo',
+                    email: 'dwi.cahyo@ui.ac.id',
+                    whatsapp: '+6287812345678',
+                    institution: 'Universitas Indonesia'
+                },
+                members: [
+                    { id: 'lf-1', name: 'Eko Wahyudi', email: 'ekow@ui.ac.id', whatsapp: '+6287812345679', institution: 'Universitas Indonesia' },
+                    { id: 'lf-2', name: 'Galih Saputra', email: 'galihs@ui.ac.id', whatsapp: '+6287812345680', institution: 'Universitas Indonesia' }
+                ],
+                paymentMethod: 'VISA',
+                paymentStatus: 'PAID',
+                refCode: 'ERIC-REG-LFLW2',
+                amount: 'IDR 150,000'
+            },
+            {
+                id: 'seed-4',
+                divisionId: 'creative-innovation',
+                teamName: 'NUSA LIGHTHOUSE',
+                leader: {
+                    name: 'Yuni Lestari',
+                    email: 'yuni.l@ugm.ac.id',
+                    whatsapp: '+6281912345678',
+                    institution: 'Universitas Gadjah Mada'
+                },
+                members: [
+                    { id: 'ci-1', name: 'Hadi Wijaya', email: 'hadiw@ugm.ac.id', whatsapp: '+6281912345679', institution: 'Universitas Gadjah Mada' }
+                ],
+                paymentMethod: 'PAYPAL',
+                paymentStatus: 'PAID',
+                refCode: 'ERIC-REG-CRIN0',
+                amount: 'IDR 150,000'
+            },
+            {
+                id: 'seed-5',
+                divisionId: 'sumobot-3kg',
+                teamName: 'KRAKATAU HEAVY-3',
+                leader: {
+                    name: 'Bayu Nugroho',
+                    email: 'bayu.nugroho@itb.ac.id',
+                    whatsapp: '+6281112345678',
+                    institution: 'Institut Teknologi Bandung'
+                },
+                members: [
+                    { id: 'sh-1', name: 'Hendri Setiawan', email: 'hendris@itb.ac.id', whatsapp: '+6281112345679', institution: 'Institut Teknologi Bandung' },
+                    { id: 'sh-2', name: 'Irfan Hakim', email: 'irfanh@itb.ac.id', whatsapp: '+6281112345680', institution: 'Institut Teknologi Bandung' }
+                ],
+                paymentMethod: 'QRIS',
+                paymentStatus: 'PAID',
+                refCode: 'ERIC-REG-SUM3K',
+                amount: 'IDR 150,000'
+            },
+            {
+                id: 'seed-6',
+                divisionId: 'drone-innovation',
+                teamName: 'SCAVENGER SKYREAPER',
+                leader: {
+                    name: 'Riska Amalia',
+                    email: 'riska.a@unj.ac.id',
+                    whatsapp: '+6281234515511',
+                    institution: 'Universitas Negeri Jakarta'
+                },
+                members: [
+                    { id: 'ds-1', name: 'Zainuddin Malik', email: 'zainm@unj.ac.id', whatsapp: '+6281234515512', institution: 'Universitas Negeri Jakarta' }
+                ],
+                paymentMethod: 'QRIS',
+                paymentStatus: 'PAID',
+                refCode: 'ERIC-REG-SKRPR',
+                amount: 'IDR 150,000'
+            }
+        ];
+
+        // EXPOSE ACTIONS TO THE GLOBAL WINDOW OBJECT FOR HIGH-COMPATIBILITY WORDPRESS / ELEMENTOR EMBEDS
+        function exposeMethodsToGlobal() {
+            window.startWizardNewReg = startWizardNewReg;
+            window.executeLogOut = executeLogOut;
+            window.executeSignIn = executeSignIn;
+            window.executeSignUp = executeSignUp;
+            window.setAuthMode = setAuthMode;
+            window.executeDeveloperMockLogin = executeDeveloperMockLogin;
+            window.confirmCancelWizard = confirmCancelWizard;
+            window.goToWizardStep = goToWizardStep;
+            window.validateStep2AndProceed = validateStep2AndProceed;
+            window.addWizardMemberInput = addWizardMemberInput;
+            window.selectPaymentGateway = selectPaymentGateway;
+            window.finalizeWizardCheckout = finalizeWizardCheckout;
+            window.closeEditFormPanel = closeEditFormPanel;
+            window.addNewMemberToEditForm = addNewMemberToEditForm;
+            window.dismissReceiptModal = dismissReceiptModal;
+            window.openRosterEditPanel = openRosterEditPanel;
+            window.removeWizardMemberInput = removeWizardMemberInput;
+            window.removeMemberFromEditForm = removeMemberFromEditForm;
+        }
+
+        // ON MOUNT SELF-HEALING INITIALIZATION
+        function runMainInitialization() {
+            loadSessionAndMetadata();
+            renderArenasRadioChoices();
+            updateUIVisualState();
+            exposeMethodsToGlobal();
+        }
+
+        if (document.readyState === 'complete' || document.readyState === 'interactive') {
+            runMainInitialization();
+        } else {
+            window.addEventListener('DOMContentLoaded', runMainInitialization);
+        }
+
+        // LOAD SESSION DATA FROM LOCALSTORAGE WITH SELF-HEALING DEFAULT SEEDS
+        function loadSessionAndMetadata() {
+            // WordPress dynamic parameter pass-through via URI query parameters
+            const urlParams = new URLSearchParams(window.location.search);
+            const wpUser = urlParams.get('wp_user') || urlParams.get('user_name') || urlParams.get('display_name');
+            const wpEmail = urlParams.get('wp_email') || urlParams.get('user_email');
+
+            const savedUser = localStorage.getItem('eric_user');
+            if (savedUser) {
+                try {
+                    currentUser = JSON.parse(savedUser);
+                } catch(e) {
+                    currentUser = null;
+                }
+            }
+
+            // If a WordPress parameter is passed, update session characteristics immediately
+            if (wpUser) {
+                currentUser = {
+                    name: decodeURIComponent(wpUser).toUpperCase(),
+                    email: wpEmail || 'wordpress_member@eric-championship.com',
+                    method: 'wordpress'
+                };
+                localStorage.setItem('eric_user', JSON.stringify(currentUser));
+            }
+
+            // Direct fallback: We retired the auto-login bypass! If no active user or WordPress URL is present,
+            // we keep currentUser as null to display the WordPress integration gate.
+
+            const savedRegs = localStorage.getItem('eric_registrations');
+            if (savedRegs) {
+                try {
+                    registrations = JSON.parse(savedRegs);
+                } catch(e) {
+                    registrations = [];
+                }
+            }
+
+            // Seed mock registrations if database ledger is currently unpopulated
+            if (!registrations || registrations.length === 0) {
+                registrations = [...MOCK_DATABASE_SEEDS];
+                localStorage.setItem('eric_registrations', JSON.stringify(registrations));
+            }
+        }
+
+        // SAVE REGISTRATION TO LOCALSTORAGE AND DISPATCH RE-RENDERERS
+        function saveRegistrationsToLocalStorage() {
+            localStorage.setItem('eric_registrations', JSON.stringify(registrations));
+            updateUIVisualState();
+        }
+
+        // DEVELOPER SIMULATION BYPASS
+        function executeDeveloperMockLogin(event) {
+            if (event) event.preventDefault();
+            const devName = document.getElementById('dev-login-name').value || 'DEVELOPER TESTER';
+            const devEmail = document.getElementById('dev-login-email').value || 'developer@eric-championship.com';
+
+            currentUser = {
+                name: devName.toUpperCase(),
+                email: devEmail,
+                method: 'wordpress-simulated'
+            };
+            localStorage.setItem('eric_user', JSON.stringify(currentUser));
+            updateUIVisualState();
+        }
+
+        // SIGN IN MOCK ACTIONS (Retired)
+        function executeSignIn(event) {
+            if (event) event.preventDefault();
+            console.log("Local Sign In retired. WordPress integration active.");
+        }
+
+        // SIGN UP MOCK ACTIONS (Retired)
+        function executeSignUp(event) {
+            if (event) event.preventDefault();
+            console.log("Local Sign Up retired. WordPress integration active.");
+        }
+
+        // GOOGLE SSO SIMULATION (Retired)
+        function executeGoogleSSO() {
+            console.log("Google SSO retired. WordPress integration active.");
+        }
+
+        // SECURE WORDPRESS SESSION LOGOUT / RETRACT OR DISCONNECT PROCESS
+        function executeLogOut() {
+            currentUser = null;
+            localStorage.removeItem('eric_user');
+            
+            // Remove WP parameters from active address bar query string so they do not auto-login on page reload
+            const url = new URL(window.location.href);
+            url.searchParams.delete('wp_user');
+            url.searchParams.delete('user_name');
+            url.searchParams.delete('display_name');
+            url.searchParams.delete('wp_email');
+            url.searchParams.delete('user_email');
+            window.history.replaceState({}, '', url.toString());
+
+            // Force visual re-alignment
+            updateUIVisualState();
+        }
+
+        // UTILITY: SHOW ERROR ON AUTH (Retired)
+        function showAuthError(msg) {
+            console.log("Auth Error logs: ", msg);
+        }
+
+        // TOGGLE SESSION AUTH FORMS VIEW (Retired)
+        function setAuthMode(mode) {
+            console.log("Auth toggle: ", mode);
+        }
+
+        // STATE CONTROLLER: Renders visible container blocks depending on active session state
+        function updateUIVisualState() {
+            const authPanel = document.getElementById('auth-panel');
+            const dashboardPanel = document.getElementById('dashboard-panel');
+            const wizardPanel = document.getElementById('wizard-panel');
+            const editModalPanel = document.getElementById('edit-modal-panel');
+
+            // 1. Session Authentication check
+            if(!currentUser) {
+                if (authPanel) authPanel.classList.remove('hidden');
+                dashboardPanel.classList.add('hidden');
+                wizardPanel.classList.add('hidden');
+                editModalPanel.classList.add('hidden');
+                return;
+            }
+
+            // User is logged in
+            if (authPanel) authPanel.classList.add('hidden');
+
+            // 2. Currently editing roster modal check
+            if (currentEditingRegId) {
+                editModalPanel.classList.remove('hidden');
+                dashboardPanel.classList.add('hidden');
+                wizardPanel.classList.add('hidden');
+                return;
+            } else {
+                editModalPanel.classList.add('hidden');
+            }
+
+            // 3. Currently in dynamic wizard check
+            const isInWizard = wizardPanel.getAttribute('data-active') === 'true';
+            if (isInWizard) {
+                wizardPanel.classList.remove('hidden');
+                dashboardPanel.classList.add('hidden');
+            } else {
+                wizardPanel.classList.add('hidden');
+                dashboardPanel.classList.remove('hidden');
+                
+                renderUserActiveRegistrations();
+            }
+
+            // Update user top details
+            document.getElementById('user-display-name').innerText = currentUser.name;
+            document.getElementById('user-display-email').innerText = currentUser.email;
+            document.getElementById('user-avatar').innerText = currentUser.name.charAt(0);
+        }
+
+        // RENDER ACTIVE USER REGISTRATIONS GRID IN DASHBOARD
+        function renderUserActiveRegistrations() {
+            const grid = document.getElementById('registrations-grid');
+            const placeholder = document.getElementById('no-regs-placeholder');
+
+            // Clean previous cards
+            grid.innerHTML = '';
+            document.getElementById('reg-count').innerText = registrations.length;
+
+            if (registrations.length === 0) {
+                placeholder.classList.remove('hidden');
+                return;
+            }
+
+            placeholder.classList.add('hidden');
+
+            registrations.forEach((reg) => {
+                const divObj = COMPETITION_DIVISIONS.find(d => d.id === reg.divisionId) || { title: reg.divisionId, detail: 'Dynamic Division Entry' };
+                
+                const card = document.createElement('div');
+                card.className = "p-6 bg-[#0a0a0c]/60 border border-zinc-900 rounded-2xl space-y-4 relative overflow-hidden group";
+                card.innerHTML = `
+                    <div class="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-[#00FF88] to-[#0047AB]"></div>
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <span class="text-[9px] font-mono text-[#00FF88] uppercase tracking-widest block font-bold">
+                                ${divObj.title}
+                            </span>
+                            <h5 class="text-lg font-display font-black text-white uppercase tracking-tight mt-1">
+                                ${reg.teamName}
+                            </h5>
+                        </div>
+                        <span class="px-2 py-0.5 text-[8.5px] font-mono bg-emerald-950/40 text-[#00FF88] border border-emerald-500/25 rounded uppercase">
+                            PAID
+                        </span>
+                    </div>
+
+                    <div class="text-[10px] font-mono text-zinc-400 space-y-1.5 border-t border-b border-zinc-900 py-3">
+                        <div>LEADER: <span class="text-white font-bold">${reg.leader.name}</span></div>
+                        <div>INSTITUTION: <span class="text-white">${reg.leader.institution}</span></div>
+                        <div>COHORT ROSTER: <span class="text-white">${reg.members.length} Additional Crew</span></div>
+                        <div>GATEWAY CODE: <span class="text-white">${reg.paymentMethod}</span></div>
+                    </div>
+
+                    <div class="flex justify-between items-center text-[10px] font-mono pt-1">
+                        <div>REF ID: <span class="text-zinc-500">${reg.refCode}</span></div>
+                        
+                        <button onclick="openRosterEditPanel('${reg.id}')" class="px-3.5 py-1.5 bg-zinc-900 border border-zinc-800 hover:border-zinc-700 text-[9px] font-mono text-zinc-300 hover:text-white rounded-md transition-all flex items-center gap-1.5 focus:outline-none">
+                            <svg class="w-3 h-3 text-[#C5A059]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
+                            <span>EDIT FORM</span>
+                        </button>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        // START MULTI-STEP WIZARD IN NEW MODE
+        function startWizardNewReg() {
+            wizardCurrentStep = 1;
+            wizardSelectedDivision = COMPETITION_DIVISIONS[0].id;
+            wizardMembers = [];
+
+            // Pre-fill Step 2 inputs with active session profile
+            document.getElementById('wiz-team-name').value = '';
+            document.getElementById('wiz-leader-name').value = currentUser.name || '';
+            document.getElementById('wiz-leader-email').value = currentUser.email || '';
+            document.getElementById('wiz-leader-whatsapp').value = '';
+            document.getElementById('wiz-leader-institution').value = '';
+
+            // Update Wizard indicators to show step 1 active
+            const wizardPanel = document.getElementById('wizard-panel');
+            wizardPanel.setAttribute('data-active', 'true');
+            
+            goToWizardStep(1);
+            updateUIVisualState();
+            renderWizardMembersInputList();
+        }
+
+        // CANCEL ONGOING REGISTRATION WIZARD
+        function confirmCancelWizard() {
+            if(confirm('Reset current registration records? All entered roster metrics will be cleared.')) {
+                const wizardPanel = document.getElementById('wizard-panel');
+                wizardPanel.setAttribute('data-active', 'false');
+                updateUIVisualState();
+            }
+        }
+
+        // STEP RENDERING AND VISIBILITY STATE TOGGLER
+        function goToWizardStep(step) {
+            wizardCurrentStep = step;
+
+            // Step Visibility class state toggles
+            for(let i=1; i<=4; i++) {
+                const el = document.getElementById(`wizard-step-${i}`);
+                const label = document.getElementById(`step-label-${i}`);
+                if(i === step) {
+                    el.classList.remove('hidden');
+                    label.className = "text-[#00FF88] font-bold";
+                } else {
+                    el.classList.add('hidden');
+                    label.className = "text-zinc-500";
+                }
+            }
+
+            // Sync checkout brief if moving to Step 4
+            if (step === 4) {
+                const targetDiv = COMPETITION_DIVISIONS.find(d => d.id === wizardSelectedDivision) || { title: 'Sumobot 500g' };
+                document.getElementById('checkout-arena-title').innerText = targetDiv.title;
+                document.getElementById('checkout-team-name').innerText = document.getElementById('wiz-team-name').value || 'TEAM ATLAS UNJ';
+                selectPaymentGateway(activePaymentMethod);
+            }
+        }
+
+        // RENDER ARENAS SELECTION CARDS
+        function renderArenasRadioChoices() {
+            const container = document.getElementById('arenas-selector-container');
+            container.innerHTML = '';
+
+            COMPETITION_DIVISIONS.forEach((arena) => {
+                const card = document.createElement('div');
+                card.id = `arena-card-${arena.id}`;
+                card.onclick = () => selectWizArena(arena.id);
+                card.className = "p-5 bg-zinc-900/10 border border-zinc-900 rounded-2xl text-left cursor-pointer transition-all hover:bg-zinc-900/30";
+                card.innerHTML = `
+                    <span class="px-2 py-0.5 text-[8px] font-mono rounded bg-zinc-900 text-zinc-500 border border-zinc-800 uppercase block w-max">
+                        ${arena.detail}
+                    </span>
+                    <h5 class="text-base font-display font-extrabold text-white uppercase mt-4">
+                        ${arena.title}
+                    </h5>
+                    <p class="text-[9.5px] font-mono text-zinc-500 mt-1 uppercase line-clamp-2">
+                        Official division class organized for academic robotics groups.
+                    </p>
+                `;
+                container.appendChild(card);
+            });
+
+            // Pre-select first arena
+            selectWizArena(wizardSelectedDivision);
+        }
+
+        // ON SELECT WIZARD ARENA DIVISION
+        function selectWizArena(id) {
+            // Remove selection class from all cards
+            COMPETITION_DIVISIONS.forEach((arena) => {
+                const el = document.getElementById(`arena-card-${arena.id}`);
+                if (el) {
+                    el.className = "p-5 bg-zinc-900/10 border border-zinc-900 rounded-2xl text-left cursor-pointer transition-all hover:bg-zinc-900/30";
+                }
+            });
+
+            // Set new active selection
+            wizardSelectedDivision = id;
+            const activeEl = document.getElementById(`arena-card-${id}`);
+            if (activeEl) {
+                activeEl.className = "p-5 bg-zinc-950 border-[#00FF88] rounded-2xl text-left cursor-pointer transition-all scale-[1.01] shadow-[0_0_15px_rgba(0,255,136,0.1)]";
+            }
+        }
+
+        // VALIDATE LEADER STEP ENTRIES
+        function validateStep2AndProceed() {
+            const teamVal = document.getElementById('wiz-team-name').value.trim();
+            const leaderNameVal = document.getElementById('wiz-leader-name').value.trim();
+            const leaderEmailVal = document.getElementById('wiz-leader-email').value.trim();
+            const leaderWAVal = document.getElementById('wiz-leader-whatsapp').value.trim();
+            const leaderInstVal = document.getElementById('wiz-leader-institution').value.trim();
+
+            if (!teamVal || !leaderNameVal || !leaderEmailVal || !leaderWAVal || !leaderInstVal) {
+                alert('Please fill out all Team Leader details correctly before continuing.');
+                return;
+            }
+
+            // Proceed to Step 3
+            goToWizardStep(3);
+        }
+
+        // DYNAMIC TEAM ROSTER BUILDER ACTIONS
+        function addWizardMemberInput() {
+            const newMember = {
+                id: `wiz-member-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`,
+                name: '',
+                email: '',
+                whatsapp: '',
+                institution: document.getElementById('wiz-leader-institution').value || ''
+            };
+            wizardMembers.push(newMember);
+            renderWizardMembersInputList();
+        }
+
+        function removeWizardMemberInput(id) {
+            wizardMembers = wizardMembers.filter(m => m.id !== id);
+            renderWizardMembersInputList();
+        }
+
+        function syncWizardMemberInputFields(id, field, value) {
+            const idx = wizardMembers.findIndex(m => m.id === id);
+            if(idx !== -1) {
+                wizardMembers[idx][field] = value;
+            }
+        }
+
+        // RENDER STEP 3 MEMBERS ARRAY AS INPUT CARDS
+        function renderWizardMembersInputList() {
+            const container = document.getElementById('wizard-members-list-container');
+            const noMembersTag = document.getElementById('no-members-tag');
+
+            container.innerHTML = '';
+
+            if (wizardMembers.length === 0) {
+                noMembersTag.classList.remove('hidden');
+                return;
+            }
+
+            noMembersTag.classList.add('hidden');
+
+            wizardMembers.forEach((member, i) => {
+                const card = document.createElement('div');
+                card.className = "p-5 bg-zinc-900/20 border border-zinc-900 rounded-xl relative space-y-4";
+                card.innerHTML = `
+                    <div class="flex justify-between items-center select-none">
+                        <span class="text-[9px] font-mono text-zinc-500 uppercase tracking-widest block">CREW MEMBER ATTACHMENT 0${i+1}</span>
+                        <button type="button" onclick="removeWizardMemberInput('${member.id}')" class="text-[10px] font-mono text-red-400 hover:text-red-300 uppercase focus:outline-none transition-colors">
+                            &times; REMOVE Crew
+                        </button>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="space-y-1">
+                            <label class="text-[8px] font-mono text-zinc-500 uppercase block">Full Name</label>
+                            <input type="text" value="${member.name}" oninput="syncWizardMemberInputFields('${member.id}', 'name', this.value)" required placeholder="e.g. Member name" class="w-full bg-[#121212] border border-zinc-800 text-xs rounded-lg px-3 py-2 text-white outline-none focus:border-[#00FF88] transition-colors">
+                        </div>
+                        <div class="space-y-1">
+                            <label class="text-[8px] font-mono text-zinc-500 uppercase block">Email Address</label>
+                            <input type="email" value="${member.email}" oninput="syncWizardMemberInputFields('${member.id}', 'email', this.value)" required placeholder="e.g. member@school.edu" class="w-full bg-[#121212] border border-zinc-800 text-xs rounded-lg px-3 py-2 text-white outline-none focus:border-[#00FF88] transition-colors">
+                        </div>
+                        <div class="space-y-1">
+                            <label class="text-[8px] font-mono text-zinc-500 uppercase block">WhatsApp No</label>
+                            <input type="tel" value="${member.whatsapp}" oninput="syncWizardMemberInputFields('${member.id}', 'whatsapp', this.value)" required placeholder="e.g. 08215005xxxx" class="w-full bg-[#121212] border border-zinc-800 text-xs rounded-lg px-3 py-2 text-white outline-none focus:border-[#00FF88] transition-colors">
+                        </div>
+                        <div class="space-y-1">
+                            <label class="text-[8px] font-mono text-zinc-500 uppercase block">School / Institution</label>
+                            <input type="text" value="${member.institution}" oninput="syncWizardMemberInputFields('${member.id}', 'institution', this.value)" required class="w-full bg-[#121212] border border-zinc-800 text-xs rounded-lg px-3 py-2 text-white outline-none focus:border-[#00FF88] transition-colors">
+                        </div>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        // SWITCH CHECKOUT BILLING SCREEN METHODS
+        function selectPaymentGateway(method) {
+            activePaymentMethod = method;
+
+            const GatewaysList = ['qris', 'bca', 'visa', 'paypal'];
+            GatewaysList.forEach((g) => {
+                const btn = document.getElementById(`pay-${g}`);
+                const screen = document.getElementById(`pay-screen-${g}`);
+
+                if (g === method) {
+                    btn.className = "p-3 bg-zinc-950 border border-[#00FF88] rounded-xl text-center cursor-pointer transition-all select-none";
+                    screen.classList.remove('hidden');
+                } else {
+                    btn.className = "p-3 bg-[#0a0a0c]/40 border border-zinc-800 rounded-xl text-center cursor-pointer transition-all select-none";
+                    screen.classList.add('hidden');
+                }
+            });
+        }
+
+        // SUBMIT AND GENERATE THE TRANSACTION FOR FINALIZING WIZARD
+        function finalizeWizardCheckout() {
+            const procScreen = document.getElementById('processing-screen');
+            procScreen.classList.remove('hidden');
+
+            setTimeout(() => {
+                // Construct final team Object
+                const refCode = "ERIC-REG-" + Math.random().toString(36).substring(2, 8).toUpperCase();
+                const cleanMembers = wizardMembers.filter(m => m.name.trim() !== '');
+
+                const finalRecord = {
+                    id: "reg-" + Date.now(),
+                    divisionId: wizardSelectedDivision,
+                    teamName: document.getElementById('wiz-team-name').value || 'TEAM ALPHA UNJ',
+                    leader: {
+                        name: document.getElementById('wiz-leader-name').value,
+                        email: document.getElementById('wiz-leader-email').value,
+                        whatsapp: document.getElementById('wiz-leader-whatsapp').value,
+                        institution: document.getElementById('wiz-leader-institution').value,
+                    },
+                    members: cleanMembers,
+                    paymentMethod: activePaymentMethod.toUpperCase(),
+                    refCode: refCode
+                };
+
+                // Store state and clear wizard views
+                registrations.push(finalRecord);
+                saveRegistrationsToLocalStorage();
+
+                procScreen.classList.add('hidden');
+
+                // Toggle success invoice brief popups
+                document.getElementById('rec-ref-id').innerText = finalRecord.refCode;
+                document.getElementById('rec-team-name').innerText = finalRecord.teamName;
+                
+                const divObj = COMPETITION_DIVISIONS.find(d => d.id === finalRecord.divisionId) || { title: finalRecord.divisionId };
+                document.getElementById('rec-arena-class').innerText = divObj.title;
+
+                document.getElementById('success-receipt-modal').classList.remove('hidden');
+                document.getElementById('wizard-panel').setAttribute('data-active', 'false');
+
+            }, 1800);
+        }
+
+        // Action: Trigger Download of Real-time Excel Ledger separating by Arena Sheets
+        function downloadExcelLedger() {
+            if (typeof XLSX === 'undefined') {
+                alert("The Excel exporter is initializing. Please check your internet connectivity to load SheetJS from CDN.");
+                return;
+            }
+
+            // Build new empty workbook container
+            const wb = XLSX.utils.book_new();
+
+            // Map through each official category in order to form distinct spreadsheet channels
+            COMPETITION_DIVISIONS.forEach((division) => {
+                const divisionRegs = registrations.filter(r => r.divisionId === division.id);
+                const sheetRows = [];
+
+                if (divisionRegs.length > 0) {
+                    divisionRegs.forEach((reg, index) => {
+                        const row = {
+                            'No': index + 1,
+                            'Reference Code': reg.refCode,
+                            'Team Name': reg.teamName,
+                            'Leader Name': reg.leader.name,
+                            'Leader Email': reg.leader.email,
+                            'Leader WhatsApp': reg.leader.whatsapp || '',
+                            'Institution': reg.leader.institution,
+                            'Payment Gateway': reg.paymentMethod,
+                            'Billing Status': reg.paymentStatus || 'PAID',
+                            'Amount Paid': reg.amount || 'IDR 150,000',
+                            'Roster size': (reg.members ? reg.members.length : 0) + 1
+                        };
+
+                        // Detail up to 5 additional roster members
+                        for (let i = 0; i < 5; i++) {
+                            const member = (reg.members && reg.members[i]) ? reg.members[i] : null;
+                            row[`Member ${i + 1} Name`] = member ? member.name : '';
+                            row[`Member ${i + 1} Email`] = member ? member.email : '';
+                            row[`Member ${i + 1} WhatsApp`] = member ? member.whatsapp || '' : '';
+                            row[`Member ${i + 1} Institution`] = member ? member.institution : '';
+                        }
+
+                        sheetRows.push(row);
+                    });
+                } else {
+                    // Feed placeholders inside empty arenas to make sheets easy to copy paste
+                    const placeholderRow = {
+                        'No': '-',
+                        'Reference Code': '-',
+                        'Team Name': '-',
+                        'Leader Name': '(No entries registered in this division yet)',
+                        'Leader Email': '-',
+                        'Leader WhatsApp': '-',
+                        'Institution': '-',
+                        'Payment Gateway': '-',
+                        'Billing Status': '-',
+                        'Amount Paid': '-',
+                        'Roster size': 0
+                    };
+                    for (let i = 0; i < 5; i++) {
+                        placeholderRow[`Member ${i + 1} Name`] = '';
+                        placeholderRow[`Member ${i + 1} Email`] = '';
+                        placeholderRow[`Member ${i + 1} WhatsApp`] = '';
+                        placeholderRow[`Member ${i + 1} Institution`] = '';
+                    }
+                    sheetRows.push(placeholderRow);
+                }
+
+                // Format Sheet Object
+                const ws = XLSX.utils.json_to_sheet(sheetRows);
+
+                // Secure readable column widths
+                ws['!cols'] = [
+                    { wch: 6 },   // No
+                    { wch: 18 },  // Reference Code
+                    { wch: 25 },  // Team Name
+                    { wch: 22 },  // Leader Name
+                    { wch: 28 },  // Leader Email
+                    { wch: 18 },  // Leader WhatsApp
+                    { wch: 30 },  // Institution
+                    { wch: 16 },  // Payment Gateway
+                    { wch: 15 },  // Billing Status
+                    { wch: 15 },  // Amount Paid
+                    { wch: 12 },  // Roster size
+                    { wch: 22 },  // Mem 1 Name
+                    { wch: 25 },  // Mem 1 Email
+                    { wch: 22 },  // Mem 2 Name
+                    { wch: 25 }   // Mem 2 Email
+                ];
+
+                // Sheet name cannot exceed 31 chars and cannot have special characters
+                const titleCleaned = division.title.replace(/[\\\/\?\*\:\[\]]/g, '').substring(0, 31);
+                XLSX.utils.book_append_sheet(wb, ws, titleCleaned);
+            });
+
+            // Save File on client device
+            XLSX.writeFile(wb, `ERIC_2026_Live_Registrations_${new Date().toISOString().slice(0, 10)}.xlsx`);
+        }
+
+        // DISMISS NOTIFICATION RECEIPT IF FINISHED
+        function dismissReceiptModal() {
+            document.getElementById('success-receipt-modal').classList.add('hidden');
+            updateUIVisualState();
+        }
+
+        // ==========================================
+        // EDIT PANEL PROCEDURES (To modify active team entries)
+        // ==========================================
+        function openRosterEditPanel(regId) {
+            currentEditingRegId = regId;
+            const reg = registrations.find(r => r.id === regId);
+            if (!reg) return;
+
+            document.getElementById('edit-reg-id').value = reg.id;
+            document.getElementById('edit-team-name').value = reg.teamName;
+            document.getElementById('edit-leader-name').value = reg.leader.name;
+            document.getElementById('edit-leader-whatsapp').value = reg.leader.whatsapp;
+            document.getElementById('edit-leader-institution').value = reg.leader.institution;
+
+            renderEditFormMembersList(reg.members);
+            updateUIVisualState();
+        }
+
+        function closeEditFormPanel() {
+            currentEditingRegId = null;
+            updateUIVisualState();
+        }
+
+        // RENDER MEMBERS ATTACHED UNDER ACTIVE FORM CURRENTLY EDITING
+        function renderEditFormMembersList(membersArray) {
+            const container = document.getElementById('edit-members-container');
+            container.innerHTML = '';
+
+            membersArray.forEach((member, idx) => {
+                const card = document.createElement('div');
+                card.className = "p-4 bg-zinc-950 border border-zinc-900 rounded-xl space-y-4 relative";
+                card.innerHTML = `
+                    <div class="flex justify-between items-center select-none">
+                        <span class="text-[8px] font-mono text-zinc-500">MEMBER SLOT 0${idx+1}</span>
+                        <button type="button" onclick="removeMemberFromEditForm('${member.id}')" class="text-[10px] font-mono text-red-500 hover:text-red-400">
+                            Remove &times;
+                        </button>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="space-y-1">
+                            <label class="text-[8px] font-mono text-zinc-500 uppercase block">Full Name</label>
+                            <input type="text" value="${member.name}" oninput="syncEditMemberField('${member.id}', 'name', this.value)" class="w-full bg-[#121212] border border-zinc-800 text-xs rounded-lg px-3 py-2 text-white focus:outline-none focus:border-[#00FF88]" required>
+                        </div>
+                        <div class="space-y-1">
+                            <label class="text-[8px] font-mono text-zinc-500 uppercase block">Email Address</label>
+                            <input type="email" value="${member.email}" oninput="syncEditMemberField('${member.id}', 'email', this.value)" class="w-full bg-[#121212] border border-zinc-800 text-xs rounded-lg px-3 py-2 text-white focus:outline-none focus:border-[#00FF88]" required>
+                        </div>
+                        <div class="space-y-1">
+                            <label class="text-[8px] font-mono text-zinc-500 uppercase block">WhatsApp No</label>
+                            <input type="tel" value="${member.whatsapp}" oninput="syncEditMemberField('${member.id}', 'whatsapp', this.value)" class="w-full bg-[#121212] border border-zinc-800 text-xs rounded-lg px-3 py-2 text-white focus:outline-none focus:border-[#00FF88]" required>
+                        </div>
+                        <div class="space-y-1">
+                            <label class="text-[8px] font-mono text-zinc-500 uppercase block">Institution</label>
+                            <input type="text" value="${member.institution}" oninput="syncEditMemberField('${member.id}', 'institution', this.value)" class="w-full bg-[#121212] border border-zinc-800 text-xs rounded-lg px-3 py-2 text-white focus:outline-none focus:border-[#00FF88]" required>
+                        </div>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        // ADD NEW SLOT INSIDE THE CONTEXT OF ACTIVE EDITS
+        function addNewMemberToEditForm() {
+            const regIndex = registrations.findIndex(r => r.id === currentEditingRegId);
+            if(regIndex === -1) return;
+
+            const instInput = document.getElementById('edit-leader-institution').value || '';
+            const newMember = {
+                id: "memb-edit-" + Date.now() + Math.random().toString(36).substring(2, 5),
+                name: '',
+                email: '',
+                whatsapp: '',
+                institution: instInput
+            };
+
+            registrations[regIndex].members.push(newMember);
+            renderEditFormMembersList(registrations[regIndex].members);
+        }
+
+        function removeMemberFromEditForm(memberId) {
+            const regIndex = registrations.findIndex(r => r.id === currentEditingRegId);
+            if(regIndex === -1) return;
+
+            registrations[regIndex].members = registrations[regIndex].members.filter(m => m.id !== memberId);
+            renderEditFormMembersList(registrations[regIndex].members);
+        }
+
+        function syncEditMemberField(memberId, field, value) {
+            const regIndex = registrations.findIndex(r => r.id === currentEditingRegId);
+            if(regIndex === -1) return;
+
+            const mIdx = registrations[regIndex].members.findIndex(m => m.id === memberId);
+            if(mIdx !== -1) {
+                registrations[regIndex].members[mIdx][field] = value;
+            }
+        }
+
+        // SAVE CHANGES FROM ACTIVE EDITS PANEL
+        function saveRosterEditChanges(event) {
+            event.preventDefault();
+            const regIndex = registrations.findIndex(r => r.id === currentEditingRegId);
+            if(regIndex === -1) return;
+
+            const cleanMembers = registrations[regIndex].members.filter(m => m.name.trim() !== '');
+
+            registrations[regIndex].teamName = document.getElementById('edit-team-name').value;
+            registrations[regIndex].leader.name = document.getElementById('edit-leader-name').value;
+            registrations[regIndex].leader.whatsapp = document.getElementById('edit-leader-whatsapp').value;
+            registrations[regIndex].leader.institution = document.getElementById('edit-leader-institution').value;
+            registrations[regIndex].members = cleanMembers;
+
+            saveRegistrationsToLocalStorage();
+            alert('Roster changes saved successfully! Roster database state synchronized.');
+            closeEditFormPanel();
+        }
+
+    </script>
+</body>
+</html>

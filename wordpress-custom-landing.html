@@ -1,0 +1,1617 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ERIC 2026 - Championship Arena & Registration Portal</title>
+    
+    <!-- 1. PREMIUM MONOSPACE & FUTURISTIC FONTS -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Space+Grotesk:wght@600;700;800;900&display=swap" rel="stylesheet">
+    
+    <!-- 2. TAILWIND CSS CDN INJECTION -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- 3. SHEETJS CDN INJECTION FOR EXCEL SPREADSHEET EXPORT -->
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                        display: ['Space Grotesk', 'sans-serif'],
+                    },
+                    colors: {
+                        emerald: {
+                            400: '#10B981',
+                            500: '#00FF88', // Master Neon Emerald color matching ERIC's landing parameters
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* Modern Tech Grid Pattern Overlay */
+        .tech-grid {
+            background-image: 
+                linear-gradient(rgba(255, 255, 255, 0.007) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.007) 1px, transparent 1px);
+            background-size: 40px 40px;
+        }
+
+        /* Custom Scrollbar Styles */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #09090b;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #27272a;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #00FF88;
+        }
+
+        /* Ambient Glow & Accent Effects */
+        .text-glow {
+            text-shadow: 0 0 15px rgba(0, 255, 136, 0.55);
+        }
+        .box-glow {
+            box-shadow: 0 0 35px rgba(0, 255, 136, 0.04);
+        }
+        .border-glow:focus {
+            border-color: #00FF88 !important;
+            box-shadow: 0 0 20px rgba(0, 255, 136, 0.15);
+        }
+        .btn-glow {
+            box-shadow: 0 0 25px rgba(0, 255, 136, 0.2);
+        }
+        .btn-glow:hover {
+            box-shadow: 0 0 35px rgba(0, 255, 136, 0.45);
+        }
+
+        /* Smooth Pulse animation for active simulation indicators */
+        @keyframes pulse-ring {
+            0% { transform: scale(0.95); opacity: 0.5; }
+            50% { transform: scale(1.1); opacity: 0.8; }
+            100% { transform: scale(0.95); opacity: 0.5; }
+        }
+        .pulse-indicator {
+            animation: pulse-ring 3s infinite ease-in-out;
+        }
+
+        body {
+            background-color: #050505;
+            color: #f4f4f5;
+            overflow-x: hidden;
+        }
+    </style>
+</head>
+<body class="bg-[#050505] text-white font-sans antialiased selection:bg-[#00FF88] selection:text-black min-h-screen">
+
+    <!-- DECORATIVE STATIC BG RADIANCE -->
+    <div class="fixed inset-0 bg-[radial-gradient(circle_at_50%_35%,rgba(0,255,136,0.03)_0%,transparent_75%)] pointer-events-none z-0"></div>
+    <div class="fixed inset-0 tech-grid pointer-events-none z-0"></div>
+
+    <!-- MAIN ROOT CONTAINER -->
+    <div class="relative z-10 flex flex-col min-h-screen">
+
+        <!-- ================= NAVBAR MODULE ================= -->
+        <header id="eric-custom-navbar" class="border-b border-zinc-900/80 bg-black/40 backdrop-blur-md sticky top-0 z-50">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex items-center justify-between h-20">
+                    
+                    <!-- BRAND LOGO -->
+                    <div class="flex items-center gap-3">
+                        <a href="#" class="flex items-center gap-2.5 group">
+                            <span class="font-display font-black text-lg sm:text-xl tracking-tight text-white uppercase group-hover:text-glow transition-all">
+                                ERIC CHAMPIONSHIP
+                            </span>
+                            <span class="font-mono text-[9px] text-[#00FF88] border border-[#00FF88]/20 bg-[#00FF88]/5 px-2 py-0.5 rounded uppercase tracking-widest font-bold">
+                                2026
+                            </span>
+                        </a>
+                    </div>
+
+                    <!-- DESKTOP NAVIGATION LINKS -->
+                    <nav class="hidden md:flex items-center gap-8">
+                        <a href="#" class="text-xs font-mono text-zinc-400 hover:text-white uppercase tracking-wider transition-colors">
+                            Gate Portal
+                        </a>
+                        <a href="#rules" onclick="scrollToElementorHelp()" class="text-xs font-mono text-zinc-400 hover:text-white uppercase tracking-wider transition-colors">
+                            Documentation
+                        </a>
+                        <a href="mailto:support@eric2026.com" class="text-xs font-mono text-zinc-400 hover:text-white uppercase tracking-wider transition-colors">
+                            Help Desk
+                        </a>
+                    </nav>
+
+                    <!-- CTAS (Dynamic Sign In / Logged in Avatar block) -->
+                    <div class="flex items-center gap-4">
+                        
+                        <!-- Logged out view trigger -->
+                        <div id="navbar-logged-out-section" class="block">
+                            <button onclick="openLoginDrawer()" class="px-4 py-2 sm:px-5 sm:py-2.5 bg-[#00FF88]/10 hover:bg-[#00FF88] border border-[#00FF88]/30 hover:border-transparent text-[#00FF88] hover:text-black font-display font-black text-[10px] sm:text-[11px] tracking-wider uppercase rounded-xl transition-all hover:scale-[1.03] active:scale-[0.98] btn-glow flex items-center gap-2 cursor-pointer focus:outline-none">
+                                <svg class="w-3.5 h-3.5 shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"></path>
+                                </svg>
+                                <span>SIGN IN TO PORTAL</span>
+                            </button>
+                        </div>
+
+                        <!-- Logged in view trigger (Shows Active Profile info in navbar) -->
+                        <div id="navbar-logged-in-section" class="hidden items-center gap-3">
+                            <div class="hidden sm:flex flex-col text-right">
+                                <span id="nav-user-name" class="text-[10px] font-display font-extrabold text-white uppercase tracking-tight">LOADING</span>
+                                <span id="nav-user-email" class="text-[9px] font-mono text-[#00FF88]">wp@user.com</span>
+                            </div>
+                            <div id="nav-user-avatar" class="w-9 h-9 rounded-full bg-gradient-to-tr from-[#0047AB] to-[#00FF88] flex items-center justify-center font-display font-black text-white text-[13px] shadow">
+                                L
+                            </div>
+                            <button onclick="executeLogOut()" class="p-2 bg-zinc-900 border border-zinc-800 hover:border-red-500/20 text-zinc-500 hover:text-red-400 rounded-lg transition-transform focus:outline-none cursor-pointer" title="Disconnect Session">
+                                <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
+                            </button>
+                        </div>
+
+                    </div>
+
+                </div>
+            </div>
+        </header>
+
+        <!-- ================= HERO LANDING SECTION (Visible if user is logged out) ================= -->
+        <section id="hero-landing-section" class="flex-grow flex items-center justify-center py-16 px-4 md:py-24 relative overflow-hidden">
+            <div class="max-w-4xl mx-auto text-center space-y-8 relative z-10">
+                
+                <!-- TOP EMBELLISHMENT BADGE -->
+                <div class="inline-flex items-center gap-2 px-4 py-1.5 bg-zinc-900/85 border border-zinc-800 rounded-full text-[10px] font-mono text-[#00FF88] uppercase tracking-widest mx-auto select-none">
+                    <span class="w-1.5 h-1.5 rounded-full bg-[#00FF88] shadow-[0_0_10px_rgba(0,255,136,0.8)] pulse-indicator"></span>
+                    <span class="font-bold">E-Sports Championship Arena Live Grid</span>
+                </div>
+
+                <!-- MAIN DISPLAY HEADER -->
+                <h1 class="text-4xl sm:text-6xl md:text-7xl font-display font-black text-white uppercase tracking-tight leading-none text-glow select-none">
+                    SECURE YOUR SLOT<br>
+                    <span class="text-transparent bg-clip-text bg-gradient-to-r from-[#00FF88] to-[#4DFFB8]">IN THE ARENA</span>
+                </h1>
+
+                <!-- PARAGRAPH INTRO -->
+                <p class="text-zinc-400 font-mono text-xs sm:text-sm uppercase max-w-2xl mx-auto leading-relaxed">
+                    The ultimate digital verification matrix for squads, tactical rosters, and participant badges. Log in under your own credentials to manage entries and view live participant statistics.
+                </p>
+
+                <!-- DUAL CTA BUTTON MODULE -->
+                <div class="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
+                    
+                    <!-- Trigger login drawer which submits dynamically to wp-login.php -->
+                    <button onclick="openLoginDrawer()" class="w-full sm:w-auto px-8 py-4.5 bg-gradient-to-r from-[#00FF88] to-[#4DFFB8] text-black font-display font-black text-xs tracking-widest uppercase rounded-xl hover:opacity-90 hover:scale-[1.01] active:scale-[0.99] transition-all btn-glow text-center cursor-pointer focus:outline-none">
+                        ENTER TOURNAMENT REGISTRATION
+                    </button>
+                    
+                    <!-- Scroll to instructions -->
+                    <button onclick="scrollToElementorHelp()" class="w-full sm:w-auto px-8 py-4.5 bg-zinc-950/80 border border-zinc-805 hover:border-zinc-700 text-zinc-300 hover:text-white font-mono text-xs tracking-wider uppercase rounded-xl transition-all text-center focus:outline-none cursor-pointer">
+                        VIEW ARENA STATISTICS
+                    </button>
+                </div>
+
+                <!-- BOTTOM DOCK METRIC TEASE (Bento-style grids) -->
+                <div class="pt-12 grid grid-cols-2 md:grid-cols-4 gap-4 max-w-3xl mx-auto font-mono text-left select-none">
+                    <div class="p-4 bg-zinc-900/10 border border-zinc-900/60 rounded-xl">
+                        <div class="text-[9px] text-[#00FF88] uppercase tracking-widest">Active squads</div>
+                        <div id="stat-squads-count" class="text-xl font-display font-bold text-white mt-1">128 / 128</div>
+                    </div>
+                    <div class="p-4 bg-zinc-900/10 border border-zinc-900/60 rounded-xl">
+                        <div class="text-[9px] text-zinc-500 uppercase tracking-widest">Roster Pool</div>
+                        <div class="text-xl font-display font-bold text-[#00FF88] mt-1">640+ Teams</div>
+                    </div>
+                    <div class="p-4 bg-zinc-900/10 border border-zinc-900/60 rounded-xl">
+                        <div class="text-[9px] text-zinc-500 uppercase tracking-widest font-bold">Total Prizes</div>
+                        <div class="text-xl font-display font-bold text-white mt-1">$25K Arena</div>
+                    </div>
+                    <div class="p-4 bg-zinc-900/10 border border-zinc-900/60 rounded-xl">
+                        <div class="text-[9px] text-zinc-500 uppercase tracking-widest">Live Server</div>
+                        <div class="text-xl font-display font-bold text-[#00FF88] mt-1">ERIC-SVRII</div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+
+        <!-- ================= MAIN REGISTRATION HUB WORKSPACE (Visible dynamically if user logged in) ================= -->
+        <main id="main-portal-hub-container" class="hidden flex-grow py-12 px-4 sm:px-6 lg:px-8 relative z-10">
+            <div class="max-w-5xl mx-auto space-y-12">
+                
+                <!-- Dynamic Title Header showing logged in status -->
+                <div class="text-center select-none space-y-4 animate-fade-in">
+                    <div class="inline-flex items-center gap-2 bg-[#0047AB]/15 text-[#00FF88] border border-[#00FF88]/20 px-3.5 py-1 rounded-full text-[10px] font-mono uppercase tracking-widest">
+                        <span class="w-1.5 h-1.5 bg-[#00FF88] rounded-full pulse-indicator"></span>
+                        <span>SQUAD DISCOVERY CORE ONLINE</span>
+                    </div>
+                    <h2 class="text-3xl md:text-5xl font-display font-black tracking-tighter text-white uppercase leading-none">
+                        MY ROSTER CONTROLS
+                    </h2>
+                    <p class="text-zinc-500 font-mono text-xs uppercase max-w-xl mx-auto leading-relaxed">
+                        Deploy teams, adjust roster logs, checkout paid slots, and generate excel sheets in real-time under custom synchronized guidelines.
+                    </p>
+                </div>
+
+                <!-- MAIN INTERACTIVE BOX PANEL CHASSIS -->
+                <div class="bg-zinc-950 border border-zinc-900 rounded-3xl p-6 md:p-10 shadow-[0_35px_80px_rgba(0,0,0,0.9)] relative overflow-hidden box-glow">
+                    
+                    <!-- Decorative technical grid overlay -->
+                    <div class="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.005)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.005)_1px,transparent_1px)] bg-[size:40px_40px] pointer-events-none"></div>
+
+                    <!-- ================= SUB-PANEL: DASHBOARD PANEL ================= -->
+                    <div id="dashboard-panel" class="hidden space-y-8 relative z-10">
+                        <!-- User Welcome Banner -->
+                        <div class="flex flex-col md:flex-row justify-between items-start md:items-center p-6 bg-zinc-900/30 border border-zinc-900 rounded-2xl gap-4">
+                            <div class="flex items-center gap-4">
+                                <div id="user-avatar" class="w-12 h-12 rounded-full bg-gradient-to-tr from-[#0047AB] to-[#00FF88] flex items-center justify-center font-display font-extrabold text-white text-lg tracking-tight shadow-md">
+                                    ?
+                                </div>
+                                <div class="space-y-0.5">
+                                    <div class="text-[9px] font-mono text-[#00FF88] uppercase tracking-widest">WordPress Synced Session ID</div>
+                                    <h3 id="user-display-name" class="text-xl font-display font-black text-white uppercase tracking-tight">Loading Name</h3>
+                                    <span id="user-display-email" class="text-xs font-mono text-zinc-400">loading@email.com</span>
+                                </div>
+                            </div>
+
+                            <div class="flex flex-col sm:flex-row items-center gap-3 w-full md:w-auto">
+                                <!-- Secure indicator -->
+                                <div class="px-4 py-2.5 bg-emerald-950/20 border border-emerald-800/30 text-[10px] font-mono text-[#00FF88] rounded-xl flex items-center gap-2 select-none justify-center w-full">
+                                    <span class="w-2 h-2 rounded-full bg-[#00FF88] shadow-[0_0_8px_#00FF88] animate-pulse"></span>
+                                    <span class="uppercase font-bold tracking-wider">WORDPRESS SECURE CONNECTION ACTIVE</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Active Registrations list section -->
+                        <div class="space-y-6">
+                            <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 pb-4 border-b border-zinc-900/80">
+                                <h4 class="font-display font-black text-base text-white uppercase tracking-wider">
+                                    ARENA ENTRIES (<span id="reg-count" class="text-[#00FF88]">0</span>)
+                                </h4>
+                                
+                                <div class="flex items-center gap-3 select-none flex-wrap">
+                                    <!-- Dynamic EXCEL sheet compilation engine trigger -->
+                                    <button onclick="downloadExcelLedger()" class="px-4 py-2 border border-zinc-800 hover:border-zinc-700 hover:bg-zinc-900 text-xs font-mono text-zinc-300 rounded-xl transition-all cursor-pointer flex items-center gap-2 focus:outline-none">
+                                        <svg class="w-4 h-4 text-[#00FF88]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                                        <span>EXCEL BOOK DOWNLOAD</span>
+                                    </button>
+
+                                    <!-- Trigger custom steps wizard -->
+                                    <button onclick="startWizardNewReg()" class="px-4 py-2 bg-[#00FF88] hover:opacity-90 text-black font-display font-black text-xs tracking-wider uppercase rounded-xl transition-all flex items-center gap-2 focus:outline-none cursor-pointer">
+                                        <svg class="w-4 h-4 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+                                        <span>ENROLL NEW SQUAD</span>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Interactive dynamics list -->
+                            <div id="registrations-grid" class="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
+                                <!-- Populated dynamically by JS -->
+                            </div>
+
+                            <!-- Setup placeholder if zero active submissions -->
+                            <div id="no-regs-placeholder" class="text-center py-16 border border-dashed border-zinc-900 rounded-2xl space-y-4 hidden">
+                                <svg class="w-12 h-12 text-zinc-700 mx-auto animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 113.536 0V21h2v-2.172a5 5 0 003.536-3.536L12 3z"></path></svg>
+                                <div class="space-y-1">
+                                    <p class="text-sm font-display font-extrabold text-white/80 uppercase">No active registrations enrolled</p>
+                                    <p class="text-[10px] font-mono text-zinc-500 max-w-xs mx-auto uppercase">Click the button above to build lists and lock down sumobot or drone spaces immediately!</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ================= SUB-PANEL: REGISTRATION STEPS WIZARD ================= -->
+                    <div id="wizard-panel" class="hidden space-y-8 relative z-10" data-active="false">
+                        <!-- Step progression indicators -->
+                        <div class="flex justify-between items-center border-b border-zinc-900 pb-4 select-none">
+                            <button onclick="confirmCancelWizard()" class="text-xs font-mono text-zinc-500 hover:text-white flex items-center gap-1.5 transition-colors focus:outline-none cursor-pointer">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+                                <span>ABORT WIZARD</span>
+                            </button>
+
+                            <div class="flex items-center gap-1 sm:gap-3 font-mono text-[9px] sm:text-[10px] text-zinc-500">
+                                <span id="step-label-1" class="text-zinc-500 font-bold">1. CATEGORIES</span>
+                                <span>/</span>
+                                <span id="step-label-2" class="text-zinc-500">2. TEAM LOGS</span>
+                                <span>/</span>
+                                <span id="step-label-3" class="text-zinc-500">3. CREW</span>
+                                <span>/</span>
+                                <span id="step-label-4" class="text-zinc-500">4. PAY CHECKOUT</span>
+                            </div>
+                        </div>
+
+                        <!-- STEP 1: ARENA SELECTION -->
+                        <div id="wizard-step-1" class="space-y-6">
+                            <div class="space-y-1 select-none">
+                                <h4 class="text-xl sm:text-2xl font-display font-extrabold text-white uppercase tracking-tight">Identify Your Challenge Division</h4>
+                                <p class="text-xs font-mono text-zinc-500 uppercase">Input parameters tailored to local robotic hardware requirements.</p>
+                            </div>
+
+                            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4" id="arenas-selector-container">
+                                <!-- Populated dynamically by javascript -->
+                            </div>
+
+                            <div class="pt-4 flex justify-end">
+                                <button type="button" onclick="goToWizardStep(2)" class="px-6 py-3.5 bg-[#00FF88] text-black font-display font-black text-xs tracking-wider uppercase rounded-xl flex items-center gap-1.5 hover:scale-101 hover:brightness-105 active:scale-95 transition-all text-glow cursor-pointer focus:outline-none">
+                                    <span>Continue to Team Details</span>
+                                    <svg class="w-4 h-4 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- STEP 2: LEADER AND TEAM INFORMATION -->
+                        <div id="wizard-step-2" class="hidden space-y-6">
+                            <div class="space-y-1 select-none">
+                                <h4 class="text-xl sm:text-2xl font-display font-extrabold text-white uppercase tracking-tight">Main Team Leader Telemetry</h4>
+                                <p class="text-xs font-mono text-zinc-500 uppercase">Input identifiers of active project coordinators.</p>
+                            </div>
+
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 bg-zinc-900/10 border border-zinc-900 p-6 rounded-2xl font-mono">
+                                <div class="space-y-1.5 md:col-span-2">
+                                    <label class="text-[10px] font-mono text-zinc-400 uppercase tracking-widest block font-bold">Official Team Name Designation</label>
+                                    <input type="text" id="wiz-team-name" required placeholder="e.g. MONALISA ROBO SQUAD" class="w-full bg-[#121212] border border-zinc-800 focus:border-[#00FF88] rounded-xl px-4 py-3.5 text-sm text-white focus:outline-none transition-colors border-glow">
+                                </div>
+                                <div class="space-y-1.5">
+                                    <label class="text-[10px] font-mono text-zinc-500 uppercase tracking-widest block">Coordinator Full Name</label>
+                                    <input type="text" id="wiz-leader-name" required placeholder="e.g. Raffa Alfarizi" class="w-full bg-[#121212] border border-zinc-800 focus:border-[#00FF88] rounded-xl px-4 py-3.5 text-sm text-white focus:outline-none transition-colors border-glow">
+                                </div>
+                                <div class="space-y-1.5">
+                                    <label class="text-[10px] font-mono text-zinc-500 uppercase tracking-widest block">Coordinator Contact Email</label>
+                                    <input type="email" id="wiz-leader-email" required placeholder="example@unj.ac.id" class="w-full bg-[#121212] border border-zinc-800 focus:border-[#00FF88] rounded-xl px-4 py-3.5 text-sm text-white focus:outline-none transition-colors border-glow">
+                                </div>
+                                <div class="space-y-1.5">
+                                    <label class="text-[10px] font-mono text-zinc-500 uppercase tracking-widest block">Coordinator WhatsApp Contact</label>
+                                    <input type="tel" id="wiz-leader-whatsapp" required placeholder="e.g. 08215005xxxx" class="w-full bg-[#121212] border border-zinc-800 focus:border-[#00FF88] rounded-xl px-4 py-3.5 text-sm text-white focus:outline-none transition-colors border-glow">
+                                </div>
+                                <div class="space-y-1.5">
+                                    <label class="text-[10px] font-mono text-zinc-500 uppercase tracking-widest block">Parent School / Institution</label>
+                                    <input type="text" id="wiz-leader-institution" required placeholder="e.g. Universitas Negeri Jakarta" class="w-full bg-[#121212] border border-zinc-800 focus:border-[#00FF88] rounded-xl px-4 py-3.5 text-sm text-white focus:outline-none transition-colors border-glow">
+                                </div>
+                            </div>
+
+                            <div class="pt-2 flex justify-between select-none">
+                                <button type="button" onclick="goToWizardStep(1)" class="px-5 py-3 border border-zinc-800 hover:border-zinc-700 text-zinc-400 hover:text-white rounded-xl text-xs uppercase font-mono tracking-wider transition-all focus:outline-none cursor-pointer">
+                                    Back
+                                </button>
+                                <button type="button" onclick="validateStep2AndProceed()" class="px-6 py-3.5 bg-[#00FF88] text-black font-display font-black text-xs tracking-wider uppercase rounded-xl flex items-center gap-1.5 hover:scale-101 hover:brightness-105 active:scale-95 transition-all text-glow cursor-pointer focus:outline-none">
+                                    <span>Roster Crew Builder</span>
+                                    <svg class="w-4 h-4 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- STEP 3: CREW ROSTER BUILDERS -->
+                        <div id="wizard-step-3" class="hidden space-y-6">
+                            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 select-none">
+                                <div class="space-y-1">
+                                    <h4 class="text-xl sm:text-2xl font-display font-extrabold text-white uppercase tracking-tight">Roster Co-workers & Crew Members</h4>
+                                    <p class="text-xs font-mono text-zinc-500 uppercase">Add technicians, programmers, and co-workers accompanying your mechanical unit.</p>
+                                </div>
+                                <button type="button" onclick="addWizardMemberInput()" class="px-4 py-2 border border-[#00FF88]/30 hover:border-[#00FF88] text-[#00FF88] hover:bg-[#00FF88]/5 rounded-xl font-mono text-xs flex items-center gap-1.5 focus:outline-none transition-all cursor-pointer">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+                                    <span>ATTACH NEW CREW</span>
+                                </button>
+                            </div>
+
+                            <!-- Crew inputs list -->
+                            <div id="wizard-members-list-container" class="space-y-4">
+                                <!-- Populated dynamically by JS -->
+                            </div>
+
+                            <!-- Solo notification indicator -->
+                            <div id="no-members-tag" class="text-center py-8 bg-zinc-900/10 border border-zinc-900 rounded-2xl select-none">
+                                <span class="text-xs font-mono text-zinc-600 uppercase">NO EXTRA TEAM MEMBERS ATTACHED (SOLO COMPETER CLASSIFICATION ATTAINED)</span>
+                            </div>
+
+                            <div class="pt-2 flex justify-between select-none">
+                                <button type="button" onclick="goToWizardStep(2)" class="px-5 py-3 border border-zinc-800 hover:border-zinc-700 text-zinc-400 hover:text-white rounded-xl text-xs uppercase font-mono tracking-wider transition-all focus:outline-none cursor-pointer">
+                                    Back
+                                </button>
+                                <button type="button" onclick="goToWizardStep(4)" class="px-6 py-3.5 bg-[#00FF88] text-black font-display font-black text-xs tracking-wider uppercase rounded-xl flex items-center gap-1.5 hover:scale-101 hover:brightness-105 active:scale-95 transition-all text-glow cursor-pointer focus:outline-none">
+                                    <span>Proceed to Billing Gate</span>
+                                    <svg class="w-4 h-4 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- STEP 4: CHECKOUT BILLING & INVOICING -->
+                        <div id="wizard-step-4" class="hidden space-y-6">
+                            <div class="space-y-1 select-none">
+                                <h4 class="text-xl sm:text-2xl font-display font-extrabold text-white uppercase tracking-tight">Verified Invoicing Core</h4>
+                                <p class="text-xs font-mono text-zinc-500 uppercase">Lock down Sumobot or Drone credentials following financial procedures.</p>
+                            </div>
+
+                            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+                                <!-- Ledger Price Brief -->
+                                <div class="lg:col-span-5 bg-[#09090b] border border-zinc-900 p-6 rounded-2xl space-y-6">
+                                    <h5 class="text-xs font-mono text-zinc-500 tracking-widest uppercase">Invoiced Brief</h5>
+                                    
+                                    <div class="space-y-4 font-mono select-none">
+                                        <div class="pb-4 border-b border-zinc-900">
+                                            <div class="text-[9px] text-zinc-500 uppercase">Division Slot</div>
+                                            <div id="checkout-arena-title" class="text-base text-white font-display font-bold uppercase mt-1">SUMOBOT 500G</div>
+                                        </div>
+                                        <div class="pb-4 border-b border-zinc-900">
+                                            <div class="text-[9px] text-zinc-500 uppercase">Designated Squad</div>
+                                            <div id="checkout-team-name" class="text-base text-white font-display font-bold uppercase mt-1">GARUDA SQUAD</div>
+                                        </div>
+                                        <div class="flex justify-between items-center py-1 text-xs text-zinc-400">
+                                            <span>Registration Fee</span>
+                                            <span class="text-white font-bold">IDR 150,000</span>
+                                        </div>
+                                        <div class="flex justify-between items-center py-1 text-xs text-zinc-400">
+                                            <span>Logistics Processing</span>
+                                            <span class="text-white font-bold">FREE</span>
+                                        </div>
+                                        <div class="flex justify-between items-center pt-4 border-t border-zinc-900 text-sm font-bold text-[#00FF88]">
+                                            <span>TOTAL AMOUNT DUE</span>
+                                            <span class="text-base">IDR 150,000</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Live Interactive Payment Core -->
+                                <div class="lg:col-span-7 bg-zinc-900/10 border border-zinc-900 p-6 rounded-2xl space-y-6">
+                                    <h5 class="text-xs font-mono text-zinc-500 uppercase">Choose Payment Gateway Method</h5>
+
+                                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                                        <div onclick="selectPaymentGateway('qris')" id="pay-qris" class="p-3 bg-zinc-950 border border-[#00FF88] rounded-xl text-center cursor-pointer transition-all select-none">
+                                            <div class="text-xs font-mono text-white font-bold tracking-tight">QRIS SPEED</div>
+                                            <div class="text-[8px] font-mono text-[#00FF88] mt-1">Instant Scan</div>
+                                        </div>
+                                        <div onclick="selectPaymentGateway('bca')" id="pay-bca" class="p-3 bg-zinc-950/20 border border-zinc-900 rounded-xl text-center cursor-pointer transition-all select-none">
+                                            <div class="text-xs font-mono text-white font-bold tracking-tight">BCA TRANSFER</div>
+                                            <div class="text-[8px] font-mono text-zinc-500 mt-1">Manual Verif</div>
+                                        </div>
+                                        <div onclick="selectPaymentGateway('visa')" id="pay-visa" class="p-3 bg-zinc-950/20 border border-zinc-900 rounded-xl text-center cursor-pointer transition-all select-none">
+                                            <div class="text-xs font-mono text-white font-bold tracking-tight">VISA CHECK</div>
+                                            <div class="text-[8px] font-mono text-zinc-500 mt-1">Corporate</div>
+                                        </div>
+                                        <div onclick="selectPaymentGateway('paypal')" id="pay-paypal" class="p-3 bg-zinc-950/20 border border-zinc-900 rounded-xl text-center cursor-pointer transition-all select-none">
+                                            <div class="text-xs font-mono text-white font-bold tracking-tight">PAYPAL</div>
+                                            <div class="text-[8px] font-mono text-zinc-500 mt-1">Worldwide</div>
+                                        </div>
+                                    </div>
+
+                                    <!-- QRIS layout panels -->
+                                    <div class="bg-zinc-950 border border-zinc-900 p-6 rounded-xl flex flex-col items-center text-center space-y-4" id="pay-screen-qris">
+                                        <div class="bg-white p-4 rounded-xl shadow-lg inline-block select-none">
+                                            <!-- Standard procedural QR IS rendering -->
+                                            <svg class="w-32 h-32" viewBox="0 0 100 100">
+                                                <rect x="5" y="5" width="25" height="25" fill="#000"/>
+                                                <rect x="8" y="8" width="19" height="19" fill="#FFF"/>
+                                                <rect x="12" y="12" width="11" height="11" fill="#000"/>
+                                                <rect x="70" y="5" width="25" height="25" fill="#000"/>
+                                                <rect x="73" y="8" width="19" height="19" fill="#FFF"/>
+                                                <rect x="77" y="12" width="11" height="11" fill="#000"/>
+                                                <rect x="5" y="70" width="25" height="25" fill="#000"/>
+                                                <rect x="8" y="73" width="19" height="19" fill="#FFF"/>
+                                                <rect x="12" y="77" width="11" height="11" fill="#000"/>
+                                                <rect x="35" y="35" width="15" height="15" fill="#000"/>
+                                                <rect x="38" y="38" width="9" height="9" fill="#FFF"/>
+                                                <rect x="5" y="35" width="5" height="10" fill="#000"/>
+                                                <rect x="15" y="45" width="10" height="5" fill="#000"/>
+                                                <rect x="40" y="5" width="8" height="8" fill="#000"/>
+                                                <rect x="55" y="12" width="10" height="4" fill="#000"/>
+                                                <rect x="55" y="25" width="5" height="15" fill="#000"/>
+                                                <rect x="35" y="60" width="15" height="5" fill="#000"/>
+                                                <rect x="45" y="75" width="12" height="12" fill="#000"/>
+                                                <rect x="70" y="45" width="20" height="10" fill="#000"/>
+                                                <rect x="85" y="75" width="10" height="15" fill="#000"/>
+                                            </svg>
+                                        </div>
+                                        <div class="space-y-1">
+                                            <div class="text-xs font-mono font-bold text-white uppercase">ERIC INDONESIA QRIS GATEWAY</div>
+                                            <p class="text-[9.5px] font-mono text-zinc-500 uppercase leading-relaxed max-w-xs mx-auto">Supports GoPay, OVO, ShopeePay, Dana, LinkAja and all mobile banking QR apps.</p>
+                                        </div>
+                                    </div>
+
+                                    <!-- BCA Manual Layout -->
+                                    <div class="hidden bg-zinc-950 border border-zinc-900 p-6 rounded-xl text-left space-y-4 font-mono" id="pay-screen-bca">
+                                        <div class="space-y-1">
+                                            <span class="text-[9px] text-zinc-500 uppercase block">BANK COOP TRANSFER SPEC REK</span>
+                                            <div class="text-lg text-[#00FF88] font-bold select-all tracking-wider">829 015 2026</div>
+                                            <div class="text-xs text-white font-bold uppercase">A/N YAYASAN ROBOTIKA UNIVERSITAS NEGERI JAKARTA</div>
+                                        </div>
+                                        <p class="text-[9.5px] text-zinc-500 uppercase leading-normal">Transfer exactly <span class="text-white font-bold">IDR 150,000</span> to the account above, then keep your transfer slip for automatic hardware validation at the tournament gate.</p>
+                                    </div>
+
+                                    <!-- Visa Layout -->
+                                    <div class="hidden bg-zinc-950 border border-zinc-900 p-6 rounded-xl text-left space-y-4 font-mono" id="pay-screen-visa">
+                                        <div class="space-y-3.5">
+                                            <div class="space-y-1">
+                                                <label class="text-[9px] text-zinc-500 uppercase">Card Holder Name</label>
+                                                <input type="text" placeholder="e.g. Raffa Alfarizi" class="w-full bg-[#121212] border border-zinc-805 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-[#00FF88] transition-colors">
+                                            </div>
+                                            <div class="space-y-1">
+                                                <label class="text-[9px] text-zinc-500 uppercase">Debit / Visa Card Number</label>
+                                                <input type="text" placeholder="e.g. 4000 1234 5678 9010" class="w-full bg-[#121212] border border-zinc-805 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-[#00FF88] transition-colors">
+                                            </div>
+                                            <div class="grid grid-cols-2 gap-4">
+                                                <div class="space-y-1">
+                                                    <label class="text-[9px] text-zinc-500 uppercase">Expiry Date</label>
+                                                    <input type="text" placeholder="MM/YY" class="w-full bg-[#121212] border border-zinc-805 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-[#00FF88] transition-colors">
+                                                </div>
+                                                <div class="space-y-1">
+                                                    <label class="text-[9px] text-zinc-500 uppercase">CVV Card Security</label>
+                                                    <input type="text" placeholder="123" class="w-full bg-[#121212] border border-zinc-805 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-[#00FF88] transition-colors">
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Paypal details -->
+                                    <div class="hidden bg-zinc-950 border border-zinc-905 p-6 rounded-xl text-center space-y-3 font-mono" id="pay-screen-paypal">
+                                        <svg class="w-10 h-10 mx-auto text-[#0047AB]" fill="currentColor" viewBox="0 0 24 24"><path d="M7.076 21.337L9.202 7.8H14c3.313 0 5.2 1.583 5.2 4.416 0 3.064-1.921 5.3-4.938 5.3H10.12l-1.042 6.6H7.076zm1.758-11.137L7.792 16.8h2.328l.842-5.32h1.666c1.616 0 2.508-.85 2.508-2.48s-.892-2.128-2.508-2.128H8.834z"/></svg>
+                                        <p class="text-[9.5px] text-zinc-500 uppercase leading-relaxed max-w-xs mx-auto">Handshake routes through the global Paypal sandbox. Click submit below to confirm simulated invoice authorization.</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Processing State Screen overlay -->
+                            <div id="processing-screen" class="hidden absolute inset-0 bg-black/95 z-50 flex flex-col items-center justify-center space-y-6">
+                                <div class="w-12 h-12 border-2 border-[#00FF88] border-t-transparent rounded-full animate-spin"></div>
+                                <div class="text-center space-y-1 select-none">
+                                    <h4 class="text-sm font-mono font-bold text-white uppercase tracking-wider">RESOLVING ARENA LEDGER CONTRACTS</h4>
+                                    <p class="text-[9px] font-mono text-zinc-500 uppercase">Encrypting database logs and signing unique reference code values...</p>
+                                </div>
+                            </div>
+
+                            <!-- Bottom Navigation -->
+                            <div class="pt-2 flex justify-between select-none">
+                                <button type="button" onclick="goToWizardStep(3)" class="px-5 py-3 border border-zinc-800 hover:border-zinc-700 text-zinc-400 hover:text-white rounded-xl text-xs uppercase font-mono tracking-wider transition-all focus:outline-none cursor-pointer">
+                                    Back
+                                </button>
+                                <button type="button" onclick="finalizeWizardCheckout()" class="px-6 py-3.5 bg-gradient-to-r from-[#00FF88] to-[#4DFFB8] text-black font-display font-black text-xs tracking-widest uppercase rounded-xl flex items-center gap-1.5 hover:scale-101 hover:brightness-105 active:scale-95 transition-all text-glow cursor-pointer focus:outline-none">
+                                    <span>SUBMIT TOTAL PAY & GENERATE CORE BADGE</span>
+                                    <svg class="w-4 h-4 text-black" fill="currentColor" viewBox="0 0 20 20"><path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"></path><path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"></path></svg>
+                                </button>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <!-- ================= SUB-PANEL: EDIT MODAL WINDOW (To customize fields of active entries) ================= -->
+                    <div id="edit-modal-panel" class="hidden space-y-8 relative z-10">
+                        <div class="flex justify-between items-center border-b border-zinc-900 pb-4">
+                            <h4 class="text-lg font-display font-extrabold text-amber-500 uppercase tracking-tight">EDIT REGISTERED ROSTER FORM</h4>
+                            <button onclick="closeEditFormPanel()" class="text-xs font-mono text-zinc-500 hover:text-white uppercase focus:outline-none cursor-pointer">Close &times;</button>
+                        </div>
+
+                        <form onsubmit="saveRosterEditChanges(event)" class="space-y-6">
+                            <input type="hidden" id="edit-reg-id">
+                            
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 bg-zinc-900/10 border border-zinc-905 p-6 rounded-2xl font-mono">
+                                <div class="space-y-1.5 md:col-span-2">
+                                    <label class="text-[10px] text-zinc-400 uppercase tracking-widest block font-bold">Team Designation Name</label>
+                                    <input type="text" id="edit-team-name" required class="w-full bg-zinc-950 border border-zinc-800 focus:border-[#00FF88] rounded-xl px-4 py-3.5 text-sm text-white focus:outline-none transition-colors border-glow">
+                                </div>
+                                <div class="space-y-1.5 font-mono">
+                                    <label class="text-[10px] text-zinc-400 uppercase tracking-widest block">Leader Name</label>
+                                    <input type="text" id="edit-leader-name" required class="w-full bg-zinc-950 border border-zinc-800 focus:border-[#00FF88] rounded-xl px-4 py-3.5 text-sm text-white focus:outline-none transition-colors border-glow">
+                                </div>
+                                <div class="space-y-1.5 font-mono">
+                                    <label class="text-[10px] text-zinc-400 uppercase tracking-widest block">Leader Whatsapp</label>
+                                    <input type="tel" id="edit-leader-whatsapp" required class="w-full bg-zinc-950 border border-zinc-800 focus:border-[#00FF88] rounded-xl px-4 py-3.5 text-sm text-white focus:outline-none transition-colors border-glow">
+                                </div>
+                                <div class="space-y-1.5 font-mono">
+                                    <label class="text-[10px] text-zinc-400 uppercase tracking-widest block">Leader School/Institution</label>
+                                    <input type="text" id="edit-leader-institution" required class="w-full bg-zinc-950 border border-zinc-800 focus:border-[#00FF88] rounded-xl px-4 py-3.5 text-sm text-white focus:outline-none transition-colors border-glow">
+                                </div>
+                            </div>
+
+                            <!-- Additional members list wrapper -->
+                            <div class="space-y-4">
+                                <div class="flex justify-between items-center pb-2 select-none">
+                                    <h5 class="text-xs font-mono text-zinc-400 uppercase">Additional Crew Team Members</h5>
+                                    <button type="button" onclick="addNewMemberToEditForm()" class="px-3.5 py-2 border border-[#00FF88]/20 hover:border-[#00FF88] hover:bg-[#00FF88]/5 text-[#00FF88] rounded-lg font-mono text-xs flex items-center gap-1 cursor-pointer focus:outline-none transition-all">
+                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+                                        <span>Add Crew Member</span>
+                                    </button>
+                                </div>
+
+                                <div id="edit-members-container" class="space-y-4">
+                                    <!-- Populated in JS on open -->
+                                </div>
+                            </div>
+
+                            <div class="flex justify-end gap-3 pt-4 select-none font-mono">
+                                <button type="button" onclick="closeEditFormPanel()" class="px-5 py-3 border border-zinc-800 text-zinc-500 hover:text-white rounded-xl text-xs uppercase tracking-wider transition-all focus:outline-none cursor-pointer">
+                                    Cancel
+                                </button>
+                                <button type="submit" class="px-6 py-3.5 bg-gradient-to-r from-emerald-400 to-[#10B981] text-black font-semibold text-xs tracking-wider uppercase rounded-xl flex items-center gap-1.5 hover:scale-101 transition-all cursor-pointer focus:outline-none">
+                                    <span>Save details changes</span>
+                                    <svg class="w-4 h-4 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <!-- ================= SUB-PANEL: SUCCESS RECEIPT MODAL (Congratulations pop-up) ================= -->
+                    <div id="success-receipt-modal" class="hidden absolute inset-0 bg-black/95 z-40 flex flex-col items-center justify-center p-6 text-center select-none">
+                        <div class="max-w-md space-y-6">
+                            <div class="w-16 h-16 rounded-full bg-[#00FF88]/10 text-[#00FF88] flex items-center justify-center mx-auto text-3xl text-glow border border-[#00FF88]/30">
+                                &check;
+                            </div>
+                            <div class="space-y-2">
+                                <h3 class="text-2xl font-display font-extrabold text-white uppercase tracking-tight">SQUAD SYNCHRONIZATION COMPLETE!</h3>
+                                <p class="text-xs font-mono text-zinc-400 uppercase leading-relaxed">
+                                    Your competition slot has been fully authenticated in the local ledger database. Simulated confirmation is complete.
+                                </p>
+                            </div>
+
+                            <!-- Dynamic Receipt Plate -->
+                            <div class="bg-zinc-950 border border-zinc-800 p-5 rounded-2xl font-mono text-xs text-left text-zinc-400 space-y-3 relative overflow-hidden">
+                                <div class="absolute top-[3px] right-3 text-[7px] text-white/20">LOG_OK_993</div>
+                                <div>REF ID: <span id="rec-ref-id" class="text-white font-bold select-all">ERIC-REG-XXXXXX</span></div>
+                                <div>SQUAD DESIGNATE: <span id="rec-team-name" class="text-[#00FF88] font-bold">TEAM ATLAS</span></div>
+                                <div>ARENA CLASS: <span id="rec-arena-class" class="text-white">SUMOBOT 500G</span></div>
+                                <div>LEDGER STATUS: <span class="text-[#00FF88] font-bold">PAID & VALIDATED</span></div>
+                                <div class="pt-2 border-t border-zinc-900 text-[10px] text-zinc-500 uppercase">VALID FOR ONSITE CREDENTIALS CHECKIN AT UNJ CAMPUS INDONESIA.</div>
+                            </div>
+
+                            <button onclick="dismissReceiptModal()" class="w-full py-4 bg-[#00FF88] text-black font-semibold text-xs tracking-wider uppercase rounded-xl hover:scale-101 transition-all text-glow block cursor-pointer focus:outline-none">
+                                ACCESS REGISTRATION DASHBOARD
+                            </button>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- ELEMENTOR GUIDE SPECIFICATIONS ACCORDION / FOOTER BAR -->
+                <div id="elementor-guidelines-box" class="bg-zinc-900/10 border border-zinc-900 rounded-2xl p-6 md:p-8 space-y-4">
+                    <h4 class="text-sm font-display font-black text-[#00FF88] uppercase tracking-widest flex items-center gap-2">
+                        <svg class="w-4 h-4 text-[#00FF88]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        <span>WordPress Elementor Deployment Matrix</span>
+                    </h4>
+                    <div class="text-xs text-zinc-400 font-mono space-y-2.5 leading-relaxed uppercase">
+                        <p>1. Copy the raw layout code of this single file `/wordpress-custom-landing.html`.</p>
+                        <p>2. Inside Elementor, insert an <strong class="text-white font-bold">"HTML" widget container</strong> into a section of your page.</p>
+                        <p>3. Choose <strong class="text-white font-bold text-[#00FF88]">"Full Width"</strong> or <strong class="text-white font-bold text-[#00FF88]">"Canvas Template"</strong> to let this portal scale dynamically on Mobile, iPad Portrait, and PC screens automatically without boundaries.</p>
+                        <p>4. All user registrations and rosters persist locally on visitor browsers. Generating the dynamic Excel exports creates pristine `.xlsx` files separating data by sumobots/drone worksheets without requiring setup of databases!</p>
+                    </div>
+                </div>
+
+            </div>
+        </main>
+
+
+        <!-- ================= FOOTER DECORATION ================= -->
+        <footer class="border-t border-zinc-950 bg-black/60 py-8 text-center text-zinc-500 font-mono text-[9px] tracking-widest uppercase relative z-10 mt-auto select-none">
+            <div class="max-w-7xl mx-auto px-4 flex flex-col md:flex-row justify-between items-center gap-4">
+                <span>&copy; 2026 ERIC CHAMPIONSHIP. ENCRYPTED INTEGRITY CODES SECURED.</span>
+                <span class="text-[#00FF88]/40">Active with WordPress Unified Membership Sync core</span>
+            </div>
+        </footer>
+
+    </div>
+
+    <!-- ================= DYNAMIC SLIDING AUTHENTICATION DRAWER ================= -->
+    <div id="login-drawer-overlay" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-[100] h-full w-full hidden opacity-0 transition-opacity duration-305 pointer-events-auto" onclick="closeLoginDrawer()"></div>
+    
+    <div id="login-drawer" class="fixed top-0 right-0 h-full w-full max-w-md bg-[#070708] border-l border-zinc-900 shadow-[0_0_50px_rgba(0,0,0,0.85)] z-[101] translate-x-full transition-transform duration-305 ease-out flex flex-col pointer-events-auto mb-0">
+        <!-- Drawer Header -->
+        <div class="p-6 border-b border-zinc-900 flex items-center justify-between select-none">
+            <div class="flex items-center gap-2">
+                <span class="w-1.5 h-1.5 rounded-full bg-[#00FF88] shadow-[0_0_8px_#00FF88] pulse-indicator"></span>
+                <span class="text-[10px] font-mono text-zinc-400 uppercase tracking-widest font-bold">AUTHENTICATION PIPELINE</span>
+            </div>
+            <button onclick="closeLoginDrawer()" class="text-zinc-500 hover:text-white p-2 rounded-lg hover:bg-zinc-900 border border-transparent hover:border-zinc-800 transition-colors cursor-pointer select-none focus:outline-none">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                </svg>
+            </button>
+        </div>
+
+        <!-- Drawer Body Content -->
+        <div class="flex-grow overflow-y-auto p-6 md:p-8 space-y-6">
+            <!-- Branding -->
+            <div class="space-y-2 select-none">
+                <h3 class="text-2xl font-display font-black text-white uppercase tracking-tight">ERIC SITE AUTH CORE</h3>
+                <p class="text-xs font-mono text-zinc-500 uppercase leading-relaxed">
+                    Log in below using local WordPress credentials. Submissions automatically handshake with secure WP-Login PHP filters and verify SQL entries.
+                </p>
+            </div>
+
+            <!-- CORE MEMBERSHIP AUTH FORM (Submits directly to local WordPress authentication handler) -->
+            <form name="loginform" id="wordpress-core-login-form" action="/wp-login.php" method="post" class="space-y-5">
+                
+                <!-- WP Log Account input -->
+                <div class="space-y-1.5">
+                    <label class="text-[10px] font-mono text-zinc-400 uppercase tracking-widest block font-bold">WordPress Username or Email</label>
+                    <input type="text" name="log" id="user_login" required placeholder="e.g. alforizi@unj.ac.id" class="w-full bg-[#0d0d0f] border border-zinc-800 focus:border-[#00FF88] rounded-xl px-4 py-3 text-sm text-white focus:outline-none transition-colors border-glow font-sans">
+                </div>
+
+                <!-- WP Password Input -->
+                <div class="space-y-1.5">
+                    <label class="text-[10px] font-mono text-zinc-400 uppercase tracking-widest block font-bold">Secure Password</label>
+                    <input type="password" name="pwd" id="user_pass" required placeholder="••••••••" class="w-full bg-[#0d0d0f] border border-zinc-800 focus:border-[#00FF88] rounded-xl px-4 py-3 text-sm text-white focus:outline-none transition-colors border-glow font-sans">
+                </div>
+
+                <!-- Keep session alive Checkbox -->
+                <div class="flex items-center justify-between py-1 font-mono">
+                    <label class="flex items-center gap-2 cursor-pointer select-none text-[10px] text-zinc-500 uppercase font-medium">
+                        <input name="rememberme" type="checkbox" id="rememberme" value="forever" class="bg-[#0d0d0f] border border-zinc-800 rounded focus:ring-0 checked:bg-[#00FF88] text-black w-4 h-4 cursor-pointer">
+                        <span>Remember Connection Session</span>
+                    </label>
+                </div>
+
+                <!-- Redirect parameter tells WordPress PHP to route the authenticated browser back here -->
+                <input type="hidden" name="redirect_to" id="hidden-wp-redirect-path" value="/registration-portal.html">
+
+                <!-- Submit Action -->
+                <button type="submit" name="wp-submit" id="wp-submit" class="w-full py-4 bg-gradient-to-r from-[#00FF88] to-[#4DFFB8] text-black font-display font-black text-xs tracking-widest uppercase rounded-xl hover:opacity-95 transition-all text-glow flex justify-center items-center gap-2 cursor-pointer select-none focus:outline-none">
+                    <svg class="w-4 h-4 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"></path>
+                    </svg>
+                    <span>AUTHORIZE & DECRYPT SLOTS</span>
+                </button>
+            </form>
+
+            <div class="border-t border-zinc-900/80 my-2"></div>
+
+            <!-- ================= HARDENED DEV MULTI-DEVICE BYPASS SIMULATOR ================= -->
+            <div class="p-5 bg-zinc-900/30 border border-dashed border-zinc-800 rounded-2xl space-y-4">
+                <div class="flex items-center gap-2 text-[10px] font-mono text-[#00FF88]">
+                    <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
+                    <span class="font-bold tracking-wider">DEV MULTI-DEVICE QUICK SIMULATOR</span>
+                </div>
+                <p class="text-[10px] font-mono text-zinc-500 uppercase leading-relaxed">
+                    Testing on alternative screens (mobile, tablets)? Bypass WordPress setup temporarily to simulate any specific roster tester profile.
+                </p>
+
+                <!-- Simple bypass form -->
+                <form id="form-dev-mock" onsubmit="executeDeveloperMockLogin(event)" class="space-y-3 pt-1 font-mono">
+                    <div>
+                        <input type="text" id="dev-login-name" placeholder="TEST USER NAME (e.g. JOHN DOE)" required class="w-full bg-[#0d0d0f] border border-zinc-900 focus:border-[#00FF88] rounded-lg px-3 py-2 text-xs text-white focus:outline-none transition-colors uppercase font-mono">
+                    </div>
+                    <div class="flex gap-2">
+                        <input type="email" id="dev-login-email" placeholder="test@unj.ac.id" required class="w-full bg-[#0d0d0f] border border-zinc-900 focus:border-[#00FF88] rounded-lg px-3 py-2 text-xs text-white focus:outline-none transition-colors font-mono">
+                        <button type="submit" class="bg-[#00FF88]/10 hover:bg-[#00FF88]/20 border border-[#00FF88]/30 text-[#00FF88] px-3 rounded-lg text-[9px] font-mono font-bold uppercase transition-all whitespace-nowrap focus:outline-none cursor-pointer">
+                            Simulate
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- ======================================================================================= -->
+    <!--                                  MASTER CORE SCRIPTS ENGINE                             -->
+    <!-- ======================================================================================= -->
+    <script>
+        // TRACEABLE SHIELDS & ARENAS SCHEMAS
+        const COMPETITION_DIVISIONS = [
+            { id: 'sumobot-500g', title: 'Sumobot 500g', titleIndo: 'Robot Sumo 500g', detail: 'Micro Force & Tactical Grip' },
+            { id: 'sumobot-3kg', title: 'Sumobot 3kg', titleIndo: 'Robot Sumo 3kg', detail: 'Tractive Force & Dual Brushless' },
+            { id: 'mini-soccerbot', title: 'Mini Soccerbot', titleIndo: 'Robot Sepak Bola Mini', detail: 'Kinematics & Radio Command' },
+            { id: 'line-follower', title: 'Line Follower', titleIndo: 'Robot Pengikut Garis', detail: 'PID Control & 16-Array IR' },
+            { id: 'plc-industrial', title: 'PLC Industrial', titleIndo: 'PLC Otomasi Industri', detail: 'Liaison Relay & HMI Integration' },
+            { id: 'collaborative-robot', title: 'Collaborative Robot', titleIndo: 'Robot Kolaboratif (Cobot)', detail: 'Active Feedback & Spatial Safety' },
+            { id: 'research-challenge', title: 'Research Challenge', titleIndo: 'Tantangan Riset Inovasi', detail: 'Applied Research & Science Papers' },
+            { id: 'creative-innovation', title: 'Creative Innovation', titleIndo: 'Karya Inovasi Kreatif', detail: 'Rapid Prototyping & CAD Design' },
+            { id: 'drone-innovation', title: 'Drone Innovation', titleIndo: 'Inovasi Wahana Drone', detail: 'Lidar Distance & Optical Flow' }
+        ];
+
+        // MASTER CLIENT DATA WORKSPACES
+        let currentUser = null;
+        let registrations = [];
+        let wizardCurrentStep = 1;
+        let wizardSelectedDivision = COMPETITION_DIVISIONS[0].id;
+        let wizardMembers = [];
+        let currentEditingRegId = null;
+        let activePaymentMethod = 'qris';
+
+        // High-fidelity active ledger seeds for simulation testing parameters
+        const RECORD_MOCKED_LEDS = [
+            {
+                id: 'seed-1',
+                divisionId: 'sumobot-500g',
+                teamName: 'MONALISA ROBO SQUAD',
+                leader: {
+                    name: 'Fauzan Lubis',
+                    email: 'fauzan@unj.ac.id',
+                    whatsapp: '081234567891',
+                    institution: 'Universitas Negeri Jakarta'
+                },
+                members: [
+                    { id: 'm-1-1', name: 'Zainuddin Malik', email: 'zainm@unj.ac.id', whatsapp: '081234567892', institution: 'Universitas Negeri Jakarta' },
+                    { id: 'm-2-1', name: 'Bayu Nugroho', email: 'bayu@unj.ac.id', whatsapp: '081234567893', institution: 'Universitas Negeri Jakarta' }
+                ],
+                paymentMethod: 'QRIS',
+                refCode: 'ERIC-REG-SUM5G',
+                paymentStatus: 'PAID'
+            },
+            {
+                id: 'seed-2',
+                divisionId: 'drone-innovation',
+                teamName: 'SKYREAPER HELI',
+                leader: {
+                    name: 'Riska Amalia',
+                    email: 'riska@unj.ac.id',
+                    whatsapp: '082150059902',
+                    institution: 'Universitas Negeri Jakarta'
+                },
+                members: [
+                    { id: 'm-3-1', name: 'Eko Wahyudi', email: 'ekow@ui.ac.id', whatsapp: '082111199923', institution: 'Universitas Indonesia' }
+                ],
+                paymentMethod: 'BCA',
+                refCode: 'ERIC-REG-DRN7A',
+                paymentStatus: 'PAID'
+            }
+        ];
+
+        // INITIAL AT-LAUNCH METHOD HANDSHAKE
+        document.addEventListener('DOMContentLoaded', function() {
+            // Establish target redirect targets relative of base domain context automatically
+            var redirectField = document.getElementById('hidden-wp-redirect-path');
+            if (redirectField) {
+                redirectField.value = window.location.origin + window.location.pathname;
+            }
+
+            var wpForm = document.getElementById('wordpress-core-login-form');
+            if (wpForm) {
+                wpForm.action = window.location.origin + '/wp-login.php';
+            }
+
+            // Expose active methods onto windows scope under Elementor widgets safety
+            exposeGlobalHooks();
+            
+            // Resolve sessions, query params, and cache ledgers
+            verifyUserSessionContext();
+            
+            // Render components
+            renderArenasRadioChoices();
+            reorganizeMasterDisplayState();
+        });
+
+        // REGISTER ENFORCED ACCESSORS ON GLOBALS
+        function exposeGlobalHooks() {
+            window.openLoginDrawer = openLoginDrawer;
+            window.closeLoginDrawer = closeLoginDrawer;
+            window.executeDeveloperMockLogin = executeDeveloperMockLogin;
+            window.startWizardNewReg = startWizardNewReg;
+            window.confirmCancelWizard = confirmCancelWizard;
+            window.goToWizardStep = goToWizardStep;
+            window.validateStep2AndProceed = validateStep2AndProceed;
+            window.addWizardMemberInput = addWizardMemberInput;
+            window.removeWizardMemberInput = removeWizardMemberInput;
+            window.selectWizArena = selectWizArena;
+            window.selectPaymentGateway = selectPaymentGateway;
+            window.finalizeWizardCheckout = finalizeWizardCheckout;
+            window.downloadExcelLedger = downloadExcelLedger;
+            window.dismissReceiptModal = dismissReceiptModal;
+            window.openRosterEditPanel = openRosterEditPanel;
+            window.closeEditFormPanel = closeEditFormPanel;
+            window.addNewMemberToEditForm = addNewMemberToEditForm;
+            window.removeMemberFromEditForm = removeMemberFromEditForm;
+            window.saveRosterEditChanges = saveRosterEditChanges;
+            window.executeLogOut = executeLogOut;
+            window.scrollToElementorHelp = scrollToElementorHelp;
+        }
+
+        // SCROLL TO ELEMENTOR DOCUMENTATION OR METRIC GRID
+        function scrollToElementorHelp() {
+            const el = document.getElementById('elementor-guidelines-box');
+            if(el) {
+                el.scrollIntoView({ behavior: 'smooth' });
+            }
+        }
+
+        // LOAD SECURE LOCALSTORAGE WITH DYNAMIC WORDPRESS QUERY CODES HANDSHAKE
+        function verifyUserSessionContext() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const wpUser = urlParams.get('wp_user') || urlParams.get('user_name') || urlParams.get('display_name');
+            const wpEmail = urlParams.get('wp_email') || urlParams.get('user_email');
+
+            // Recipient check
+            const cachedUser = localStorage.getItem('eric_user');
+            if (cachedUser) {
+                try {
+                    currentUser = JSON.parse(cachedUser);
+                } catch(e) {
+                    currentUser = null;
+                }
+            }
+
+            // High-fidelity rewrite profile if WP parameter passes successfully
+            if (wpUser) {
+                currentUser = {
+                    name: decodeURIComponent(wpUser).toUpperCase(),
+                    email: wpEmail ? decodeURIComponent(wpEmail) : 'wordpress_member@eric-championship.com',
+                    method: 'wordpress'
+                };
+                localStorage.setItem('eric_user', JSON.stringify(currentUser));
+                
+                // Scrub query parameters cleanly from browser address bar
+                const cleanUrl = new URL(window.location.href);
+                cleanUrl.searchParams.delete('wp_user');
+                cleanUrl.searchParams.delete('user_name');
+                cleanUrl.searchParams.delete('display_name');
+                cleanUrl.searchParams.delete('wp_email');
+                cleanUrl.searchParams.delete('user_email');
+                window.history.replaceState({}, '', cleanUrl.toString());
+            }
+
+            const cachedRegs = localStorage.getItem('eric_registrations');
+            if (cachedRegs) {
+                try {
+                    registrations = JSON.parse(cachedRegs);
+                } catch(e) {
+                    registrations = [];
+                }
+            }
+
+            // Fill empty catalogs with active robust seeds to visualize data instantly
+            if (!registrations || registrations.length === 0) {
+                registrations = [...RECORD_MOCKED_LEDS];
+                localStorage.setItem('eric_registrations', JSON.stringify(registrations));
+            }
+        }
+
+        // PERSIST LEDGER SAVES
+        function persistRosterData() {
+            localStorage.setItem('eric_registrations', JSON.stringify(registrations));
+            reorganizeMasterDisplayState();
+        }
+
+        // DYNAMICS VIEWER CLASSIFICATION SWITCHER
+        function reorganizeMasterDisplayState() {
+            const heroSection = document.getElementById('hero-landing-section');
+            const mainHub = document.getElementById('main-portal-hub-container');
+            const loggedOutNav = document.getElementById('navbar-logged-out-section');
+            const loggedInNav = document.getElementById('navbar-logged-in-section');
+            
+            const dashboardPanel = document.getElementById('dashboard-panel');
+            const wizardPanel = document.getElementById('wizard-panel');
+            const editModalPanel = document.getElementById('edit-modal-panel');
+
+            // Update stats counts indicators in Landing page layout
+            const activeSquadsEl = document.getElementById('stat-squads-count');
+            if(activeSquadsEl) {
+                const count = registrations.length + 122; // Keep stats relative
+                activeSquadsEl.innerText = `${count} / 128`;
+            }
+
+            if (!currentUser) {
+                // USER NOT LOGGED IN - SHOW GORGEOUS LANDING HERO
+                heroSection.classList.remove('hidden');
+                mainHub.classList.add('hidden');
+                loggedOutNav.classList.remove('hidden');
+                loggedInNav.classList.add('hidden');
+                loggedInNav.classList.remove('flex');
+                return;
+            }
+
+            // USER IDENTIFIED - REVEAL SYSTEM CONTROLS PORTAL
+            heroSection.classList.add('hidden');
+            mainHub.classList.remove('hidden');
+            loggedOutNav.classList.add('hidden');
+            loggedInNav.classList.remove('hidden');
+            loggedInNav.classList.add('flex');
+
+            // Sync user labels in top navbar
+            document.getElementById('nav-user-name').innerText = currentUser.name;
+            document.getElementById('nav-user-email').innerText = currentUser.email;
+            document.getElementById('nav-user-avatar').innerText = currentUser.name.charAt(0);
+
+            // Sync user details inside workspace dashboard panel
+            document.getElementById('user-display-name').innerText = currentUser.name;
+            document.getElementById('user-display-email').innerText = currentUser.email;
+            document.getElementById('user-avatar').innerText = currentUser.name.charAt(0);
+
+            // Direct route panels display toggler depending on wizard & edit parameters
+            if (currentEditingRegId) {
+                editModalPanel.classList.remove('hidden');
+                dashboardPanel.classList.add('hidden');
+                wizardPanel.classList.add('hidden');
+                return;
+            } else {
+                editModalPanel.classList.add('hidden');
+            }
+
+            const activeWizardStatus = wizardPanel.getAttribute('data-active') === 'true';
+            if (activeWizardStatus) {
+                wizardPanel.classList.remove('hidden');
+                dashboardPanel.classList.add('hidden');
+            } else {
+                wizardPanel.classList.add('hidden');
+                dashboardPanel.classList.remove('hidden');
+                renderActiveRegistrationsLedger();
+            }
+        }
+
+        // LOG OUT SESSION DISCONNECT
+        function executeLogOut() {
+            currentUser = null;
+            localStorage.removeItem('eric_user');
+            
+            // Re-render
+            reorganizeMasterDisplayState();
+            closeLoginDrawer();
+        }
+
+        // DEVELOPER SIMULATION BYPASS
+        function executeDeveloperMockLogin(event) {
+            if (event) event.preventDefault();
+            const devName = document.getElementById('dev-login-name').value || 'TEST SQUAD USER';
+            const devEmail = document.getElementById('dev-login-email').value || 'tester@gmail.com';
+
+            currentUser = {
+                name: devName.toUpperCase(),
+                email: devEmail,
+                method: 'wordpress-simulation'
+            };
+            localStorage.setItem('eric_user', JSON.stringify(currentUser));
+            
+            // Re-render view immediately
+            reorganizeMasterDisplayState();
+            closeLoginDrawer();
+        }
+
+        // =======================================================================================
+        //                               REGISTRATIONS COMPILER & RENDERERS                       //
+        // =======================================================================================
+        
+        function renderActiveRegistrationsLedger() {
+            const grid = document.getElementById('registrations-grid');
+            const placeholder = document.getElementById('no-regs-placeholder');
+
+            grid.innerHTML = '';
+            document.getElementById('reg-count').innerText = registrations.length;
+
+            if (registrations.length === 0) {
+                placeholder.classList.remove('hidden');
+                return;
+            }
+
+            placeholder.classList.add('hidden');
+
+            registrations.forEach((reg) => {
+                const divisionData = COMPETITION_DIVISIONS.find(d => d.id === reg.divisionId) || { title: reg.divisionId, detail: 'Special Challenge Unit' };
+                
+                const card = document.createElement('div');
+                card.className = "p-6 bg-[#0a0a0c]/85 border border-zinc-900 rounded-2xl space-y-4 relative overflow-hidden group transition-all hover:border-zinc-800";
+                card.innerHTML = `
+                    <div class="absolute top-0 left-0 right-0 h-[2.5px] bg-gradient-to-r from-[#00FF88] to-[#0047AB]"></div>
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <span class="text-[9px] font-mono text-[#00FF88] uppercase tracking-widest block font-bold">
+                                ${divisionData.title}
+                            </span>
+                            <h5 class="text-lg font-display font-black text-white uppercase tracking-tight mt-1">
+                                ${reg.teamName}
+                            </h5>
+                        </div>
+                        <span class="px-2 py-0.5 text-[8px] font-mono bg-emerald-950/20 text-[#00FF88] border border-emerald-500/20 rounded uppercase font-bold tracking-wider">
+                            ${reg.paymentStatus || 'PAID'}
+                        </span>
+                    </div>
+
+                    <div class="text-[10px] font-mono text-zinc-400 space-y-2 border-t border-b border-zinc-900 py-3.5 select-none">
+                        <div>CREW LEADER: <span class="text-white font-bold">${reg.leader.name}</span></div>
+                        <div>SCHOOL/CORP: <span class="text-white">${reg.leader.institution}</span></div>
+                        <div>SQUAD CREW: <span class="text-white font-bold">${reg.members ? reg.members.length : 0} Additional Crew Members</span></div>
+                        <div>PAYMENT METHOD: <span class="text-[#00FF88]">${reg.paymentMethod}</span></div>
+                    </div>
+
+                    <div class="flex justify-between items-center text-[10px] font-mono pt-1">
+                        <div>REF CODE: <span class="text-zinc-505 select-all text-white/50">${reg.refCode}</span></div>
+                        
+                        <button onclick="openRosterEditPanel('${reg.id}')" class="px-3.5 py-2 bg-zinc-900/50 border border-zinc-805 hover:border-zinc-700 hover:bg-zinc-900 text-[9.5px] text-zinc-300 hover:text-white rounded-lg transition-all flex items-center gap-1.5 focus:outline-none cursor-pointer">
+                            <svg class="w-3 h-3 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
+                            <span>EDIT ROSTER</span>
+                        </button>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        // NEW ENROLLMENT ACTION
+        function startWizardNewReg() {
+            wizardCurrentStep = 1;
+            wizardSelectedDivision = COMPETITION_DIVISIONS[0].id;
+            wizardMembers = [];
+
+            // Pre-fill coordinate names of synced profile to make entry zero-friction
+            document.getElementById('wiz-team-name').value = '';
+            document.getElementById('wiz-leader-name').value = currentUser.name || '';
+            document.getElementById('wiz-leader-email').value = currentUser.email || '';
+            document.getElementById('wiz-leader-whatsapp').value = '';
+            document.getElementById('wiz-leader-institution').value = '';
+
+            const wizardPanel = document.getElementById('wizard-panel');
+            wizardPanel.setAttribute('data-active', 'true');
+            
+            goToWizardStep(1);
+            reorganizeMasterDisplayState();
+            renderWizardMembersInputList();
+        }
+
+        // CANCEL NEW ENROLLMENT
+        function confirmCancelWizard() {
+            if(confirm('Reset current registration records? All entered details will be cleared.')) {
+                const wizardPanel = document.getElementById('wizard-panel');
+                wizardPanel.setAttribute('data-active', 'false');
+                reorganizeMasterDisplayState();
+            }
+        }
+
+        // STEP SWITCHER
+        function goToWizardStep(step) {
+            wizardCurrentStep = step;
+
+            for(let i=1; i<=4; i++) {
+                const el = document.getElementById(`wizard-step-${i}`);
+                const label = document.getElementById(`step-label-${i}`);
+                if(i === step) {
+                    el.classList.remove('hidden');
+                    label.className = "text-[#00FF88] font-bold";
+                } else {
+                    el.classList.add('hidden');
+                    label.className = "text-zinc-500";
+                }
+            }
+
+            // Sync checkout invoicing values on Step 4
+            if (step === 4) {
+                const selectionObj = COMPETITION_DIVISIONS.find(d => d.id === wizardSelectedDivision);
+                document.getElementById('checkout-arena-title').innerText = selectionObj ? selectionObj.title : 'Sumobot';
+                document.getElementById('checkout-team-name').innerText = document.getElementById('wiz-team-name').value || 'TEAM ATLAS';
+                selectPaymentGateway(activePaymentMethod);
+            }
+        }
+
+        // RENDER ARENAS SELECTIONS CARDS
+        function renderArenasRadioChoices() {
+            const container = document.getElementById('arenas-selector-container');
+            container.innerHTML = '';
+
+            COMPETITION_DIVISIONS.forEach((arena) => {
+                const card = document.createElement('div');
+                card.id = `arena-card-${arena.id}`;
+                card.onclick = () => selectWizArena(arena.id);
+                card.className = "p-5 bg-zinc-900/10 border border-zinc-900 rounded-2xl text-left cursor-pointer transition-all hover:bg-zinc-900/30 select-none";
+                card.innerHTML = `
+                    <span class="px-2 py-0.5 text-[8.5px] font-mono rounded bg-zinc-900 text-zinc-500 border border-zinc-800 uppercase block w-max font-bold">
+                        ${arena.detail}
+                    </span>
+                    <h5 class="text-base font-display font-extrabold text-white uppercase mt-4">
+                        ${arena.title}
+                    </h5>
+                    <p class="text-[9.5px] font-mono text-zinc-500 mt-1 uppercase line-clamp-2">
+                        Official arena category hosted for automated hardware groups.
+                    </p>
+                `;
+                container.appendChild(card);
+            });
+
+            selectWizArena(wizardSelectedDivision);
+        }
+
+        function selectWizArena(id) {
+            COMPETITION_DIVISIONS.forEach((arena) => {
+                const el = document.getElementById(`arena-card-${arena.id}`);
+                if (el) {
+                    el.className = "p-5 bg-zinc-900/10 border border-zinc-900 rounded-2xl text-left cursor-pointer transition-all hover:bg-zinc-900/30 select-none";
+                }
+            });
+
+            wizardSelectedDivision = id;
+            const activeEl = document.getElementById(`arena-card-${id}`);
+            if (activeEl) {
+                activeEl.className = "p-5 bg-zinc-950 border-[#00FF88] rounded-2xl text-left cursor-pointer transition-all scale-[1.01] shadow-[0_0_15px_rgba(0,255,136,0.1)] select-none";
+            }
+        }
+
+        // LEADER VALIDATION
+        function validateStep2AndProceed() {
+            const team = document.getElementById('wiz-team-name').value.trim();
+            const leaderName = document.getElementById('wiz-leader-name').value.trim();
+            const leaderEmail = document.getElementById('wiz-leader-email').value.trim();
+            const leaderWhatsapp = document.getElementById('wiz-leader-whatsapp').value.trim();
+            const leaderInstitution = document.getElementById('wiz-leader-institution').value.trim();
+
+            if (!team || !leaderName || !leaderEmail || !leaderWhatsapp || !leaderInstitution) {
+                alert('Please complete all team telemetry coordinates prior to continuing.');
+                return;
+            }
+
+            goToWizardStep(3);
+        }
+
+        // ATTACH SHIFT TEAM MEMBERS
+        function addWizardMemberInput() {
+            const memberObj = {
+                id: `crews-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`,
+                name: '',
+                email: '',
+                whatsapp: '',
+                institution: document.getElementById('wiz-leader-institution').value || ''
+            };
+            wizardMembers.push(memberObj);
+            renderWizardMembersInputList();
+        }
+
+        function removeWizardMemberInput(id) {
+            wizardMembers = wizardMembers.filter(m => m.id !== id);
+            renderWizardMembersInputList();
+        }
+
+        function syncWizardMemberInputFields(id, field, value) {
+            const index = wizardMembers.findIndex(m => m.id === id);
+            if(index !== -1) {
+                wizardMembers[index][field] = value;
+            }
+        }
+
+        function renderWizardMembersInputList() {
+            const container = document.getElementById('wizard-members-list-container');
+            const placeholder = document.getElementById('no-members-tag');
+
+            container.innerHTML = '';
+
+            if (wizardMembers.length === 0) {
+                placeholder.classList.remove('hidden');
+                return;
+            }
+
+            placeholder.classList.add('hidden');
+
+            wizardMembers.forEach((member, i) => {
+                const card = document.createElement('div');
+                card.className = "p-5 bg-zinc-900/20 border border-zinc-900 rounded-xl space-y-4 relative font-mono";
+                card.innerHTML = `
+                    <div class="flex justify-between items-center select-none text-[9px] text-zinc-500 font-bold">
+                        <span>ATTACHED CREW MEMBER SPOT 0${i+1}</span>
+                        <button type="button" onclick="removeWizardMemberInput('${member.id}')" class="text-red-400 hover:text-red-300 uppercase focus:outline-none transition-colors cursor-pointer">
+                            &times; REMOVE Crew
+                        </button>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="space-y-1">
+                            <label class="text-[8px] text-zinc-500 uppercase block font-bold">Full Name</label>
+                            <input type="text" value="${member.name}" oninput="syncWizardMemberInputFields('${member.id}', 'name', this.value)" required placeholder="e.g. Andi Saputra" class="w-full bg-[#121212] border border-zinc-805 text-xs rounded-lg px-3 py-2 text-white focus:outline-none focus:border-[#00FF88] transition-colors">
+                        </div>
+                        <div class="space-y-1">
+                            <label class="text-[8px] text-zinc-500 uppercase block font-bold">Email Address</label>
+                            <input type="email" value="${member.email}" oninput="syncWizardMemberInputFields('${member.id}', 'email', this.value)" required placeholder="member@univ.edu" class="w-full bg-[#121212] border border-zinc-805 text-xs rounded-lg px-3 py-2 text-white focus:outline-none focus:border-[#00FF88] transition-colors">
+                        </div>
+                        <div class="space-y-1">
+                            <label class="text-[8px] text-zinc-500 uppercase block font-bold">WhatsApp Contact</label>
+                            <input type="tel" value="${member.whatsapp}" oninput="syncWizardMemberInputFields('${member.id}', 'whatsapp', this.value)" required placeholder="0821xxxx" class="w-full bg-[#121212] border border-zinc-805 text-xs rounded-lg px-3 py-2 text-white focus:outline-none focus:border-[#00FF88] transition-colors">
+                        </div>
+                        <div class="space-y-1">
+                            <label class="text-[8px] text-zinc-500 uppercase block font-bold">School / Institution</label>
+                            <input type="text" value="${member.institution}" oninput="syncWizardMemberInputFields('${member.id}', 'institution', this.value)" required class="w-full bg-[#121212] border border-zinc-805 text-xs rounded-lg px-3 py-2 text-white focus:outline-none focus:border-[#00FF88] transition-colors">
+                        </div>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        // SWAP INVOICE OPTIONS
+        function selectPaymentGateway(method) {
+            activePaymentMethod = method;
+
+            const systems = ['qris', 'bca', 'visa', 'paypal'];
+            systems.forEach((sys) => {
+                const btn = document.getElementById(`pay-${sys}`);
+                const screen = document.getElementById(`pay-screen-${sys}`);
+
+                if (sys === method) {
+                    btn.className = "p-3 bg-zinc-950 border border-[#00FF88] rounded-xl text-center cursor-pointer transition-all select-none scale-[1.01]";
+                    screen.classList.remove('hidden');
+                } else {
+                    btn.className = "p-3 bg-zinc-950/20 border border-zinc-900 rounded-xl text-center cursor-pointer transition-all select-none hover:border-zinc-800";
+                    screen.classList.add('hidden');
+                }
+            });
+        }
+
+        // EXECUTE SECURE CLIENT SIMULATED PAYMENTS
+        function finalizeWizardCheckout() {
+            const proc = document.getElementById('processing-screen');
+            proc.classList.remove('hidden');
+
+            setTimeout(() => {
+                const refCode = "ERIC-" + Math.random().toString(36).substring(2, 8).toUpperCase();
+                const sanitizedMembers = wizardMembers.filter(m => m.name.trim() !== '');
+
+                // Compile final structured roster record
+                const finalRecord = {
+                    id: "ledgers-" + Date.now(),
+                    divisionId: wizardSelectedDivision,
+                    teamName: document.getElementById('wiz-team-name').value || 'TEAM ROBO ATLAS',
+                    leader: {
+                        name: document.getElementById('wiz-leader-name').value,
+                        email: document.getElementById('wiz-leader-email').value,
+                        whatsapp: document.getElementById('wiz-leader-whatsapp').value,
+                        institution: document.getElementById('wiz-leader-institution').value,
+                    },
+                    members: sanitizedMembers,
+                    paymentMethod: activePaymentMethod.toUpperCase(),
+                    paymentStatus: 'PAID',
+                    refCode: refCode
+                };
+
+                registrations.push(finalRecord);
+                
+                // Persist locally
+                persistRosterData();
+                proc.classList.add('hidden');
+
+                // Trigger celebration receipts
+                document.getElementById('rec-ref-id').innerText = finalRecord.refCode;
+                document.getElementById('rec-team-name').innerText = finalRecord.teamName;
+                
+                const divObj = COMPETITION_DIVISIONS.find(d => d.id === finalRecord.divisionId) || { title: finalRecord.divisionId };
+                document.getElementById('rec-arena-class').innerText = divObj.title;
+
+                document.getElementById('success-receipt-modal').classList.remove('hidden');
+                document.getElementById('wizard-panel').setAttribute('data-active', 'false');
+
+            }, 1800);
+        }
+
+        function dismissReceiptModal() {
+            document.getElementById('success-receipt-modal').classList.add('hidden');
+            reorganizeMasterDisplayState();
+        }
+
+        // =======================================================================================
+        //                               ROSTER EDIT SYSTEMS                                      //
+        // =======================================================================================
+        function openRosterEditPanel(regId) {
+            currentEditingRegId = regId;
+            const reg = registrations.find(r => r.id === regId);
+            if(!reg) return;
+
+            document.getElementById('edit-reg-id').value = reg.id;
+            document.getElementById('edit-team-name').value = reg.teamName;
+            document.getElementById('edit-leader-name').value = reg.leader.name;
+            document.getElementById('edit-leader-whatsapp').value = reg.leader.whatsapp || '';
+            document.getElementById('edit-leader-institution').value = reg.leader.institution || '';
+
+            renderEditFormMembersList(reg.members || []);
+            reorganizeMasterDisplayState();
+        }
+
+        function closeEditFormPanel() {
+            currentEditingRegId = null;
+            reorganizeMasterDisplayState();
+        }
+
+        function renderEditFormMembersList(membersArray) {
+            const container = document.getElementById('edit-members-container');
+            container.innerHTML = '';
+
+            membersArray.forEach((member, i) => {
+                const card = document.createElement('div');
+                card.className = "p-4 bg-zinc-950 border border-zinc-900 rounded-xl space-y-4 relative font-mono text-zinc-400";
+                card.innerHTML = `
+                    <div class="flex justify-between items-center select-none text-[8px]">
+                        <span>CO-WORKER ATTACHED SLOT 0${i+1}</span>
+                        <button type="button" onclick="removeMemberFromEditForm('${member.id}')" class="text-red-400 hover:text-red-300">
+                            Remove &times;
+                        </button>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="space-y-1">
+                            <label class="text-[8px] uppercase block font-bold">Full Name</label>
+                            <input type="text" value="${member.name}" oninput="syncEditMemberField('${member.id}', 'name', this.value)" class="w-full bg-[#121212] border border-zinc-805 text-xs rounded-lg px-3 py-2 text-white focus:outline-none focus:border-[#00FF88]" required>
+                        </div>
+                        <div class="space-y-1">
+                            <label class="text-[8px] uppercase block font-bold">Email Address</label>
+                            <input type="email" value="${member.email}" oninput="syncEditMemberField('${member.id}', 'email', this.value)" class="w-full bg-[#121212] border border-zinc-805 text-xs rounded-lg px-3 py-2 text-white focus:outline-none focus:border-[#00FF88]" required>
+                        </div>
+                        <div class="space-y-1">
+                            <label class="text-[8px] uppercase block font-bold">WhatsApp Contact</label>
+                            <input type="tel" value="${member.whatsapp}" oninput="syncEditMemberField('${member.id}', 'whatsapp', this.value)" class="w-full bg-[#121212] border border-zinc-805 text-xs rounded-lg px-3 py-2 text-white focus:outline-none focus:border-[#00FF88]" required>
+                        </div>
+                        <div class="space-y-1">
+                            <label class="text-[8px] uppercase block font-bold">Institution</label>
+                            <input type="text" value="${member.institution}" oninput="syncEditMemberField('${member.id}', 'institution', this.value)" class="w-full bg-[#121212] border border-zinc-805 text-xs rounded-lg px-3 py-2 text-white focus:outline-none focus:border-[#00FF88]" required>
+                        </div>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        function addNewMemberToEditForm() {
+            const index = registrations.findIndex(r => r.id === currentEditingRegId);
+            if(index === -1) return;
+
+            const instInput = document.getElementById('edit-leader-institution').value || '';
+            const newMember = {
+                id: "crews-edit-" + Date.now() + Math.random().toString(36).substring(2, 5),
+                name: '',
+                email: '',
+                whatsapp: '',
+                institution: instInput
+            };
+
+            registrations[index].members.push(newMember);
+            renderEditFormMembersList(registrations[index].members);
+        }
+
+        function removeMemberFromEditForm(memberId) {
+            const index = registrations.findIndex(r => r.id === currentEditingRegId);
+            if(index === -1) return;
+
+            registrations[index].members = registrations[index].members.filter(m => m.id !== memberId);
+            renderEditFormMembersList(registrations[index].members);
+        }
+
+        function syncEditMemberField(memberId, field, value) {
+            const index = registrations.findIndex(r => r.id === currentEditingRegId);
+            if(index === -1) return;
+
+            const mIdx = registrations[index].members.findIndex(m => m.id === memberId);
+            if(mIdx !== -1) {
+                registrations[index].members[mIdx][field] = value;
+            }
+        }
+
+        function saveRosterEditChanges(event) {
+            if(event) event.preventDefault();
+            const index = registrations.findIndex(r => r.id === currentEditingRegId);
+            if(index === -1) return;
+
+            const filtered = registrations[index].members.filter(m => m.name.trim() !== '');
+
+            registrations[index].teamName = document.getElementById('edit-team-name').value;
+            registrations[index].leader.name = document.getElementById('edit-leader-name').value;
+            registrations[index].leader.whatsapp = document.getElementById('edit-leader-whatsapp').value;
+            registrations[index].leader.institution = document.getElementById('edit-leader-institution').value;
+            registrations[index].members = filtered;
+
+            persistRosterData();
+            alert('Squad details saved cleanly. Browser database caches resolved.');
+            closeEditFormPanel();
+        }
+
+        // =======================================================================================
+        //                               SHEETJS LIVE EXCEL LEDGER ENGINE                         //
+        // =======================================================================================
+        function downloadExcelLedger() {
+            if (typeof XLSX === 'undefined') {
+                alert("The Excel compilation engine is completing setup. Keep your connection active to load SheetJS from CDN.");
+                return;
+            }
+
+            // Create fresh book workbook
+            const wb = XLSX.utils.book_new();
+
+            // Segment and create workspaces separating outputs cleanly across division headers
+            COMPETITION_DIVISIONS.forEach((division) => {
+                const targetedEntries = registrations.filter(r => r.divisionId === division.id);
+                const fileRows = [];
+
+                if (targetedEntries.length > 0) {
+                    targetedEntries.forEach((reg, i) => {
+                        const row = {
+                            'No': i + 1,
+                            'Reference ID': reg.refCode,
+                            'Designated Squad': reg.teamName,
+                            'Roster Leader': reg.leader.name,
+                            'Leader Email': reg.leader.email,
+                            'Leader WhatsApp': reg.leader.whatsapp || '',
+                            'Origin School/Corp': reg.leader.institution,
+                            'Payment Portal': reg.paymentMethod,
+                            'Billing Verification': reg.paymentStatus || 'PAID',
+                            'Total Crew Size': (reg.members ? reg.members.length : 0) + 1
+                        };
+
+                        // Support mapping up to 5 additional roster helpers
+                        for(let col = 0; col < 5; col++) {
+                            const member = (reg.members && reg.members[col]) ? reg.members[col] : null;
+                            row[`Crew ${col + 1} Full Name`] = member ? member.name : '';
+                            row[`Crew ${col + 1} Email`] = member ? member.email : '';
+                            row[`Crew ${col + 1} WhatsApp`] = member ? member.whatsapp || '' : '';
+                            row[`Crew ${col + 1} School`] = member ? member.institution : '';
+                        }
+
+                        fileRows.push(row);
+                    });
+                } else {
+                    const fallbackRow = {
+                        'No': '-',
+                        'Reference ID': '-',
+                        'Designated Squad': '-',
+                        'Roster Leader': '(No entrants recorded in this division class category yet)',
+                        'Leader Email': '-',
+                        'Leader WhatsApp': '-',
+                        'Origin School/Corp': '-',
+                        'Payment Portal': '-',
+                        'Billing Verification': '-',
+                        'Total Crew Size': 0
+                    };
+                    for(let col = 0; col < 5; col++) {
+                        fallbackRow[`Crew ${col + 1} Full Name`] = '';
+                        fallbackRow[`Crew ${col + 1} Email`] = '';
+                        fallbackRow[`Crew ${col + 1} WhatsApp`] = '';
+                        fallbackRow[`Crew ${col + 1} School`] = '';
+                    }
+                    fileRows.push(fallbackRow);
+                }
+
+                const worksheet = XLSX.utils.json_to_sheet(fileRows);
+
+                // Set secure row spacing boundaries
+                worksheet['!cols'] = [
+                    { wch: 6 },   // No
+                    { wch: 18 },  // Reference ID
+                    { wch: 25 },  // Designated Squad
+                    { wch: 22 },  // Roster Leader
+                    { wch: 28 },  // Leader Email
+                    { wch: 18 },  // Leader WhatsApp
+                    { wch: 30 },  // School
+                    { wch: 16 },  // Payment Portal
+                    { wch: 15 },  // Status
+                    { wch: 12 },  // Size
+                    { wch: 22 },  // Crew 1 Name
+                    { wch: 25 },  // Crew 1 Email
+                    { wch: 22 },  // Crew 2 Name
+                    { wch: 25 }   // Crew 2 Email
+                ];
+
+                // Append cleaned worksheet tab
+                const sanitiseSheetTitle = division.title.replace(/[\\\/\?\*\:\[\]]/g, '').substring(0, 31);
+                XLSX.utils.book_append_sheet(wb, worksheet, sanitiseSheetTitle);
+            });
+
+            // Write output as standalone file download
+            XLSX.writeFile(wb, `ERIC_Championship_Active_Rosters_${new Date().toISOString().slice(0, 10)}.xlsx`);
+        }
+
+        // =======================================================================================
+        //                               DRAWER UTILITY ACTIONS                                   //
+        // =======================================================================================
+        function openLoginDrawer() {
+            const overlay = document.getElementById('login-drawer-overlay');
+            const drawer = document.getElementById('login-drawer');
+            
+            overlay.classList.remove('hidden');
+            setTimeout(function() {
+                overlay.classList.remove('opacity-0');
+                overlay.classList.add('opacity-100');
+                drawer.classList.remove('translate-x-full');
+                drawer.classList.add('translate-x-0');
+            }, 15);
+        }
+
+        function closeLoginDrawer() {
+            const overlay = document.getElementById('login-drawer-overlay');
+            const drawer = document.getElementById('login-drawer');
+            
+            overlay.classList.remove('opacity-100');
+            overlay.classList.add('opacity-0');
+            drawer.classList.remove('translate-x-0');
+            drawer.classList.add('translate-x-full');
+            
+            setTimeout(function() {
+                overlay.classList.add('hidden');
+            }, 305);
+        }
+    </script>
+</body>
+</html>

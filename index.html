@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="en" class="scroll-smooth bg-[#050505]">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ERIC 2026 | Electronics & Robotics Innovation Competition</title>
+    
+    <script>
+      // Web3 Sandbox Guard: Prevent MetaMask or other browser extension connection errors inside sandboxed iframes
+      (function() {
+        if (typeof window !== 'undefined') {
+          const isWeb3OrMetaMaskError = function(errorMsg) {
+            if (!errorMsg) return false;
+            const msg = String(errorMsg).toLowerCase();
+            return msg.includes('metamask') || msg.includes('ethereum') || msg.includes('web3') || msg.includes('wallet');
+          };
+
+          // Override console.error to suppress specific metamask/web3 errors
+          const originalConsoleError = console.error;
+          console.error = function() {
+            const args = Array.prototype.slice.call(arguments);
+            const joinedArgs = args.map(String).join(' ');
+            if (isWeb3OrMetaMaskError(joinedArgs)) {
+              console.warn('[Web3 Sandbox Guard] Suppressed console error:', joinedArgs);
+              return;
+            }
+            originalConsoleError.apply(console, arguments);
+          };
+
+          // Globally intercept errors and suppress MetaMask/Web3 connection errors
+          window.addEventListener('error', function(event) {
+            const errorMsg = event.message || (event.error && event.error.message) || '';
+            if (isWeb3OrMetaMaskError(errorMsg)) {
+              console.warn('[Web3 Sandbox Guard] Suppressed runtime error:', errorMsg);
+              event.preventDefault();
+              event.stopPropagation();
+            }
+          }, true);
+
+          window.addEventListener('unhandledrejection', function(event) {
+            const errorMsg = (event.reason && (event.reason.message || event.reason.toString())) || '';
+            if (isWeb3OrMetaMaskError(errorMsg)) {
+              console.warn('[Web3 Sandbox Guard] Suppressed unhandled promise rejection:', errorMsg);
+              event.preventDefault();
+              event.stopPropagation();
+            }
+          }, true);
+
+          // Intercept postMessage communication to prevent MetaMask extension from raising connection errors
+          window.addEventListener('message', function(event) {
+            if (event.data && (
+              String(event.data.target).includes('metamask') ||
+              String(event.data.action).includes('metamask') ||
+              String(event.data.type).includes('metamask')
+            )) {
+              event.stopImmediatePropagation();
+            }
+          }, true);
+
+          // Create an ultimate recursive silent Proxy for window.ethereum to completely absorb all wallet inquiries safely
+          const createSilentProxy = function() {
+            const silentProxy = new Proxy(function() {}, {
+              get: function(target, prop) {
+                if (prop === 'isMetaMask') return true;
+                if (prop === 'isConnected') return function() { return false; };
+                if (prop === 'request') {
+                  return function(req) {
+                    console.warn('[Web3 Sandbox Guard] Intercepted ethereum.request:', req ? req.method : '');
+                    if (req && (req.method === 'eth_accounts' || req.method === 'eth_requestAccounts')) {
+                      return Promise.resolve([]);
+                    }
+                    return Promise.resolve(null);
+                  };
+                }
+                if (prop === 'on' || prop === 'removeListener' || prop === 'addListener') {
+                  return function() {};
+                }
+                if (prop === 'enable') {
+                  return function() { return Promise.resolve([]); };
+                }
+                if (prop === 'send' || prop === 'sendAsync') {
+                  return function(payload, callback) {
+                    if (typeof callback === 'function') {
+                      callback(null, { jsonrpc: '2.0', result: null });
+                    }
+                  };
+                }
+                if (prop === 'then') {
+                  return undefined; // Avoid being treated as a promise/thenable
+                }
+                // Recursively return the silentProxy itself for any nested properties
+                return silentProxy;
+              },
+              apply: function() {
+                return silentProxy;
+              }
+            });
+            return silentProxy;
+          };
+
+          const safeEthereum = createSilentProxy();
+
+          try {
+            Object.defineProperty(window, 'ethereum', {
+              get: function() { return safeEthereum; },
+              set: function(val) {
+                // Ignore any sets to ensure it stays silent and doesn't crash the page or extension
+                console.warn('[Web3 Sandbox Guard] Suppressed attempt to redefine window.ethereum');
+              },
+              configurable: true,
+              enumerable: true
+            });
+          } catch (e) {
+            console.warn('[Web3 Sandbox Guard] Failed to defineProperty:', e);
+          }
+        }
+      })();
+    </script>
+
+    <!-- Premium Google Fonts pairing -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&family=Space+Grotesk:wght@400;500;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+  </head>
+  <body class="bg-[#050505] text-[#FFFFFF] antialiased selection:bg-[#00FF88] selection:text-black">
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
+

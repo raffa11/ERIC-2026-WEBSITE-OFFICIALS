@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ERIC 2026 - Custom Footer</title>
+    <!-- PREMIUM FONTS -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Space+Grotesk:wght@600;700;800;900&display=swap" rel="stylesheet">
+    <!-- TAILWIND CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                        display: ['Space Grotesk', 'sans-serif'],
+                    },
+                    colors: {
+                        emerald: {
+                            500: '#00FF88', // Highlight Neon Emerald Accent
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .text-glow {
+            text-shadow: 0 0 10px rgba(0, 255, 136, 0.35);
+        }
+    </style>
+</head>
+<body class="bg-[#050505] text-white">
+
+    <!-- ================= BRAND FOOTER COMPONENT ================= -->
+    <footer class="border-t border-zinc-900 bg-[#070708] font-sans w-full py-12 px-4 select-none">
+        <div class="max-w-7xl mx-auto space-y-12">
+            
+            <!-- FLEXIBLE GRID MATRIX (RESPONSIVE: COLUMNS SCALE FROM 1 TO 4 BASED ON SIZE) -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+                
+                <!-- COLUMN 1: CORPORATE / ARENA META -->
+                <div class="space-y-4">
+                    <div class="flex items-center gap-2">
+                        <span class="font-display font-black text-base uppercase tracking-tight text-white hover:text-glow transition-all">
+                            ERIC CHAMPIONSHIP
+                        </span>
+                        <span class="font-mono text-[8px] text-[#00FF88] border border-[#00FF88]/20 bg-[#00FF88]/5 px-1.5 py-0.5 rounded font-bold">2026</span>
+                    </div>
+                    <p class="text-[11px] font-mono text-zinc-500 uppercase leading-relaxed">
+                        The ultimate robotic sumobot telemetry and autonomous drone racing hub. Synchronized through state-of-the-art live status checks.
+                    </p>
+                </div>
+
+                <!-- COLUMN 2: ARENA RESOURCES -->
+                <div class="space-y-3 font-mono text-xs">
+                    <h4 class="text-[10px] text-zinc-400 uppercase tracking-widest font-bold">ARENA LINKS</h4>
+                    <ul class="space-y-2 text-zinc-500">
+                        <li><a href="#hero" class="hover:text-[#00FF88] transition-colors">> PORTAL MAIN GATEWAY</a></li>
+                        <li><a href="#divisions" class="hover:text-[#00FF88] transition-colors">> CHALLENGE DIVISIONS</a></li>
+                        <li><a href="#rules" class="hover:text-[#00FF88] transition-colors">> TECHNICAL BLUEPRINTS</a></li>
+                    </ul>
+                </div>
+
+                <!-- COLUMN 3: TOURNAMENT SUPPORT -->
+                <div class="space-y-3 font-mono text-xs">
+                    <h4 class="text-[10px] text-zinc-400 uppercase tracking-widest font-bold">CONGRESS CORE</h4>
+                    <ul class="space-y-2 text-zinc-500">
+                        <li><a href="mailto:support@eric2026.com" class="hover:text-[#00FF88] transition-colors">> TOURNAMENT HELP DESK</a></li>
+                        <li><a href="mailto:registration@eric2026.com" class="hover:text-[#00FF88] transition-colors">> SQUAD REGULATION ADVISORY</a></li>
+                        <li><a href="mailto:sponsors@eric2026.com" class="hover:text-[#00FF88] transition-colors">> PARTNERSHIP PROTOCOLS</a></li>
+                    </ul>
+                </div>
+
+                <!-- COLUMN 4: SECURITY SYSTEM METRICS -->
+                <div class="space-y-3 font-mono text-[11px]">
+                    <h4 class="text-[10px] text-zinc-400 uppercase tracking-widest font-bold mt-0.5">SYSTEM DIAGNOSTICS</h4>
+                    <div class="space-y-1.5 p-3.5 bg-zinc-950 border border-zinc-900 rounded-xl">
+                        <div class="flex justify-between text-zinc-500">
+                            <span>ONLINE PARITY</span>
+                            <span class="text-[#00FF88] font-bold">STABLE</span>
+                        </div>
+                        <div class="flex justify-between text-zinc-500">
+                            <span>NETWORK COOP</span>
+                            <span class="text-zinc-400">SSL ENCRYPTED</span>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- BOTTOM COPYRIGHT MATRIX -->
+            <div class="pt-8 border-t border-zinc-900/60 flex flex-col md:flex-row justify-between items-center gap-4 text-[10px] font-mono text-zinc-500">
+                <div class="uppercase tracking-wide text-center md:text-left">
+                    &copy; 2026 <span class="text-white font-bold text-glow">ERIC Championship Arena</span>. Designed for elite robotic sportsmanship.
+                </div>
+                <div class="uppercase tracking-widest flex items-center gap-2">
+                    <span class="w-1.5 h-1.5 bg-[#00FF88] rounded-full animate-ping"></span>
+                    <span>All Rights Reserved | Powered by WordPress Core Backend</span>
+                </div>
+            </div>
+
+        </div>
+    </footer>
+
+</body>
+</html>

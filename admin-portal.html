@@ -1,0 +1,715 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ERIC 2026 | Admin & Excel Center</title>
+    <!-- Import Google Fonts: Inter for UI, Space Grotesk for Heading, JetBrains Mono for Code/Telemetry -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Space+Grotesk:wght@600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Load Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Load SheetJS library for elite multi-sheet .xlsx Excel file creation in real time -->
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        display: ['Space Grotesk', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    },
+                    colors: {
+                        emerald: {
+                            400: '#10B981',
+                            500: '#00FF88', // Match ERIC's primary green glow
+                        },
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Custom scrollbar and subtle glowing animations */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #09090b;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #27272a;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #00FF88;
+        }
+        body {
+            background-color: #050505;
+            color: #f4f4f5;
+            font-family: 'Inter', sans-serif;
+            overflow-x: hidden;
+        }
+        .text-glow {
+            text-shadow: 0 0 15px rgba(0, 255, 136, 0.45);
+        }
+        .box-glow {
+            box-shadow: 0 0 30px rgba(0, 255, 136, 0.08);
+        }
+        @keyframes pulse-slow {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.4; }
+        }
+        .animate-pulse-slow {
+            animation: pulse-slow 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+    </style>
+</head>
+<body class="selection:bg-[#00FF88] selection:text-black min-h-screen bg-[radial-gradient(ellipse_80%_80%_at_50%_-20%,rgba(0,255,136,0.06),rgba(255,255,255,0))]">
+
+    <!-- DECORATIVE GRID PATTERN OVERLAY -->
+    <div class="fixed inset-0 z-0 pointer-events-none opacity-10 bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:32px_32px]"></div>
+
+    <!-- MAIN DASHBOARD WRAPPER -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 relative z-10">
+        
+        <!-- HEADER HUD -->
+        <header class="flex flex-col md:flex-row md:items-center justify-between gap-6 pb-8 border-b border-zinc-900 mb-8 select-none">
+            <div class="space-y-1.5">
+                <div class="flex items-center gap-2">
+                    <span class="w-2.5 h-2.5 rounded-full bg-[#00FF88] shadow-[0_0_10px_rgba(0,255,136,0.8)] animate-pulse"></span>
+                    <span class="text-xs font-mono font-bold tracking-widest text-[#00FF88] uppercase">ERIC 2026 CONTROL DECK</span>
+                </div>
+                <h1 class="text-3xl sm:text-4xl font-display font-black text-white uppercase tracking-tight">
+                    ADMIN & EXCEL <span class="bg-gradient-to-r from-[#00FF88] to-emerald-400 bg-clip-text text-transparent">CENTER</span>
+                </h1>
+                <p class="text-xs font-mono text-zinc-400 uppercase">
+                    Connected live database registry. Formulates clean multi-sheet workbooks automatically.
+                </p>
+            </div>
+            
+            <!-- BACK LINK TO PARTICIPANT LIST -->
+            <div class="flex flex-wrap items-center gap-3">
+                <a href="registration-portal.html" class="px-4 py-2 bg-zinc-950 border border-zinc-900 hover:border-zinc-800 text-xs font-mono text-zinc-400 hover:text-white rounded-lg transition-all flex items-center gap-2 uppercase">
+                    <svg class="w-3.5 h-3.5 text-zinc-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" /></svg>
+                    <span>Particpant Portal</span>
+                </a>
+                <span class="px-3.5 py-1 text-[10px] bg-zinc-900/45 border border-zinc-800 rounded-md text-zinc-500 font-mono tracking-wider uppercase select-none">
+                    v2.4 SECURE OFFICE
+                </span>
+            </div>
+        </header>
+
+        <!-- TOP LEVEL NOTIFICATIONS / FEEDBACK -->
+        <div id="general-alert" class="hidden p-4 bg-emerald-950/45 border border-emerald-800/50 rounded-xl text-xs font-mono text-emerald-300 uppercase tracking-wide flex items-center justify-between mb-6">
+            <span id="general-alert-msg">ALERT: LEDGER SYSTEM IS SYNCHRONIZED</span>
+            <button onclick="dismissAlert()" class="text-emerald-500 hover:text-emerald-300 font-black">&times;</button>
+        </div>
+
+        <!-- EXCEL CONTROLLER HERO SECTION -->
+        <div class="p-8 bg-gradient-to-br from-[#0b1610] to-zinc-950 border border-[#00FF88]/20 rounded-2xl relative overflow-hidden box-glow mb-8">
+            <!-- Grid design embellishment -->
+            <div class="absolute right-0 bottom-0 top-0 w-1/3 opacity-15 pointer-events-none bg-[radial-gradient(#00ff88_1px,transparent_1px)] bg-[size:10px_10px]"></div>
+            
+            <div class="flex flex-col lg:flex-row gap-8 justify-between items-start lg:items-center relative z-10">
+                <div class="space-y-3">
+                    <span class="inline-flex items-center gap-1.5 bg-[#00FF88]/10 border border-[#00FF88]/30 px-3 py-1 rounded-full text-[9px] font-mono text-[#00FF88] uppercase tracking-widest block w-max">
+                        <svg class="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                        <span>OFFICIAL .XLSX GENERATOR ENGINE</span>
+                    </span>
+                    <h2 class="text-2xl sm:text-3xl font-display font-extrabold text-white uppercase tracking-tight leading-none">
+                        DOWNLOAD CONTEST SPREADSHEEET
+                    </h2>
+                    <p class="text-xs font-mono text-zinc-400 uppercase max-w-2xl leading-relaxed">
+                        Compiles and outputs Microsoft Excel file formats directly on your client browser. Dynamic multi-tab page design maps every contest division to its isolated database worksheet in order to preserve absolute roster purity.
+                    </p>
+                </div>
+
+                <div class="flex flex-col sm:flex-row lg:flex-col gap-3 w-full lg:w-auto shrink-0 select-none">
+                    <button onclick="downloadExcelLedger()" class="px-6 py-4 bg-gradient-to-r from-[#00FF88] to-[#4DFFB8] text-black font-semibold text-xs tracking-wider uppercase rounded-xl hover:scale-102 hover:shadow-[0_0_25px_rgba(0,255,136,0.35)] active:scale-98 transition-all flex items-center justify-center gap-2.5 font-black focus:outline-none cursor-pointer">
+                        <svg class="w-4 h-4 text-black shrink-0 animate-bounce" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" /></svg>
+                        <span>DOWNLOAD WORKBOOK (.XLSX)</span>
+                    </button>
+
+                    <div class="flex gap-2">
+                        <button onclick="resetToDefaultSeeds()" class="flex-1 px-3.5 py-2.5 border border-zinc-800 hover:border-zinc-700 hover:bg-zinc-900/40 text-[9.5px] font-mono text-zinc-400 hover:text-zinc-200 rounded-lg transition-all flex items-center justify-center gap-1.5 focus:outline-none cursor-pointer">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-3.182V8.25" /></svg>
+                            <span>RESEED MOCK DATA</span>
+                        </button>
+                        <button onclick="clearLedgerEntries()" class="px-3.5 py-2.5 border border-red-950 hover:border-red-800/40 hover:bg-[#1a0808]/20 text-[9.5px] font-mono text-red-500 hover:text-red-400 rounded-lg transition-all flex items-center justify-center gap-1.5 focus:outline-none cursor-pointer">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+                            <span>WIPE</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TELEMETRY COUNTER CARDS -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-10 select-none">
+            <div class="p-5 bg-zinc-950 border border-zinc-900 rounded-2xl relative overflow-hidden">
+                <div class="text-[9px] font-mono text-zinc-500 uppercase tracking-wider">TOTAL REGISTERED TEAMS</div>
+                <div id="stat-teams-count" class="text-3xl font-display font-black text-white mt-1">0 Teams</div>
+                <div class="absolute right-4 bottom-4 w-1.5 h-1.5 rounded-full bg-zinc-800"></div>
+            </div>
+            <div class="p-5 bg-zinc-950 border border-zinc-900 rounded-2xl relative overflow-hidden">
+                <div class="text-[9px] font-mono text-zinc-400 uppercase tracking-wider">ACTIVE COMPETITORS</div>
+                <div id="stat-participants-count" class="text-3xl font-display font-black text-[#00FF88] mt-1 text-glow">0 Members</div>
+                <div class="absolute right-4 bottom-4 w-1.5 h-1.5 rounded-full bg-[#00FF88] animate-pulse"></div>
+            </div>
+            <div class="p-5 bg-zinc-950 border border-zinc-900 rounded-2xl relative overflow-hidden">
+                <div class="text-[9px] font-mono text-zinc-500 uppercase tracking-wider">CONTEST WORKSHEETS</div>
+                <div id="stat-pages-count" class="text-3xl font-display font-black text-white mt-1">9 Pages</div>
+                <div class="absolute right-4 bottom-4 w-1.5 h-1.5 rounded-full bg-zinc-800"></div>
+            </div>
+            <div class="p-5 bg-zinc-950 border border-[#00FF88]/20 rounded-2xl relative overflow-hidden bg-gradient-to-br from-[#07130c] to-black">
+                <div class="text-[9px] font-mono text-[#00ff88] uppercase tracking-wider flex items-center gap-1.5">
+                    <span class="w-1.5 h-1.5 rounded-full bg-[#00ff88] animate-pulse"></span>
+                    <span>LEDGER DESK FEED</span>
+                </div>
+                <div id="stat-sync-time" class="text-base font-mono font-black text-white mt-2 uppercase tracking-wide">
+                    REALTIME LIVE
+                </div>
+                <span class="absolute right-4 bottom-4 text-[9px] font-mono text-[#00ff88]/30">ONLINE</span>
+            </div>
+        </div>
+
+        <!-- TWO COLUMN INTERACTION PANEL -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start mb-12">
+            
+            <!-- COMLUMN 1 (Left): QUICK MANUAL INJECTOR (Add Team on the Fly) -->
+            <div class="lg:col-span-1 p-6 bg-zinc-950 border border-zinc-900 rounded-2xl space-y-5">
+                <h3 class="font-display font-black text-sm text-white uppercase tracking-wider flex items-center gap-2">
+                    <svg class="w-4 h-4 text-[#00FF88]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                    <span>MANUAL REGISTER AGENT</span>
+                </h3>
+                <p class="text-[11px] font-mono text-zinc-500 uppercase leading-relaxed">
+                    Instantly inject new student team credentials directly into the client database pool for validation or testing.
+                </p>
+
+                <form id="admin-manual-injector" onsubmit="handleManualInject(event)" class="space-y-4 text-left">
+                    <div class="space-y-1">
+                        <label class="text-[9.5px] font-mono text-zinc-400 uppercase font-black">Competition Division</label>
+                        <select id="inject-division" class="w-full bg-[#070708] border border-zinc-800 text-xs font-mono text-zinc-300 rounded-lg p-3 uppercase focus:outline-none focus:border-[#00FF88]">
+                            <!-- React injected dynamic arenas -->
+                        </select>
+                    </div>
+
+                    <div class="space-y-1">
+                        <label class="text-[9.5px] font-mono text-zinc-400 uppercase font-black">Team Name</label>
+                        <input type="text" id="inject-teamname" placeholder="E.G. ZEPHYR AUTOMATION" required class="w-full bg-[#070708] border border-zinc-800 text-xs font-mono text-zinc-300 rounded-lg p-3 uppercase placeholder-zinc-700 focus:outline-none focus:border-[#00FF88]">
+                    </div>
+
+                    <div class="space-y-1">
+                        <label class="text-[9.5px] font-mono text-zinc-400 uppercase font-black">Leader Name</label>
+                        <input type="text" id="inject-leadername" placeholder="E.G. ALDRICH MARCEL" required class="w-full bg-[#070708] border border-zinc-800 text-xs font-mono text-zinc-300 rounded-lg p-3 uppercase placeholder-zinc-700 focus:outline-none focus:border-[#00FF88]">
+                    </div>
+
+                    <div class="space-y-1">
+                        <label class="text-[9.5px] font-mono text-zinc-400 uppercase font-black">ID / Academic Institution</label>
+                        <input type="text" id="inject-school" placeholder="E.G. UNIVERSITAS INDONESIA" required class="w-full bg-[#070708] border border-zinc-800 text-xs font-mono text-zinc-300 rounded-lg p-3 uppercase placeholder-zinc-700 focus:outline-none focus:border-[#00FF88]">
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-3">
+                        <div class="space-y-1">
+                            <label class="text-[9.5px] font-mono text-zinc-400 uppercase font-black">Leader Email</label>
+                            <input type="email" id="inject-email" placeholder="student@edu.id" required class="w-full bg-[#070708] border border-zinc-800 text-xs font-mono text-zinc-300 rounded-lg p-3 focus:outline-none focus:border-[#00FF88] placeholder-zinc-700">
+                        </div>
+                        <div class="space-y-1">
+                            <label class="text-[9.5px] font-mono text-zinc-400 uppercase font-black">WhatsApp / No. HP</label>
+                            <input type="text" id="inject-whatsapp" placeholder="+62..." required class="w-full bg-[#070708] border border-zinc-800 text-xs font-mono text-zinc-300 rounded-lg p-3 focus:outline-none focus:border-[#00FF88] placeholder-zinc-700">
+                        </div>
+                    </div>
+
+                    <button type="submit" class="w-full py-3 bg-[#00FF88]/10 hover:bg-[#00FF88] border border-[#00FF88]/20 text-black hover:text-black font-semibold text-xs tracking-wider uppercase rounded-xl transition-all flex items-center justify-center gap-1.5 focus:outline-none cursor-pointer text-[#00FF88]">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4" /></svg>
+                        <span>INJECT ENTRY CARD</span>
+                    </button>
+                </form>
+            </div>
+
+            <!-- COLUMN 2 (Right): SCHEMAS BY DIVISION SHEETS -->
+            <div class="lg:col-span-2 space-y-6">
+                <!-- Inner header -->
+                <div class="border-b border-zinc-900 pb-3 flex justify-between items-center select-none">
+                    <h4 class="font-display font-black text-sm text-white uppercase tracking-wider flex items-center gap-2">
+                        <svg class="w-4 h-4 text-[#00FF88]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
+                        <span>DYNAMIC SHEET PREVIEW SITES</span>
+                    </h4>
+                    <span id="active-sheets-ticker" class="text-[10px] font-mono text-zinc-500 uppercase">9 WORKSHEETS IN MEMORY</span>
+                </div>
+
+                <!-- DIVISION WORKBOOK LAYOUT VIEWS -->
+                <div id="division-sheets-container" class="space-y-8">
+                    <!-- Dynamic rendering will insert tables here -->
+                </div>
+            </div>
+
+        </div>
+
+        <!-- FOOTER AND TERMS -->
+        <footer class="text-center py-10 border-t border-zinc-900 select-none space-y-2">
+            <p class="text-[10px] font-mono text-zinc-600 uppercase tracking-widest">
+                ERIC 2026 OFFICIAL OFFICE PORTAL &middot; NOT INTENDED FOR INTERMEDIARIES
+            </p>
+            <p class="text-[9px] font-mono text-zinc-700 uppercase">
+                ALL INTELLECTUAL LEDGERS ARE RE-BUILT LOCALLY ACCORDING TO W3C LOCALSTORAGE STANDARDS
+            </p>
+        </footer>
+
+    </main>
+
+    <!-- HUB SCRIPTS -->
+    <script>
+        // CONFIG DISIVION DATA
+        const COMPETITION_DIVISIONS = [
+            { id: 'sumobot-500g', title: 'Sumobot 500g', detail: 'Micro Force & Tactical Grip' },
+            { id: 'sumobot-3kg', title: 'Sumobot 3kg', detail: 'Tractive Force & Dual Brushless' },
+            { id: 'mini-soccerbot', title: 'Mini Soccerbot', detail: 'Kinematics & Radio Command' },
+            { id: 'line-follower', title: 'Line Follower', detail: 'PID Control & 16-Array IR' },
+            { id: 'plc-industrial', title: 'PLC Industrial', detail: 'Liaison Relay & HMI Integration' },
+            { id: 'collaborative-robot', title: 'Collaborative Robot', detail: 'Active Feedback & Spatial Safety' },
+            { id: 'research-challenge', title: 'Research Challenge', detail: 'Applied Research & Science Papers' },
+            { id: 'creative-innovation', title: 'Creative Innovation', detail: 'Rapid Prototyping & CAD Design' },
+            { id: 'drone-innovation', title: 'Drone Innovation', detail: 'Lidar Distance & Optical Flow' }
+        ];
+
+        // SEED DEFAULTS BACKUP
+        const MOCK_DATABASE_SEEDS = [
+            {
+                id: 'seed-1',
+                divisionId: 'sumobot-500g',
+                teamName: 'GARUDA MINI-1',
+                leader: {
+                    name: 'Fauzan Lubis',
+                    email: 'fauzan.lubis@unj.ac.id',
+                    whatsapp: '+6281234567890',
+                    institution: 'Universitas Negeri Jakarta'
+                },
+                members: [
+                    { id: 'sm-1', name: 'Ahmad Riza', email: 'ahmaddr@unj.ac.id', whatsapp: '+6281234567891', institution: 'Universitas Negeri Jakarta' },
+                    { id: 'sm-2', name: 'Budi Hermawan', email: 'budih@unj.ac.id', whatsapp: '+6281234567892', institution: 'Universitas Negeri Jakarta' }
+                ],
+                paymentMethod: 'QRIS',
+                paymentStatus: 'PAID',
+                refCode: 'ERIC-REG-SUM5G',
+                amount: 'IDR 150,000'
+            },
+            {
+                id: 'seed-2',
+                divisionId: 'plc-industrial',
+                teamName: 'TRIDENT AUTOMATION',
+                leader: {
+                    name: 'Rian Hidayat',
+                    email: 'rian.hidayat@its.ac.id',
+                    whatsapp: '+6285612345678',
+                    institution: 'Institut Teknologi Sepuluh Nopember'
+                },
+                members: [
+                    { id: 'plc-1', name: 'Siti Aminah', email: 'sitia@its.ac.id', whatsapp: '+6285612345679', institution: 'Institut Teknologi Sepuluh Nopember' }
+                ],
+                paymentMethod: 'BCA',
+                paymentStatus: 'PAID',
+                refCode: 'ERIC-REG-PLC09',
+                amount: 'IDR 150,000'
+            },
+            {
+                id: 'seed-3',
+                divisionId: 'line-follower',
+                teamName: 'VEGA TRACKER',
+                leader: {
+                    name: 'Dwi Cahyo',
+                    email: 'dwi.cahyo@ui.ac.id',
+                    whatsapp: '+6287812345678',
+                    institution: 'Universitas Indonesia'
+                },
+                members: [
+                    { id: 'lf-1', name: 'Eko Wahyudi', email: 'ekow@ui.ac.id', whatsapp: '+6287812345679', institution: 'Universitas Indonesia' },
+                    { id: 'lf-2', name: 'Galih Saputra', email: 'galihs@ui.ac.id', whatsapp: '+6287812345680', institution: 'Universitas Indonesia' }
+                ],
+                paymentMethod: 'VISA',
+                paymentStatus: 'PAID',
+                refCode: 'ERIC-REG-LFLW2',
+                amount: 'IDR 150,000'
+            },
+            {
+                id: 'seed-4',
+                divisionId: 'creative-innovation',
+                teamName: 'NUSA LIGHTHOUSE',
+                leader: {
+                    name: 'Yuni Lestari',
+                    email: 'yuni.l@ugm.ac.id',
+                    whatsapp: '+6281912345678',
+                    institution: 'Universitas Gadjah Mada'
+                },
+                members: [
+                    { id: 'ci-1', name: 'Hadi Wijaya', email: 'hadiw@ugm.ac.id', whatsapp: '+6281912345679', institution: 'Universitas Gadjah Mada' }
+                ],
+                paymentMethod: 'PAYPAL',
+                paymentStatus: 'PAID',
+                refCode: 'ERIC-REG-CRIN0',
+                amount: 'IDR 150,000'
+            },
+            {
+                id: 'seed-5',
+                divisionId: 'sumobot-3kg',
+                teamName: 'KRAKATAU HEAVY-3',
+                leader: {
+                    name: 'Bayu Nugroho',
+                    email: 'bayu.nugroho@itb.ac.id',
+                    whatsapp: '+6281112345678',
+                    institution: 'Institut Teknologi Bandung'
+                },
+                members: [
+                    { id: 'sh-1', name: 'Hendri Setiawan', email: 'hendris@itb.ac.id', whatsapp: '+6281112345679', institution: 'Institut Teknologi Bandung' },
+                    { id: 'sh-2', name: 'Irfan Hakim', email: 'irfanh@itb.ac.id', whatsapp: '+6281112345680', institution: 'Institut Teknologi Bandung' }
+                ],
+                paymentMethod: 'QRIS',
+                paymentStatus: 'PAID',
+                refCode: 'ERIC-REG-SUM3K',
+                amount: 'IDR 150,000'
+            },
+            {
+                id: 'seed-6',
+                divisionId: 'drone-innovation',
+                teamName: 'SCAVENGER SKYREAPER',
+                leader: {
+                    name: 'Riska Amalia',
+                    email: 'riska.a@unj.ac.id',
+                    whatsapp: '+6281234515511',
+                    institution: 'Universitas Negeri Jakarta'
+                },
+                members: [
+                    { id: 'ds-1', name: 'Zainuddin Malik', email: 'zainm@unj.ac.id', whatsapp: '+6281234515512', institution: 'Universitas Negeri Jakarta' }
+                ],
+                paymentMethod: 'QRIS',
+                paymentStatus: 'PAID',
+                refCode: 'ERIC-REG-SKRPR',
+                amount: 'IDR 150,000'
+            }
+        ];
+
+        let registrations = [];
+
+        // ON-LOAD MOUNTING
+        window.addEventListener('DOMContentLoaded', () => {
+            initializeDatabase();
+            renderSelectors();
+            renderDataWorksheets();
+        });
+
+        // HANDLE DATABASE FETCHES
+        function initializeDatabase() {
+            let records = localStorage.getItem('eric_registrations');
+            if (records) {
+                try {
+                    registrations = JSON.parse(records);
+                } catch(e) {
+                    registrations = [...MOCK_DATABASE_SEEDS];
+                }
+            } else {
+                registrations = [...MOCK_DATABASE_SEEDS];
+                localStorage.setItem('eric_registrations', JSON.stringify(registrations));
+            }
+        }
+
+        // REDEPOSIT SEEDS ON COMMAND
+        function resetToDefaultSeeds() {
+            if (confirm('RESEED MOCK DATABASE TO ORIGINAL CHANNELS? Custom student rows created recently will be erased.')) {
+                registrations = [...MOCK_DATABASE_SEEDS];
+                localStorage.setItem('eric_registrations', JSON.stringify(registrations));
+                renderDataWorksheets();
+                triggerAlert('DATABASE RESTORED TO DEFAULT ROSTERS SUCCESSFULLY!');
+            }
+        }
+
+        // FULL DATABASE ERASE
+        function clearLedgerEntries() {
+            if (confirm('CRITICAL ACTION: COMPLETELY WIPE OUT DATA RECORDS? This empty roster state will write direct blank lines.')) {
+                registrations = [];
+                localStorage.setItem('eric_registrations', JSON.stringify(registrations));
+                renderDataWorksheets();
+                triggerAlert('DATABASE PURGED. LEDGER COMPILATION IS CURRENTLY EMPTY.');
+            }
+        }
+
+        // RENDER SELECT OPTION CHANNELS
+        function renderSelectors() {
+            const selectEl = document.getElementById('inject-division');
+            selectEl.innerHTML = '';
+            COMPETITION_DIVISIONS.forEach((item) => {
+                const opt = document.createElement('option');
+                opt.value = item.id;
+                opt.innerText = item.title;
+                opt.className = "bg-zinc-950 text-white";
+                selectEl.appendChild(opt);
+            });
+        }
+
+        // RE-COMPULSION TAB RENDERS
+        function renderDataWorksheets() {
+            // Stats calculation
+            const teamsLen = registrations.length;
+            let competitorCount = teamsLen;
+            registrations.forEach(r => {
+                if(r.members && r.members.length) {
+                    competitorCount += r.members.length;
+                }
+            });
+
+            document.getElementById('stat-teams-count').innerText = `${teamsLen} Teams`;
+            document.getElementById('stat-participants-count').innerText = `${competitorCount} Members`;
+            
+            // Render Live table columns
+            const sheetsContainer = document.getElementById('division-sheets-container');
+            sheetsContainer.innerHTML = '';
+
+            COMPETITION_DIVISIONS.forEach((category) => {
+                const categoryRegs = registrations.filter(r => r.divisionId === category.id);
+
+                const divBlock = document.createElement('div');
+                divBlock.className = "bg-[#070708]/80 border border-zinc-900 rounded-2xl overflow-hidden box-glow";
+                
+                let rowsHtml = '';
+                if (categoryRegs.length === 0) {
+                    rowsHtml = `
+                        <tr>
+                            <td colspan="6" class="p-8 text-center text-xs font-mono text-zinc-600 uppercase">
+                                -- NO TEAM ENTRIES RECORDED FOR THIS DIVISION YET --
+                            </td>
+                        </tr>
+                    `;
+                } else {
+                    categoryRegs.forEach((reg, idx) => {
+                        const hasMembers = (reg.members && reg.members.length > 0);
+                        const namesText = hasMembers ? reg.members.map(m => m.name).join(', ') : 'None';
+                        
+                        rowsHtml += `
+                            <tr class="border-b border-zinc-950/80 hover:bg-white/[0.01] transition-all">
+                                <td class="p-4 text-xs font-mono text-zinc-500">${idx + 1}</td>
+                                <td class="p-4 text-xs font-mono text-[#00FF88] font-bold select-all">${reg.refCode}</td>
+                                <td class="p-4 text-sm font-display font-bold text-white uppercase">${reg.teamName}</td>
+                                <td class="p-4 text-xs font-mono">
+                                    <div class="text-white font-semibold">${reg.leader.name}</div>
+                                    <div class="text-[10px] text-zinc-500">${reg.leader.email} | ${reg.leader.whatsapp || ''}</div>
+                                </td>
+                                <td class="p-4 text-xs font-mono text-zinc-400">
+                                    <div class="font-semibold">${reg.leader.institution}</div>
+                                    <div class="text-[9px] text-zinc-500 max-w-xs truncate">Members: ${namesText}</div>
+                                </td>
+                                <td class="p-4 text-xs font-mono text-right flex flex-col items-end gap-1">
+                                    <span class="px-2 py-0.5 bg-emerald-950/40 text-[#00FF88] border border-emerald-500/20 rounded uppercase text-[9px] font-bold">
+                                        ${reg.paymentMethod || 'QRIS'}
+                                    </span>
+                                    <button onclick="deleteSingleEntry('${reg.id}')" class="text-[9.5px] text-zinc-600 hover:text-red-400 font-mono uppercase transition-colors">Wipe Single &times;</button>
+                                </td>
+                            </tr>
+                        `;
+                    });
+                }
+
+                divBlock.innerHTML = `
+                    <!-- Sheet Panel Header -->
+                    <div class="p-4 bg-zinc-950 border-b border-zinc-900 flex justify-between items-center flex-wrap gap-2 select-none">
+                        <div class="flex items-center gap-2.5">
+                            <span class="w-2.5 h-2.5 rounded-full bg-[#10B981] shadow-[0_0_8px_rgba(16,185,129,0.5)]"></span>
+                            <h5 class="font-display font-black text-xs text-white uppercase tracking-wider">
+                                Sheet: ${category.title}
+                            </h5>
+                        </div>
+                        <span class="px-2.5 py-1 bg-zinc-900 text-[8.5px] font-mono text-zinc-500 rounded-md border border-zinc-800 uppercase">
+                            ${categoryRegs.length} Teams Registered
+                        </span>
+                    </div>
+
+                    <!-- Layout Tables representation -->
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse">
+                            <thead>
+                                <tr class="bg-zinc-950/40 border-b border-zinc-900 text-zinc-500 font-mono text-[9px] uppercase tracking-wider">
+                                    <th class="p-4 w-12 font-medium">No</th>
+                                    <th class="p-4 w-40 font-medium">Ref Code</th>
+                                    <th class="p-4 font-medium">Team Name</th>
+                                    <th class="p-4 font-medium">Leader Contact</th>
+                                    <th class="p-4 font-medium">Affiliation & Members</th>
+                                    <th class="p-4 text-right font-medium">Operations</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-zinc-900/60">
+                                ${rowsHtml}
+                            </tbody>
+                        </table>
+                    </div>
+                `;
+
+                sheetsContainer.appendChild(divBlock);
+            });
+        }
+
+        // DELETE SINGLE RECORD FROM RE-RENDERS
+        function deleteSingleEntry(id) {
+            if(confirm('REMOVE THIS REGISTERED TEAM PERMANENTLY?')) {
+                registrations = registrations.filter(r => r.id !== id);
+                localStorage.setItem('eric_registrations', JSON.stringify(registrations));
+                renderDataWorksheets();
+                triggerAlert('TEAM RECORD DELETED SUCCESSFULLY.');
+            }
+        }
+
+        // MANUAL TEAM INJECTIONS
+        function handleManualInject(e) {
+            e.preventDefault();
+
+            const divisionId = document.getElementById('inject-division').value;
+            const teamName = document.getElementById('inject-teamname').value.trim();
+            const leaderName = document.getElementById('inject-leadername').value.trim();
+            const school = document.getElementById('inject-school').value.trim();
+            const email = document.getElementById('inject-email').value.trim();
+            const whatsapp = document.getElementById('inject-whatsapp').value.trim();
+
+            const newReg = {
+                id: 'inject-' + Date.now(),
+                divisionId: divisionId,
+                teamName: teamName.toUpperCase(),
+                leader: {
+                    name: leaderName,
+                    email: email,
+                    whatsapp: whatsapp,
+                    institution: school
+                },
+                members: [],
+                paymentMethod: 'INJECTED-OFFICE',
+                paymentStatus: 'PAID',
+                refCode: 'ERIC-INJ-' + Math.floor(100+Math.random()*900),
+                amount: 'IDR 150,000'
+            };
+
+            registrations.unshift(newReg);
+            localStorage.setItem('eric_registrations', JSON.stringify(registrations));
+            
+            // Clean interface
+            document.getElementById('inject-teamname').value = '';
+            document.getElementById('inject-leadername').value = '';
+            document.getElementById('inject-email').value = '';
+            document.getElementById('inject-whatsapp').value = '';
+
+            renderDataWorksheets();
+            triggerAlert(`TEAM "${newReg.teamName}" FORCED INTO ROSTER SUCCESSFULLY!`);
+        }
+
+        // NOTIFICATION CONTROLS
+        function triggerAlert(msg) {
+            const container = document.getElementById('general-alert');
+            const txt = document.getElementById('general-alert-msg');
+            txt.innerText = 'ALERT: ' + msg.toUpperCase();
+            container.classList.remove('hidden');
+        }
+
+        function dismissAlert() {
+            document.getElementById('general-alert').classList.add('hidden');
+        }
+
+        // DURATION OF EXCEL GENERATION
+        function downloadExcelLedger() {
+            if (typeof XLSX === 'undefined') {
+                alert("SheetJS Excel processor is downloading in the background. Please restore connection to internet CDN.");
+                return;
+            }
+
+            // Creating a pristine Workbook instance
+            const wb = XLSX.utils.book_new();
+
+            COMPETITION_DIVISIONS.forEach((division) => {
+                const divisionRegs = registrations.filter(r => r.divisionId === division.id);
+                const dataRows = [];
+
+                if (divisionRegs.length > 0) {
+                    divisionRegs.forEach((reg, index) => {
+                        const rObj = {
+                            'No': index + 1,
+                            'Reference ID': reg.refCode || 'N/A',
+                            'Team Name': reg.teamName || 'N/A',
+                            'Leader Name': reg.leader.name || 'N/A',
+                            'Leader Email': reg.leader.email || 'N/A',
+                            'Leader WhatsApp': reg.leader.whatsapp || 'N/A',
+                            'Institution': reg.leader.institution || 'N/A',
+                            'Payment Gateway': reg.paymentMethod || 'QRIS',
+                            'Billing Verification': reg.paymentStatus || 'PAID',
+                            'Amount Due': reg.amount || 'IDR 150,000',
+                            'Roster Headcount': (reg.members ? reg.members.length : 0) + 1
+                        };
+
+                        // Support up to 5 individual members in direct horizontal columns
+                        for (let i = 0; i < 5; i++) {
+                            const member = (reg.members && reg.members[i]) ? reg.members[i] : null;
+                            rObj[`Member ${i + 1} Name`] = member ? member.name : '';
+                            rObj[`Member ${i + 1} Email`] = member ? member.email : '';
+                            rObj[`Member ${i + 1} WhatsApp`] = member ? member.whatsapp || '' : '';
+                            rObj[`Member ${i + 1} Institution`] = member ? member.institution : '';
+                        }
+
+                        dataRows.push(rObj);
+                    });
+                } else {
+                    // Empty arenas placeholder layout to keep sheets consistent
+                    const emptyObj = {
+                        'No': '-',
+                        'Reference ID': '-',
+                        'Team Name': '-',
+                        'Leader Name': '(No registration entries recorded in this arena yet)',
+                        'Leader Email': '-',
+                        'Leader WhatsApp': '-',
+                        'Institution': '-',
+                        'Payment Gateway': '-',
+                        'Billing Verification': '-',
+                        'Amount Due': '-',
+                        'Roster Headcount': 0
+                    };
+                    for (let i = 0; i < 5; i++) {
+                        emptyObj[`Member ${i + 1} Name`] = '';
+                        emptyObj[`Member ${i + 1} Email`] = '';
+                        emptyObj[`Member ${i + 1} WhatsApp`] = '';
+                        emptyObj[`Member ${i + 1} Institution`] = '';
+                    }
+                    dataRows.push(emptyObj);
+                }
+
+                // Append sheets format
+                const ws = XLSX.utils.json_to_sheet(dataRows);
+
+                // Setup clean columns parameters
+                ws['!cols'] = [
+                    { wch: 6 },   // No
+                    { wch: 18 },  // Reference Code
+                    { wch: 25 },  // Team Name
+                    { wch: 22 },  // Leader Name
+                    { wch: 28 },  // Leader Email
+                    { wch: 18 },  // Leader WhatsApp
+                    { wch: 30 },  // Institution
+                    { wch: 16 },  // Payment Gateway
+                    { wch: 15 },  // Billing Status
+                    { wch: 15 },  // Amount Paid
+                    { wch: 12 },  // Roster size
+                    { wch: 22 },  // Mem 1 Name
+                    { wch: 25 },  // Mem 1 Email
+                    { wch: 22 },  // Mem 2 Name
+                    { wch: 25 }   // Mem 2 Email
+                ];
+
+                // Append tab sheet avoiding symbol restrictions
+                const cleanSheetTitle = division.title.replace(/[\\\/\?\*\:\[\]]/g, '').substring(0, 31);
+                XLSX.utils.book_append_sheet(wb, ws, cleanSheetTitle);
+            });
+
+            // Write and finalize download stream
+            const filename = `ERIC_2026_Official_Ledger_${new Date().toISOString().slice(0,10)}.xlsx`;
+            XLSX.writeFile(wb, filename);
+            triggerAlert(`SUCCESSFULLY BUILT EXCEL WORKBOOK: "${filename}"`);
+        }
+    </script>
+</body>
+</html>

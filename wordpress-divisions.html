@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ERIC 2026 - Challenge Divisions Overview</title>
+    <!-- PREMIUM FONTS -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&family=Space+Grotesk:wght@600;700;800;900&display=swap" rel="stylesheet">
+    <!-- TAILWIND CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                        display: ['Space Grotesk', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .box-glow {
+            box-shadow: 0 0 50px rgba(0, 255, 136, 0.05);
+        }
+        .text-[#C5A059] {
+            color: #C5A059;
+        }
+    </style>
+</head>
+<body class="bg-[#050505] text-white">
+
+    <!-- ================= CHALLENGE DIVISIONS SECTION (MAPPED FROM Divisions.tsx & data.ts) ================= -->
+    <section id="divisions-section" class="relative py-28 bg-[#050505] border-t border-white/5 overflow-hidden font-sans">
+        
+        <!-- Visual cybernetic backdrops -->
+        <div class="absolute right-[5%] top-[-5%] w-[450px] h-[450px] bg-[#00FF88]/5 rounded-full blur-[110px] pointer-events-none"></div>
+        <div class="absolute left-[5%] bottom-[10%] w-[380px] h-[380px] bg-[#0047AB]/5 rounded-full blur-[130px] pointer-events-none"></div>
+
+        <div class="max-w-7xl mx-auto px-6 relative z-10">
+            
+            <!-- Section Header -->
+            <div class="mb-20 select-none">
+                <div class="flex items-center gap-3 text-xs font-mono text-[#00FF88] tracking-[0.4em] uppercase mb-4 font-bold">
+                    <svg class="w-4 h-4 text-[#00FF88]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v13m0-13V6a2 2 0 112 2h-2zm0 0V5a2 2 0 10-2 2h2zm0 0h4m-4 0H8m12 9a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                    <span>COMPETITION DIVISIONS</span>
+                </div>
+                <h2 class="text-4xl md:text-7xl font-sans font-black tracking-tighter text-white uppercase leading-none">
+                    THE <span class="text-transparent bg-clip-text bg-gradient-to-r from-[#00FF88] to-[#4DFFB8] text-glow">ARENAS</span>
+                </h2>
+                <p class="text-[#B3B3B3] font-mono text-xs sm:text-sm uppercase max-w-xl mt-4 leading-relaxed">
+                    Nine competition categories built to test the limits of innovation, design, and practical electronics and robotics application.
+                </p>
+            </div>
+
+            <!-- 3D Card-Like Grid Layout (9 Divisions) -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                
+                <!-- CARD 1: SUMOBOT 500G -->
+                <div class="relative cursor-pointer select-none group focus:outline-none" onclick="triggerLockedRegistration('Sumobot 500g')">
+                    <div class="absolute inset-0 rounded-2xl bg-[#00FF88]/5 opacity-0 group-hover:opacity-100 blur-[20px] transition-all duration-300 pointer-events-none"></div>
+                    <div class="relative overflow-hidden bg-gradient-to-b from-zinc-900/90 to-black border border-white/5 group-hover:border-[#00FF88]/30 p-8 h-[440px] rounded-2xl flex flex-col justify-between transition-all duration-300 group-hover:scale-[1.02] shadow-[0_15px_35px_rgba(0,0,0,0.6)]">
+                        <div class="absolute top-0 right-0 w-16 h-16 bg-white/5 group-hover:bg-[#00FF88]/10 transition-colors duration-300 [clip-path:polygon(100%_0,0_0,100%_100%)] pointer-events-none"></div>
+                        <div>
+                            <div class="flex justify-between items-start mb-6">
+                                <div class="p-3 bg-zinc-950/80 rounded-xl border border-white/10 text-white group-hover:text-[#00FF88] group-hover:border-[#00FF88]/40 transition-colors duration-300">
+                                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 22s8-4 8-10V5l-8-3-8 3v7s0 6 8 10z"/></svg>
+                                </div>
+                                <span class="font-mono text-[9px] text-zinc-500 uppercase font-bold">DIVISION 01</span>
+                            </div>
+                            <h3 class="text-2xl font-sans font-black text-white group-hover:text-[#00FF88] transition-colors uppercase leading-none tracking-tight">Sumobot 500g</h3>
+                            <h4 class="text-[10px] font-mono text-[#C5A059] uppercase tracking-wider block mt-1.5 font-bold">Robot Sumo 500g</h4>
+                            <p class="text-zinc-400 text-xs mt-4 leading-relaxed line-clamp-4">
+                                Autonomous combat maneuvers and precision engineering design. Teams deploy lightweight tactical sumobots optimized for high response speeds and active domain domination under 500g weight tolerances.
+                            </p>
+                            <p class="text-zinc-500 text-[10px] italic mt-1 font-sans">Pertarungan robot otonom dengan rekayasa tingkat mikro. Tim merancang robot sumo taktis ringan di bawah 500g yang dioptimalkan untuk reaksi instan dan dominasi arena.</p>
+                        </div>
+                        <div class="border-t border-white/5 pt-5 space-y-3">
+                            <div class="flex justify-between items-center text-[10px] font-mono">
+                                <span class="text-zinc-500">DIVISION SPECIFICATION</span>
+                                <span class="text-white font-semibold uppercase">Micro Force & Tactical Grip</span>
+                            </div>
+                            <div>
+                                <div class="flex justify-between items-center text-[9px] font-mono text-zinc-400 mb-1">
+                                    <span>TECHNICAL INDEX</span>
+                                    <span>89%</span>
+                                </div>
+                                <div class="h-1 w-full bg-zinc-900 rounded-full overflow-hidden">
+                                    <div class="h-full bg-gradient-to-r from-[#0047AB] via-[#00FF88] to-[#4DFFB8] transition-all duration-500" style="width: 89%;"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- CARD 2: SUMOBOT 3KG -->
+                <div class="relative cursor-pointer select-none group focus:outline-none" onclick="triggerLockedRegistration('Sumobot 3kg')">
+                    <div class="absolute inset-0 rounded-2xl bg-amber-500/5 opacity-0 group-hover:opacity-100 blur-[20px] transition-all duration-300 pointer-events-none"></div>
+                    <div class="relative overflow-hidden bg-gradient-to-b from-zinc-900/90 to-black border border-white/5 group-hover:border-[#C5A059]/40 p-8 h-[440px] rounded-2xl flex flex-col justify-between transition-all duration-300 group-hover:scale-[1.02] shadow-[0_15px_35px_rgba(0,0,0,0.6)]">
+                        <div class="absolute top-0 right-0 w-16 h-16 bg-white/5 group-hover:bg-amber-500/10 transition-colors duration-300 [clip-path:polygon(100%_0,0_0,100%_100%)] pointer-events-none"></div>
+                        <div>
+                            <div class="flex justify-between items-start mb-6">
+                                <div class="p-3 bg-zinc-950/80 rounded-xl border border-white/10 text-white group-hover:text-[#C5A059] group-hover:border-[#C5A059]/40 transition-colors duration-300">
+                                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 9l3 3-3 3m5 0h3M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                                </div>
+                                <span class="font-mono text-[9px] text-zinc-500 uppercase font-bold">DIVISION 02</span>
+                            </div>
+                            <h3 class="text-2xl font-sans font-black text-white group-hover:text-[#C5A059] transition-colors uppercase leading-none tracking-tight">Sumobot 3kg</h3>
+                            <h4 class="text-[10px] font-mono text-[#C5A059] uppercase tracking-wider block mt-1.5 font-bold">Robot Sumo 3kg</h4>
+                            <p class="text-zinc-400 text-xs mt-4 leading-relaxed line-clamp-4">
+                                High power magnetic tractive force and strategic programming. Heavier platforms commanding supreme steel armor, dual brushless drives, and autonomous ring displacement strategies.
+                            </p>
+                            <p class="text-zinc-500 text-[10px] italic mt-1 font-sans">Kekuatan medan magnet dan traksi ekstrem dengan pemrograman taktis. Robot sumo 3kg berlapis baja premium, sistem penggerak brushless ganda, dan strategi sensorik otonom.</p>
+                        </div>
+                        <div class="border-t border-white/5 pt-5 space-y-3">
+                            <div class="flex justify-between items-center text-[10px] font-mono">
+                                <span class="text-zinc-500">DIVISION SPECIFICATION</span>
+                                <span class="text-white font-semibold uppercase">Tractive Force & Dual Brushless</span>
+                            </div>
+                            <div>
+                                <div class="flex justify-between items-center text-[9px] font-mono text-zinc-400 mb-1">
+                                    <span>TECHNICAL INDEX</span>
+                                    <span>96%</span>
+                                </div>
+                                <div class="h-1 w-full bg-zinc-900 rounded-full overflow-hidden">
+                                    <div class="h-full bg-gradient-to-r from-[#0047AB] via-[#00FF88] to-[#4DFFB8] transition-all duration-500" style="width: 96%;"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- CARD 3: MINI SOCCERBOT -->
+                <div class="relative cursor-pointer select-none group focus:outline-none" onclick="triggerLockedRegistration('Mini Soccerbot')">
+                    <div class="absolute inset-0 rounded-2xl bg-blue-500/5 opacity-0 group-hover:opacity-100 blur-[20px] transition-all duration-300 pointer-events-none"></div>
+                    <div class="relative overflow-hidden bg-gradient-to-b from-zinc-900/90 to-black border border-white/5 group-hover:border-[#0047AB]/50 p-8 h-[440px] rounded-2xl flex flex-col justify-between transition-all duration-300 group-hover:scale-[1.02] shadow-[0_15px_35px_rgba(0,0,0,0.6)]">
+                        <div class="absolute top-0 right-0 w-16 h-16 bg-white/5 group-hover:bg-[#0047AB]/10 transition-colors duration-300 [clip-path:polygon(100%_0,0_0,100%_100%)] pointer-events-none"></div>
+                        <div>
+                            <div class="flex justify-between items-start mb-6">
+                                <div class="p-3 bg-zinc-950/80 rounded-xl border border-white/10 text-white group-hover:text-[#0047AB] group-hover:border-[#0047AB]/40 transition-colors duration-300">
+                                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+                                </div>
+                                <span class="font-mono text-[9px] text-zinc-500 uppercase font-bold">DIVISION 03</span>
+                            </div>
+                            <h3 class="text-2xl font-sans font-black text-white group-hover:text-blue-400 transition-colors uppercase leading-none tracking-tight">Mini Soccerbot</h3>
+                            <h4 class="text-[10px] font-mono text-[#C5A059] uppercase tracking-wider block mt-1.5 font-bold">Robot Sepak Bola Mini</h4>
+                            <p class="text-zinc-400 text-xs mt-4 leading-relaxed line-clamp-4">
+                                Active teamwork, decentralized communication, dynamic AI decision-making controls, and real-time kinematic control. Perfect bipedal or wheeled athletics converging on the tactical ball.
+                            </p>
+                            <p class="text-zinc-500 text-[10px] italic mt-1 font-sans">Kerjasama tim aktif, komunikasi desentralisasi, kecerdasan buatan dinamis, dan kontrol pemosisian real-time. Atletik robotik roda atau berkaki bertarung merebut bola.</p>
+                        </div>
+                        <div class="border-t border-white/5 pt-5 space-y-3">
+                            <div class="flex justify-between items-center text-[10px] font-mono">
+                                <span class="text-zinc-500">DIVISION SPECIFICATION</span>
+                                <span class="text-white font-semibold uppercase">Kinematics & Radio Command</span>
+                            </div>
+                            <div>
+                                <div class="flex justify-between items-center text-[9px] font-mono text-zinc-400 mb-1">
+                                    <span>TECHNICAL INDEX</span>
+                                    <span>91%</span>
+                                </div>
+                                <div class="h-1 w-full bg-zinc-900 rounded-full overflow-hidden">
+                                    <div class="h-full bg-gradient-to-r from-[#0047AB] via-[#00FF88] to-[#4DFFB8] transition-all duration-500" style="width: 91%;"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- CARD 4: LINE FOLLOWER -->
+                <div class="relative cursor-pointer select-none group focus:outline-none" onclick="triggerLockedRegistration('Line Follower')">
+                    <div class="absolute inset-0 rounded-2xl bg-[#4DFFB8]/5 opacity-0 group-hover:opacity-100 blur-[20px] transition-all duration-300 pointer-events-none"></div>
+                    <div class="relative overflow-hidden bg-gradient-to-b from-zinc-900/90 to-black border border-white/5 group-hover:border-[#4DFFB8]/40 p-8 h-[440px] rounded-2xl flex flex-col justify-between transition-all duration-300 group-hover:scale-[1.02] shadow-[0_15px_35px_rgba(0,0,0,0.6)]">
+                        <div class="absolute top-0 right-0 w-16 h-16 bg-white/5 group-hover:bg-[#4DFFB8]/10 transition-colors duration-300 [clip-path:polygon(100%_0,0_0,100%_100%)] pointer-events-none"></div>
+                        <div>
+                            <div class="flex justify-between items-start mb-6">
+                                <div class="p-3 bg-zinc-950/80 rounded-xl border border-white/10 text-white group-hover:text-[#4DFFB8] group-hover:border-[#4DFFB8]/40 transition-colors duration-300">
+                                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 2L2 22l10-4 10 4L12 2z"/></svg>
+                                </div>
+                                <span class="font-mono text-[9px] text-zinc-500 uppercase font-bold">DIVISION 04</span>
+                            </div>
+                            <h3 class="text-2xl font-sans font-black text-white group-hover:text-[#4DFFB8] transition-colors uppercase leading-none tracking-tight">Line Follower</h3>
+                            <h4 class="text-[10px] font-mono text-[#C5A059] uppercase tracking-wider block mt-1.5 font-bold">Robot Pengikut Garis</h4>
+                            <p class="text-zinc-400 text-xs mt-4 leading-relaxed line-clamp-4">
+                                High speed tracking, razor sharp curves, and real-time math optimization. High-rate IR arrays translating continuous tracks securely under strict physical tolerances.
+                            </p>
+                            <p class="text-zinc-500 text-[10px] italic mt-1 font-sans">Navigasi lintasan super cepat dengan perhitungan kontrol PID instan. 16-channel array sensor inframerah presisi tinggi mendeteksi belokan secara mulus.</p>
+                        </div>
+                        <div class="border-t border-white/5 pt-5 space-y-3">
+                            <div class="flex justify-between items-center text-[10px] font-mono">
+                                <span class="text-zinc-500">DIVISION SPECIFICATION</span>
+                                <span class="text-white font-semibold uppercase">PID Control & 16-Array IR</span>
+                            </div>
+                            <div>
+                                <div class="flex justify-between items-center text-[9px] font-mono text-zinc-400 mb-1">
+                                    <span>TECHNICAL INDEX</span>
+                                    <span>87%</span>
+                                </div>
+                                <div class="h-1 w-full bg-zinc-900 rounded-full overflow-hidden">
+                                    <div class="h-full bg-gradient-to-r from-[#0047AB] via-[#00FF88] to-[#4DFFB8] transition-all duration-500" style="width: 87%;"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- CARD 5: PLC INDUSTRIAL -->
+                <div class="relative cursor-pointer select-none group focus:outline-none" onclick="triggerLockedRegistration('PLC Industrial')">
+                    <div class="absolute inset-0 rounded-2xl bg-[#00FF88]/5 opacity-0 group-hover:opacity-100 blur-[20px] transition-all duration-300 pointer-events-none"></div>
+                    <div class="relative overflow-hidden bg-gradient-to-b from-zinc-900/90 to-black border border-white/5 group-hover:border-[#00FF88]/30 p-8 h-[440px] rounded-2xl flex flex-col justify-between transition-all duration-300 group-hover:scale-[1.02] shadow-[0_15px_35px_rgba(0,0,0,0.6)]">
+                        <div class="absolute top-0 right-0 w-16 h-16 bg-white/5 group-hover:bg-[#00FF88]/10 transition-colors duration-300 [clip-path:polygon(100%_0,0_0,100%_100%)] pointer-events-none"></div>
+                        <div>
+                            <div class="flex justify-between items-start mb-6">
+                                <div class="p-3 bg-zinc-950/80 rounded-xl border border-white/10 text-white group-hover:text-[#00FF88] group-hover:border-[#00FF88]/40 transition-colors duration-300">
+                                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2 17l10 5 10-5M2 12l10 5 10-5M12 2L2 7l10 5 10-5-10-5z"/></svg>
+                                </div>
+                                <span class="font-mono text-[9px] text-zinc-500 uppercase font-bold">DIVISION 05</span>
+                            </div>
+                            <h3 class="text-2xl font-sans font-black text-white group-hover:text-[#00FF88] transition-colors uppercase leading-none tracking-tight">PLC Industrial</h3>
+                            <h4 class="text-[10px] font-mono text-[#C5A059] uppercase tracking-wider block mt-1.5 font-bold">PLC Otomasi Industri</h4>
+                            <p class="text-zinc-400 text-xs mt-4 leading-relaxed line-clamp-4">
+                                Smart automation control models, robust PLC logic integration, and Industry 4.0 production simulator. Direct deployment of hardware relays processing real manufacturing tasks.
+                            </p>
+                            <p class="text-zinc-500 text-[10px] italic mt-1 font-sans">Sistem pengkabelan modular, logika PLC industri, dan integrasi pabrik cerdas Industry 4.0. Pemrosesan relay waktu nyata untuk mensimulasikan pabrik otomatis murni.</p>
+                        </div>
+                        <div class="border-t border-white/5 pt-5 space-y-3">
+                            <div class="flex justify-between items-center text-[10px] font-mono">
+                                <span class="text-zinc-500">DIVISION SPECIFICATION</span>
+                                <span class="text-white font-semibold uppercase">Relay & HMI Integration</span>
+                            </div>
+                            <div>
+                                <div class="flex justify-between items-center text-[9px] font-mono text-zinc-400 mb-1">
+                                    <span>TECHNICAL INDEX</span>
+                                    <span>92%</span>
+                                </div>
+                                <div class="h-1 w-full bg-zinc-900 rounded-full overflow-hidden">
+                                    <div class="h-full bg-gradient-to-r from-[#0047AB] via-[#00FF88] to-[#4DFFB8] transition-all duration-500" style="width: 92%;"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- CARD 6: COLLABORATIVE ROBOT -->
+                <div class="relative cursor-pointer select-none group focus:outline-none" onclick="triggerLockedRegistration('Collaborative Robot')">
+                    <div class="absolute inset-0 rounded-2xl bg-amber-500/5 opacity-0 group-hover:opacity-100 blur-[20px] transition-all duration-300 pointer-events-none"></div>
+                    <div class="relative overflow-hidden bg-gradient-to-b from-zinc-900/90 to-black border border-white/5 group-hover:border-[#C5A059]/40 p-8 h-[440px] rounded-2xl flex flex-col justify-between transition-all duration-300 group-hover:scale-[1.02] shadow-[0_15px_35px_rgba(0,0,0,0.6)]">
+                        <div class="absolute top-0 right-0 w-16 h-16 bg-white/5 group-hover:bg-[#C5A059]/10 transition-colors duration-300 [clip-path:polygon(100%_0,0_0,100%_100%)] pointer-events-none"></div>
+                        <div>
+                            <div class="flex justify-between items-start mb-6">
+                                <div class="p-3 bg-zinc-950/80 rounded-xl border border-white/10 text-white group-hover:text-[#C5A059] group-hover:border-[#C5A059]/40 transition-colors duration-300">
+                                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 24 24"><rect x="4" y="4" width="16" height="16" rx="2" stroke="currentColor" stroke-width="2"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 1v3M15 1v3M9 20v3M15 20v3M20 9h3M20 15h3M1 9h3M1 15h3"/></svg>
+                                </div>
+                                <span class="font-mono text-[9px] text-zinc-500 uppercase font-bold">DIVISION 06</span>
+                            </div>
+                            <h3 class="text-2xl font-sans font-black text-white group-hover:text-[#C5A059] transition-colors uppercase leading-none tracking-tight">Collaborative Robot</h3>
+                            <h4 class="text-[10px] font-mono text-[#C5A059] uppercase tracking-wider block mt-1.5 font-bold">Robot Kolaboratif (Cobot)</h4>
+                            <p class="text-zinc-400 text-xs mt-4 leading-relaxed line-clamp-4">
+                                Advanced human-machine collaboration ecosystems, safety compliance sensors, and premium torque feedback calibration. Designing assistive arms that coordinate directly with human workspaces.
+                            </p>
+                            <p class="text-zinc-500 text-[10px] italic mt-1 font-sans">Integrasi hubungan aman antara robot dan manusia. Penyandian balik gaya presisi tinggi untuk memanipulasi obyek berkekuatan halus otomatis aman.</p>
+                        </div>
+                        <div class="border-t border-white/5 pt-5 space-y-3">
+                            <div class="flex justify-between items-center text-[10px] font-mono">
+                                <span class="text-zinc-500">DIVISION SPECIFICATION</span>
+                                <span class="text-white font-semibold uppercase">Feedback & Spatial Safety</span>
+                            </div>
+                            <div>
+                                <div class="flex justify-between items-center text-[9px] font-mono text-zinc-400 mb-1">
+                                    <span>TECHNICAL INDEX</span>
+                                    <span>90%</span>
+                                </div>
+                                <div class="h-1 w-full bg-zinc-900 rounded-full overflow-hidden">
+                                    <div class="h-full bg-gradient-to-r from-[#0047AB] via-[#00FF88] to-[#4DFFB8] transition-all duration-500" style="width: 90%;"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- CARD 7: RESEARCH CHALLENGE -->
+                <div class="relative cursor-pointer select-none group focus:outline-none" onclick="triggerLockedRegistration('Research Challenge')">
+                    <div class="absolute inset-0 rounded-2xl bg-blue-500/5 opacity-0 group-hover:opacity-100 blur-[20px] transition-all duration-300 pointer-events-none"></div>
+                    <div class="relative overflow-hidden bg-gradient-to-b from-zinc-900/90 to-black border border-white/5 group-hover:border-[#0047AB]/50 p-8 h-[440px] rounded-2xl flex flex-col justify-between transition-all duration-300 group-hover:scale-[1.02] shadow-[0_15px_35px_rgba(0,0,0,0.6)]">
+                        <div class="absolute top-0 right-0 w-16 h-16 bg-white/5 group-hover:bg-[#0047AB]/10 transition-colors duration-300 [clip-path:polygon(100%_0,0_0,100%_100%)] pointer-events-none"></div>
+                        <div>
+                            <div class="flex justify-between items-start mb-6">
+                                <div class="p-3 bg-zinc-950/80 rounded-xl border border-white/10 text-white group-hover:text-[#0047AB] group-hover:border-[#0047AB]/40 transition-colors duration-300">
+                                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
+                                </div>
+                                <span class="font-mono text-[9px] text-zinc-500 uppercase font-bold">DIVISION 07</span>
+                            </div>
+                            <h3 class="text-2xl font-sans font-black text-white group-hover:text-blue-400 transition-colors uppercase leading-none tracking-tight">Research Challenge</h3>
+                            <h4 class="text-[10px] font-mono text-[#C5A059] uppercase tracking-wider block mt-1.5 font-bold">Tantangan Riset Inovasi</h4>
+                            <p class="text-zinc-400 text-xs mt-4 leading-relaxed line-clamp-4">
+                                Academic research breakthroughs, deep technical problem solving, and revolutionary concept abstracts. Judged by doctors, enterprise advisors, and global research lab managers.
+                            </p>
+                            <p class="text-zinc-500 text-[10px] italic mt-1 font-sans">Presentasi tulisan sains, formulasi masalah mekanis, dan penyelesaian berbasis teori cerdas. Menggabungkan kegunaan praktis dengan kontribusi riset mendalam.</p>
+                        </div>
+                        <div class="border-t border-white/5 pt-5 space-y-3">
+                            <div class="flex justify-between items-center text-[10px] font-mono">
+                                <span class="text-zinc-500">DIVISION SPECIFICATION</span>
+                                <span class="text-white font-semibold uppercase">Research Papers & Abstracts</span>
+                            </div>
+                            <div>
+                                <div class="flex justify-between items-center text-[9px] font-mono text-zinc-400 mb-1">
+                                    <span>TECHNICAL INDEX</span>
+                                    <span>85%</span>
+                                </div>
+                                <div class="h-1 w-full bg-zinc-900 rounded-full overflow-hidden">
+                                    <div class="h-full bg-gradient-to-r from-[#0047AB] via-[#00FF88] to-[#4DFFB8] transition-all duration-500" style="width: 85%;"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- CARD 8: CREATIVE INNOVATION -->
+                <div class="relative cursor-pointer select-none group focus:outline-none" onclick="triggerLockedRegistration('Creative Innovation')">
+                    <div class="absolute inset-0 rounded-2xl bg-[#4DFFB8]/5 opacity-0 group-hover:opacity-100 blur-[20px] transition-all duration-300 pointer-events-none"></div>
+                    <div class="relative overflow-hidden bg-gradient-to-b from-zinc-900/90 to-black border border-white/5 group-hover:border-[#4DFFB8]/40 p-8 h-[440px] rounded-2xl flex flex-col justify-between transition-all duration-300 group-hover:scale-[1.02] shadow-[0_15px_35px_rgba(0,0,0,0.6)]">
+                        <div class="absolute top-0 right-0 w-16 h-16 bg-white/5 group-hover:bg-[#4DFFB8]/10 transition-colors duration-300 [clip-path:polygon(100%_0,0_0,100%_100%)] pointer-events-none"></div>
+                        <div>
+                            <div class="flex justify-between items-start mb-6">
+                                <div class="p-3 bg-zinc-950/80 rounded-xl border border-white/10 text-white group-hover:text-[#4DFFB8] group-hover:border-[#4DFFB8]/40 transition-colors duration-300">
+                                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/></svg>
+                                </div>
+                                <span class="font-mono text-[9px] text-zinc-500 uppercase font-bold">DIVISION 08</span>
+                            </div>
+                            <h3 class="text-2xl font-sans font-black text-white group-hover:text-[#4DFFB8] transition-colors uppercase leading-none tracking-tight">Creative Innovation</h3>
+                            <h4 class="text-[10px] font-mono text-[#C5A059] uppercase tracking-wider block mt-1.5 font-bold">Karya Inovasi Kreatif</h4>
+                            <p class="text-zinc-400 text-xs mt-4 leading-relaxed line-clamp-4">
+                                Engineering design concepts, modern technological solutions, and advanced mechatronics prototyping. Perfect integration of materials, industrial aesthetics, and real usability factors.
+                            </p>
+                            <p class="text-zinc-500 text-[10px] italic mt-1 font-sans">Rancangan desain mekanis yang berpusat pada kegunaan nyata dengan keindahan estetika sirkuit. Produk fungsional yang siap diproduksi massal.</p>
+                        </div>
+                        <div class="border-t border-white/5 pt-5 space-y-3">
+                            <div class="flex justify-between items-center text-[10px] font-mono">
+                                <span class="text-zinc-500">DIVISION SPECIFICATION</span>
+                                <span class="text-white font-semibold uppercase">Prototyping & CAD Design</span>
+                            </div>
+                            <div>
+                                <div class="flex justify-between items-center text-[9px] font-mono text-zinc-400 mb-1">
+                                    <span>TECHNICAL INDEX</span>
+                                    <span>88%</span>
+                                </div>
+                                <div class="h-1 w-full bg-zinc-900 rounded-full overflow-hidden">
+                                    <div class="h-full bg-gradient-to-r from-[#0047AB] via-[#00FF88] to-[#4DFFB8] transition-all duration-500" style="width: 88%;"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- CARD 9: DRONE INNOVATION -->
+                <div class="relative cursor-pointer select-none group focus:outline-none" onclick="triggerLockedRegistration('Drone Innovation')">
+                    <div class="absolute inset-0 rounded-2xl bg-[#00FF88]/5 opacity-0 group-hover:opacity-100 blur-[20px] transition-all duration-300 pointer-events-none"></div>
+                    <div class="relative overflow-hidden bg-gradient-to-b from-zinc-900/90 to-black border border-white/5 group-hover:border-[#00FF88]/30 p-8 h-[440px] rounded-2xl flex flex-col justify-between transition-all duration-300 group-hover:scale-[1.02] shadow-[0_15px_35px_rgba(0,0,0,0.6)]">
+                        <div class="absolute top-0 right-0 w-16 h-16 bg-white/5 group-hover:bg-[#00FF88]/10 transition-colors duration-300 [clip-path:polygon(100%_0,0_0,100%_100%)] pointer-events-none"></div>
+                        <div>
+                            <div class="flex justify-between items-start mb-6">
+                                <div class="p-3 bg-zinc-950/80 rounded-xl border border-white/10 text-white group-hover:text-[#00FF88] group-hover:border-[#00FF88]/40 transition-colors duration-300">
+                                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19a7 7 0 100-14 7 7 0 000 14zm0 0v-7m4-2l-6 4 2-6 4 2"/></svg>
+                                </div>
+                                <span class="font-mono text-[9px] text-zinc-500 uppercase font-bold">DIVISION 09</span>
+                            </div>
+                            <h3 class="text-2xl font-sans font-black text-white group-hover:text-[#00FF88] transition-colors uppercase leading-none tracking-tight">Drone Innovation</h3>
+                            <h4 class="text-[10px] font-mono text-[#C5A059] uppercase tracking-wider block mt-1.5 font-bold">Inovasi Wahana Drone</h4>
+                            <p class="text-zinc-400 text-xs mt-4 leading-relaxed line-clamp-4">
+                                Aerial navigation systems, real-time spatial positioning, and autonomous obstacle avoidance. Deploying highly agile multicopters capable of delivering parcels or mapping rugged arenas.
+                            </p>
+                            <p class="text-zinc-500 text-[10px] italic mt-1 font-sans">Pengembangan piranti drone otonom, sistem navigasi udara, dan penghindar rintangan dalam ruang dinamis secara taktis cerdas.</p>
+                        </div>
+                        <div class="border-t border-white/5 pt-5 space-y-3">
+                            <div class="flex justify-between items-center text-[10px] font-mono">
+                                <span class="text-zinc-500">DIVISION SPECIFICATION</span>
+                                <span class="text-white font-semibold uppercase">Lidar Distance & Optical Flow</span>
+                            </div>
+                            <div>
+                                <div class="flex justify-between items-center text-[9px] font-mono text-zinc-400 mb-1">
+                                    <span>TECHNICAL INDEX</span>
+                                    <span>94%</span>
+                                </div>
+                                <div class="h-1 w-full bg-zinc-900 rounded-full overflow-hidden">
+                                    <div class="h-full bg-gradient-to-r from-[#0047AB] via-[#00FF88] to-[#4DFFB8] transition-all duration-500" style="width: 94%;"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+    </section>
+
+    <!-- ================= REGISTRATION LOCKUP MODAL ================= -->
+    <div id="division-modal-lock" class="fixed inset-0 bg-black/90 backdrop-blur-sm z-[9999] hidden flex items-center justify-center p-4 selection:bg-[#00FF88] selection:text-black">
+        <div class="relative w-full max-w-md bg-zinc-950 border border-zinc-900 rounded-2xl p-6 md:p-8 shadow-[0_25px_60px_rgba(0,0,0,0.95)] max-h-[90vh] overflow-y-auto box-glow text-center">
+            
+            <!-- CLOSE TRIGGER -->
+            <button onclick="closeLockedRegistration()" class="absolute top-4 right-4 text-zinc-400 hover:text-white transition-colors text-2xl font-bold p-1 focus:outline-none cursor-pointer">
+                &times;
+            </button>
+
+            <!-- DESIGN BADGE -->
+            <div class="w-12 h-12 rounded-full bg-amber-500/10 border border-amber-500/20 flex items-center justify-center mx-auto mb-5 text-amber-400">
+                <svg class="w-6 h-6 animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+                </svg>
+            </div>
+
+            <!-- TEXTUAL -->
+            <div class="space-y-2 select-none">
+                <span class="text-[9px] font-mono text-amber-400 tracking-widest border border-amber-500/15 bg-amber-500/5 px-2.5 py-0.5 rounded font-bold uppercase">
+                    Slot Lockdown Active
+                </span>
+                <h3 class="text-xl font-display font-black text-white uppercase tracking-tight">
+                    <span id="target-division-title" class="text-amber-400">DIVISION</span> DIVISION LOCKED
+                </h3>
+                <p class="text-zinc-500 font-mono text-[11px] uppercase leading-relaxed max-w-sm mx-auto">
+                    Central database filters are verifying tournament specifications with regional event organizers.
+                </p>
+            </div>
+
+            <!-- EXPLAINER BOX WITH LITERAL TEXT REQUEST -->
+            <div class="mt-6 bg-zinc-900/40 border border-zinc-900 rounded-xl p-5 text-center font-mono space-y-3">
+                <div class="text-xs text-amber-400 font-bold uppercase tracking-wider">
+                    * The registration will open later please waiting *
+                </div>
+                <div class="text-[10px] text-zinc-400 leading-relaxed uppercase">
+                    You cannot enroll a team at this moment. The registration system will be launched shortly. Please stay tuned and prepare your squad databases!
+                </div>
+            </div>
+
+            <!-- DISMISS BUTTON -->
+            <div class="mt-6">
+                <button onclick="closeLockedRegistration()" class="w-full py-3.5 bg-zinc-900 border border-zinc-800 hover:border-zinc-700 text-zinc-300 hover:text-white font-mono text-xs uppercase tracking-wider rounded-xl transition-colors cursor-pointer focus:outline-none">
+                    Understood, Back to Arenas
+                </button>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        function triggerLockedRegistration(divisionName) {
+            document.getElementById('target-division-title').textContent = divisionName.toUpperCase();
+            document.getElementById('division-modal-lock').classList.remove('hidden');
+            document.body.classList.add('overflow-hidden');
+        }
+
+        function closeLockedRegistration() {
+            document.getElementById('division-modal-lock').classList.add('hidden');
+            document.body.classList.remove('overflow-hidden');
+        }
+    </script>
+</body>
+</html>
