@@ -183,7 +183,7 @@ export const ROBOT_MACHINES: RobotMachine[] = [
     name: 'Garuda Soccerbot v3',
     category: 'Mini Soccerbot',
     year: '2025 Winner',
-    imageUrl: '/src/assets/images/humanoid_soccer_1780298617429.png',
+    imageUrl: '/images/humanoid_soccer_1780298617429.png',
     batteryLife: '2.5 Hours',
     weight: '5.2 kg',
     maxSpeed: '2.1 m/s',
@@ -204,7 +204,7 @@ export const ROBOT_MACHINES: RobotMachine[] = [
     name: 'Suro-3K Heavy Sumo',
     category: 'Sumobot 3kg',
     year: '2025 Runner-up',
-    imageUrl: '/src/assets/images/cyber_sumobot_1780299691137.png',
+    imageUrl: '/images/cyber_sumobot_1780299691137.png',
     batteryLife: '1.2 Hours',
     weight: '3.0 kg',
     maxSpeed: '3.8 m/s',
@@ -225,7 +225,7 @@ export const ROBOT_MACHINES: RobotMachine[] = [
     name: 'Cakrawala AgroDrone',
     category: 'Drone Innovation',
     year: '2025 Top Innovation',
-    imageUrl: '/src/assets/images/championship_drone_1780299711288.png',
+    imageUrl: '/images/championship_drone_1780299711288.png',
     batteryLife: '35 Minutes',
     weight: '2.4 kg',
     maxSpeed: '12.0 m/s',
@@ -246,7 +246,7 @@ export const ROBOT_MACHINES: RobotMachine[] = [
     name: 'Sakura Cobot Arm',
     category: 'Collaborative Robot',
     year: '2024 Tech Favorite',
-    imageUrl: '/src/assets/images/innovation_arm_1780298643999.png',
+    imageUrl: '/images/innovation_arm_1780298643999.png',
     batteryLife: 'Wall Plugged / AC Adapter',
     weight: '12.5 kg',
     maxSpeed: '0.05mm Repeatability',
@@ -267,7 +267,7 @@ export const ROBOT_MACHINES: RobotMachine[] = [
     name: 'Vanguard Tracker',
     category: 'Line Follower',
     year: '2025 Speed Record',
-    imageUrl: '/src/assets/images/autonomous_robot_1780298580155.png',
+    imageUrl: '/images/autonomous_robot_1780298580155.png',
     batteryLife: '3.0 Hours',
     weight: '0.8 kg',
     maxSpeed: '5.5 m/s',
@@ -333,28 +333,28 @@ export const GALLERY_ITEMS: GalleryItem[] = [
     id: 'g-01',
     title: 'Under the Hood Electronics Diagnostics',
     category: 'Diagnostics',
-    imageUrl: '/src/assets/images/robotics_workbench_1780298686024.png',
+    imageUrl: '/images/robotics_workbench_1780298686024.png',
     aspectClassName: 'col-span-12 md:col-span-6 lg:col-span-8'
   },
   {
     id: 'g-02',
     title: 'Championship Live Arena Spotlights',
     category: 'Arena Trials',
-    imageUrl: '/src/assets/images/robot_arena_1780298668316.png',
+    imageUrl: '/images/robot_arena_1780298668316.png',
     aspectClassName: 'col-span-12 md:col-span-6 lg:col-span-4'
   },
   {
     id: 'g-03',
     title: 'Heavy Sumobot Dynamic Collision Focus',
     category: 'Combat sumo',
-    imageUrl: '/src/assets/images/cyber_sumobot_1780299691137.png',
+    imageUrl: '/images/cyber_sumobot_1780299691137.png',
     aspectClassName: 'col-span-12 md:col-span-6 lg:col-span-4'
   },
   {
     id: 'g-04',
     title: 'Aviation Flight-Dynamics Drone Calibrating',
     category: 'Aerospace',
-    imageUrl: '/src/assets/images/championship_drone_1780299711288.png',
+    imageUrl: '/images/championship_drone_1780299711288.png',
     aspectClassName: 'col-span-12 md:col-span-6 lg:col-span-8'
   }
 ];

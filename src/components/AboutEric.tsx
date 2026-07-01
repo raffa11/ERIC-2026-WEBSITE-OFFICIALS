@@ -27,7 +27,7 @@ export default function AboutEric() {
         
         {/* Horizontal running heading separator */}
         <div className="flex items-center gap-4 text-xs font-mono text-zinc-600 tracking-widest mb-6 uppercase select-none">
-          <span>ABOUT THE CHAMPIONSHIP</span>
+          <span>{t('ABOUT THE CHAMPIONSHIP', 'TENTANG KOMPETISI')}</span>
           <div className="h-[1px] bg-zinc-800 grow" />
           <span>ERIC 2026</span>
         </div>
@@ -41,7 +41,7 @@ export default function AboutEric() {
               
               {/* Image with slow zoom */}
               <img
-                src="/src/assets/images/robotics_workbench_1780298686024.png"
+                src="/images/robotics_workbench_1780298686024.png"
                 alt="Robotics development mekatronika workbench"
                 referrerPolicy="no-referrer"
                 className="w-full h-[400px] object-cover filter brightness-90 contrast-105 group-hover:scale-103 transition-transform duration-700"
