@@ -52,12 +52,12 @@ export default function Hero() {
               <div className="flex items-center gap-2 mb-2">
                 <Radio className="w-3.5 h-3.5 text-[#00FF88] animate-pulse" />
                 <span className="text-[10px] font-mono text-[#00FF88] tracking-widest uppercase">
-                  Location
+                  {t('Location', 'Lokasi')}
                 </span>
               </div>
               <div className="text-xs font-mono text-zinc-400 mt-2">
                 <span className="text-white font-bold">
-                Campus A UNJ, JAKARTA, IND</span>
+                {t('Campus A UNJ, JAKARTA, IND', 'Kampus A UNJ, JAKARTA TIMUR')}</span>
               </div>
             </motion.div>
 
@@ -72,14 +72,14 @@ export default function Hero() {
               <div className="flex items-center gap-2 mb-2">
                 <Award className="w-4 h-4 text-amber-400" />
                 <span className="text-[10px] font-mono text-zinc-300 tracking-widest uppercase">
-                  Prize Support
+                  {t('Prize Support', 'Hadiah & Dukungan Dana')}
                 </span>
               </div>
               <div className="text-lg font-sans font-black text-white tracking-tight">
                 RP 62,000,000+
               </div>
               <div className="text-[9px] font-mono text-[#B3B3B3]">
-                PENDANAAN PROYEK & INKUBASI
+                {t('Project Funding & Incubation', 'Pendanaan Proyek & Inkubasi')}
               </div>
             </motion.div>
 
@@ -111,7 +111,7 @@ export default function Hero() {
                 transition={{ delay: 0.1, duration: 0.7 }}
                 className="text-white text-5xl sm:text-7xl md:text-9xl font-black block"
               >
-                INTERNATIONAL ERIC 2026
+                {t('INTERNATIONAL ERIC 2026', 'INTERNATIONAL ERIC 2026')}
               </motion.div>
 
               <motion.div
@@ -147,7 +147,7 @@ export default function Hero() {
             >
               <button
                 id="hero-btn-cta-register"
-                onClick={() => handleScrollTo('#registration-section')}
+                onClick={() => handleScrollTo('#divisions-section')}
                 className="group relative px-8 py-4 w-full sm:w-auto bg-gradient-to-r from-[#002D62] via-[#0047AB] to-[#00FF88] text-white rounded-full font-sans text-xs font-black tracking-widest uppercase transition-all duration-300 hover:shadow-[0_0_25px_rgba(0,255,136,0.35)] select-none text-center"
               >
                 <span className="relative z-10 flex items-center justify-center gap-2">
@@ -176,10 +176,10 @@ export default function Hero() {
         <div className="flex flex-col md:flex-row justify-between items-center gap-6">
           <div className="flex items-center gap-8 text-[10px] font-mono text-zinc-500">
             <span className="flex items-center gap-1">
-              <Compass className="w-3.5 h-3.5 text-[#00FF88] animate-spin-slow" /> COORD: 106.8229° E // 6.1944° S
+              <Compass className="w-3.5 h-3.5 text-[#00FF88] animate-spin-slow" /> {t('COORD: 106.8229° E // 6.1944° S', 'KOORD: 106.8229° T // 6.1944° S')}
             </span>
             <span className="hidden md:inline text-white/20">|</span>
-            <span className="hidden md:inline">VERSION: F1-ME-2026-v2</span>
+            <span className="hidden md:inline">{t('VERSION: F1-ME-2026-v2', 'VERSI: F1-ME-2026-v2')}</span>
           </div>
 
           <button
