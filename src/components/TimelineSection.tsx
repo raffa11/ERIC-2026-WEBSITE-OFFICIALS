@@ -5,10 +5,12 @@
 
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
+import { useLanguage } from './LanguageContext';
 import { TIMELINE_EVENTS } from '../data';
 import { Calendar, Layers, ChevronRight, CornerDownRight, CheckCircle2, ExternalLink } from 'lucide-react';
 
 export default function TimelineSection() {
+  const { t } = useLanguage();
   const [activeIdx, setActiveIdx] = useState(0);
   const activeEvent = TIMELINE_EVENTS[activeIdx];
 
