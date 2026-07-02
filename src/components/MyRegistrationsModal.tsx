@@ -43,11 +43,12 @@ export default function MyRegistrationsModal({
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
-        className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/95 backdrop-blur-md overflow-y-auto select-none"
+        className="fixed inset-0 z-50 bg-black/95 backdrop-blur-md overflow-y-auto select-none"
       >
+        <div className="min-h-full sm:min-h-screen flex items-center justify-center px-4 py-10">
         <div className="absolute inset-0 cursor-default" onClick={onClose} />
         
-        <div className="bg-[#0C0C0C] border border-white/10 rounded-3xl p-6 md:p-8 max-w-2xl w-full relative z-10 overflow-hidden shadow-[0_30px_70px_rgba(0,0,0,0.95)]">
+        <div className="bg-[#0C0C0C] border border-white/10 rounded-3xl p-6 md:p-8 max-w-2xl w-full relative z-10 shadow-[0_30px_70px_rgba(0,0,0,0.95)]">
           
           {/* Header */}
           <div className="flex justify-between items-center border-b border-white/5 pb-4">
@@ -143,6 +144,7 @@ export default function MyRegistrationsModal({
               {t('CLOSE PANEL', 'TUTUP PANEL')}
             </button>
           </div>
+        </div>
         </div>
       </motion.div>
     </AnimatePresence>

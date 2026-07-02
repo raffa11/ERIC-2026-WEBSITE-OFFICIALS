@@ -413,7 +413,8 @@ export default function RegistrationModal({
   return (
     <AnimatePresence>
       {isOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/95 backdrop-blur-md overflow-y-auto">
+        <div className="fixed inset-0 z-50 bg-black/95 backdrop-blur-md overflow-y-auto">
+          <div className="min-h-full sm:min-h-screen flex items-center justify-center px-4 py-6 sm:py-10 md:py-12">
           {/* Backdrop closer */}
           {!successPopup && <div className="absolute inset-0 cursor-default" onClick={onClose} />}
 
@@ -422,9 +423,9 @@ export default function RegistrationModal({
             initial={{ opacity: 0, scale: 0.95, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 20 }}
-            className="relative w-full max-w-2xl bg-zinc-950 border border-white/10 rounded-3xl p-6 md:p-8 shadow-[0_35px_80px_rgba(0,0,0,0.95)] overflow-hidden z-10 my-8"
+            className="relative w-full max-w-2xl bg-zinc-950 border border-white/10 rounded-3xl p-5 sm:p-6 md:p-8 shadow-[0_35px_80px_rgba(0,0,0,0.95)] z-10"
           >
-            {/* Design grid outline */}
+            {/* Design grid outline - hide on mobile */}
             <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.012)_1px,transparent_1px)] bg-[size:25px_25px] pointer-events-none" />
             <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-[#00FF88] to-[#0047AB]" />
 
@@ -440,7 +441,7 @@ export default function RegistrationModal({
 
             <AnimatePresence mode="wait">
               {successPopup ? (
-                /* SUCCESS FLOW */
+                /* SUCCESS FLOW - centered on both mobile and desktop */
                 <motion.div
                   key="success-card"
                   initial={{ opacity: 0, scale: 0.9 }}
@@ -547,7 +548,7 @@ export default function RegistrationModal({
                     ))}
                   </div>
 
-                  <form onSubmit={handleWizardSubmit} className="space-y-6">
+                  <form onSubmit={handleWizardSubmit} className="space-y-5">
                     {/* STEP 1: DIVISION VERIFICATION */}
                     {wizardStep === 1 && (
                       <motion.div
@@ -1443,6 +1444,7 @@ export default function RegistrationModal({
               )}
             </AnimatePresence>
           </motion.div>
+          </div>
         </div>
       )}
     </AnimatePresence>
