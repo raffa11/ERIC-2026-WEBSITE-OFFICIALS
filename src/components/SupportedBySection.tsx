@@ -28,10 +28,10 @@ export default function SupportedBySection() {
                     src={org.logo}
                     alt={org.name}
                     onError={() => setImgErrors(prev => ({ ...prev, [org.name]: true }))}
-                    className="h-10 md:h-14 w-auto object-contain opacity-50 hover:opacity-100 transition-opacity duration-300"
+                    className="h-20 md:h-28 w-auto object-contain opacity-100"
                   />
                 ) : (
-                  <span className="text-sm md:text-base font-sans font-black text-zinc-500 opacity-50 hover:opacity-100 transition-opacity duration-300 uppercase tracking-widest">
+                  <span className="text-sm md:text-base font-sans font-black text-zinc-500 opacity-80 uppercase tracking-widest">
                     {org.initials}
                   </span>
                 )}
@@ -43,3 +43,6 @@ export default function SupportedBySection() {
     </section>
   );
 }
+
+
+
