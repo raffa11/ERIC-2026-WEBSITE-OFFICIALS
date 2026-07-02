@@ -246,22 +246,27 @@ export default function Divisions({ onSelectDivision }: DivisionsProps) {
                     </div>
 
                     {/* Contact Persons */}
-                    <div className="flex flex-wrap gap-1.5">
-                      {division.contactPersons.map((cp) => (
-                        <a
-                          key={cp.label}
-                          href={`https://wa.me/${cp.waNumber}`}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          onClick={(e) => e.stopPropagation()}
-                          className="inline-flex items-center gap-1 px-2 py-0.5 bg-[#25D366]/5 border border-[#25D366]/15 rounded-md text-[7.5px] font-mono text-[#25D366] hover:bg-[#25D366]/15 hover:border-[#25D366]/30 transition-all"
-                        >
-                          <LucideIcons.MessageCircle className="w-2.5 h-2.5" />
-                          <span>{cp.label}</span>
-                          <span className="text-white/60">|</span>
-                          <span className="font-semibold">{cp.name}</span>
-                        </a>
-                      ))}
+                    <div className="pt-1 border-t border-white/[0.03]">
+                      <div className="text-[8px] font-mono text-zinc-500 uppercase tracking-wider mb-1.5 font-bold">
+                        {t('CONTACT PERSON', 'CONTACT PERSON')}
+                      </div>
+                      <div className="flex flex-wrap gap-1.5">
+                        {division.contactPersons.map((cp) => (
+                          <a
+                            key={cp.label}
+                            href={`https://wa.me/${cp.waNumber}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            onClick={(e) => e.stopPropagation()}
+                            className="inline-flex items-center gap-1 px-2 py-1 bg-[#25D366]/10 border border-[#25D366]/20 rounded-md text-[9px] font-mono text-[#25D366] hover:bg-[#25D366]/20 hover:border-[#25D366]/40 transition-all"
+                          >
+                            <LucideIcons.MessageCircle className="w-3 h-3" />
+                            <span className="font-bold">{cp.label}</span>
+                            <span className="text-white/30">/</span>
+                            <span>{cp.name}</span>
+                          </a>
+                        ))}
+                      </div>
                     </div>
 
                     {/* F1-style sliding CTA banner */}
