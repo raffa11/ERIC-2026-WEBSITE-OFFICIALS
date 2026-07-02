@@ -9,6 +9,7 @@ import { useLanguage } from './LanguageContext';
 import EricLogo from './EricLogo';
 import { Menu, X, Globe, Trophy, ArrowUpRight, LogIn, LogOut, User, Shield } from 'lucide-react';
 import { ADMIN_EMAILS } from '../types';
+import { SUPPORTED_BY } from '../data';
 
 interface NavbarProps {
   currentUser: { name: string; email: string; method: string } | null;
@@ -231,6 +232,22 @@ export default function Navbar({
           </div>
 
         </div>
+
+          {/* Partner Institution Logos Strip - appears on scroll */}
+          {isScrolled && (
+            <motion.div
+              initial={{ opacity: 0, y: -5 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="hidden lg:flex items-center justify-center gap-6 mt-2 pt-2 border-t border-white/5"
+            >
+              <span className="text-[7px] font-mono text-zinc-600 uppercase tracking-widest mr-1">Supported by</span>
+              {SUPPORTED_BY.map((org) => (
+                <div key={org.name} className="flex items-center opacity-60 hover:opacity-100 transition-opacity">
+                  <span className="text-[8px] font-sans font-black text-zinc-500 uppercase tracking-wider">{org.initials}</span>
+                </div>
+              ))}
+            </motion.div>
+          )}
       </motion.nav>
 
       {/* FULL SCREEN MOBILE OVERLAY DRAWER */}

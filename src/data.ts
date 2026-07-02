@@ -435,12 +435,7 @@ export const SUPPORTED_BY = [
     logo: '/images/supported-by/unj.png',
     initials: 'UNJ'
   },
-  {
-    name: 'Faculty of Engineering UNJ',
-    logo: '/images/supported-by/ft-unj.png',
-    initials: 'FT UNJ'
-  },
-  {
+{
     name: 'Kampus Berdampak',
     logo: '/images/supported-by/kampus-berdampak.png',
     initials: 'KB'
@@ -449,6 +444,11 @@ export const SUPPORTED_BY = [
     name: 'FSI UNJ',
     logo: '/images/supported-by/fsi.png',
     initials: 'FSI'
+  },
+  {
+    name: 'BEMELKA',
+    logo: '/images/supported-by/bemelka.png',
+    initials: 'BMK'
   }
 ];
 

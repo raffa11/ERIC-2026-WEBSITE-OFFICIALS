@@ -6,6 +6,7 @@
 import { useLanguage } from './LanguageContext';
 import EricLogo from './EricLogo';
 import { Mail, Phone, MapPin, Send, MessageSquare, Heart } from 'lucide-react';
+import { SUPPORTED_BY } from '../data';
 
 export default function Footer() {
   const { t } = useLanguage();
@@ -153,6 +154,27 @@ export default function Footer() {
             </a>
           </div>
 
+        </div>
+
+        {/* Supported By Institution Logos */}
+        <div className="pb-12 border-b border-white/5 mb-8">
+          <div className="flex flex-col items-center gap-6">
+            <span className="text-[9px] font-mono text-zinc-600 tracking-[0.3em] uppercase">
+              {t('SUPPORTED BY', 'DIDUKUNG OLEH')}
+            </span>
+            <div className="flex flex-wrap items-center justify-center gap-x-8 gap-y-4">
+              {SUPPORTED_BY.map((org) => (
+                <div key={org.name} className="flex flex-col items-center gap-1">
+                  <span className="text-xs font-sans font-black text-zinc-500 uppercase tracking-wider hover:text-white transition-colors">
+                    {org.initials}
+                  </span>
+                  <span className="text-[7px] font-mono text-zinc-600 text-center max-w-[80px] leading-tight">
+                    {org.name}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
 
         {/* Map Embed */}
