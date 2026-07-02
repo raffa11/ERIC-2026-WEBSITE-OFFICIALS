@@ -245,6 +245,25 @@ export default function Divisions({ onSelectDivision }: DivisionsProps) {
                       </div>
                     </div>
 
+                    {/* Contact Persons */}
+                    <div className="flex flex-wrap gap-1.5">
+                      {division.contactPersons.map((cp) => (
+                        <a
+                          key={cp.label}
+                          href={`https://wa.me/${cp.waNumber}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          onClick={(e) => e.stopPropagation()}
+                          className="inline-flex items-center gap-1 px-2 py-0.5 bg-[#25D366]/5 border border-[#25D366]/15 rounded-md text-[7.5px] font-mono text-[#25D366] hover:bg-[#25D366]/15 hover:border-[#25D366]/30 transition-all"
+                        >
+                          <LucideIcons.MessageCircle className="w-2.5 h-2.5" />
+                          <span>{cp.label}</span>
+                          <span className="text-white/60">|</span>
+                          <span className="font-semibold">{cp.name}</span>
+                        </a>
+                      ))}
+                    </div>
+
                     {/* F1-style sliding CTA banner */}
                     <div className="pt-1.5 text-center">
                       <span className="inline-flex items-center gap-1.5 font-mono text-[8.5px] text-[#00FF88] opacity-0 group-hover:opacity-100 group-hover:translate-y-0 translate-y-1 transition-all duration-300 font-bold tracking-widest uppercase bg-[#00FF88]/5 border border-[#00FF88]/20 px-3 py-1 rounded-full w-full justify-center">

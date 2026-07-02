@@ -23,7 +23,11 @@ export const COMPETITION_DIVISIONS: Division[] = [
     hasLecturer: false,
     price: 'Rp. 225,000',
     priceUSD: '$14.00',
-    whatsappGroup: 'https://chat.whatsapp.com/HSFpgkTQjbJKNbmyzXeefT'
+    whatsappGroup: 'https://chat.whatsapp.com/HSFpgkTQjbJKNbmyzXeefT',
+    contactPersons: [
+      { name: 'Ade', waNumber: '6283143705558', label: 'Nasional' },
+      { name: 'Nabil', waNumber: '6282258640813', label: 'Internasional' }
+    ]
   },
   {
     id: 'sumobot-3kg',
@@ -42,7 +46,11 @@ export const COMPETITION_DIVISIONS: Division[] = [
     hasLecturer: false,
     price: 'Rp. 250,000',
     priceUSD: '$20.00',
-    whatsappGroup: 'https://chat.whatsapp.com/GX3rv5PKbbp3fKB66FlwnJ'
+    whatsappGroup: 'https://chat.whatsapp.com/GX3rv5PKbbp3fKB66FlwnJ',
+    contactPersons: [
+      { name: 'Ryan', waNumber: '6285711011898', label: 'Nasional' },
+      { name: 'Theo', waNumber: '6282111490515', label: 'Internasional' }
+    ]
   },
   {
     id: 'mini-soccer',
@@ -60,7 +68,11 @@ export const COMPETITION_DIVISIONS: Division[] = [
     hasLecturer: false,
     price: 'Rp. 250,000',
     priceUSD: '$20.00',
-    whatsappGroup: 'https://chat.whatsapp.com/K1oLVvfu38NHNV41KjqaZA'
+    whatsappGroup: 'https://chat.whatsapp.com/K1oLVvfu38NHNV41KjqaZA',
+    contactPersons: [
+      { name: 'Dimas', waNumber: '6285715139655', label: 'Nasional' },
+      { name: 'Noufal', waNumber: '6281317811877', label: 'Internasional' }
+    ]
   },
   {
     id: 'line-follower',
@@ -79,7 +91,11 @@ export const COMPETITION_DIVISIONS: Division[] = [
     hasLecturer: false,
     price: 'Rp. 250,000',
     priceUSD: '$20.00',
-    whatsappGroup: 'https://chat.whatsapp.com/HNXtjsKC5g50PZzuPt7NOq'
+    whatsappGroup: 'https://chat.whatsapp.com/HNXtjsKC5g50PZzuPt7NOq',
+    contactPersons: [
+      { name: 'Rizqba', waNumber: '6289637788569', label: 'Nasional' },
+      { name: 'Raihan R', waNumber: '62895332277723', label: 'Internasional' }
+    ]
   },
   {
     id: 'plc-industrial',
@@ -98,7 +114,11 @@ export const COMPETITION_DIVISIONS: Division[] = [
     hasLecturer: true,
     price: 'Rp. 280,000',
     priceUSD: '$26.00',
-    whatsappGroup: 'https://chat.whatsapp.com/B8RMDu9uJ3tIQBgcbcx4NL'
+    whatsappGroup: 'https://chat.whatsapp.com/B8RMDu9uJ3tIQBgcbcx4NL',
+    contactPersons: [
+      { name: 'Randy', waNumber: '6287824300637', label: 'Nasional' },
+      { name: 'Iqbal', waNumber: '6285283476045', label: 'Internasional' }
+    ]
   },
   {
     id: 'collaborative-robot',
@@ -117,7 +137,11 @@ export const COMPETITION_DIVISIONS: Division[] = [
     hasLecturer: false,
     price: 'Rp. 500,000',
     priceUSD: '$30.00',
-    whatsappGroup: 'https://chat.whatsapp.com/HHKWkVk3oA8DwMNBTE2LpU'
+    whatsappGroup: 'https://chat.whatsapp.com/HHKWkVk3oA8DwMNBTE2LpU',
+    contactPersons: [
+      { name: 'Wijaya', waNumber: '62881010963051', label: 'Nasional' },
+      { name: 'Athallah', waNumber: '6287782491551', label: 'Internasional' }
+    ]
   },
   {
     id: 'research-innovation',
@@ -136,7 +160,11 @@ export const COMPETITION_DIVISIONS: Division[] = [
     hasLecturer: false,
     price: 'Rp. 120,000',
     priceUSD: '$7.50',
-    whatsappGroup: 'https://chat.whatsapp.com/Jp5VNTCxXgGFP3RNZCLI6z'
+    whatsappGroup: 'https://chat.whatsapp.com/Jp5VNTCxXgGFP3RNZCLI6z',
+    contactPersons: [
+      { name: 'Intan', waNumber: '6285780247605', label: 'Nasional' },
+      { name: 'Adiba', waNumber: '6285893177023', label: 'Internasional' }
+    ]
   },
   {
     id: 'creative-innovation',
@@ -155,7 +183,11 @@ export const COMPETITION_DIVISIONS: Division[] = [
     hasLecturer: true,
     price: 'Rp. 120,000',
     priceUSD: '$7.50',
-    whatsappGroup: 'https://chat.whatsapp.com/LwWIV0GAElF1DbT2nmn6Ug'
+    whatsappGroup: 'https://chat.whatsapp.com/LwWIV0GAElF1DbT2nmn6Ug',
+    contactPersons: [
+      { name: 'Joan', waNumber: '6285716476747', label: 'Nasional' },
+      { name: 'Barnett', waNumber: '6289506359322', label: 'Internasional' }
+    ]
   },
   {
     id: 'drone-innovation',
@@ -173,7 +205,11 @@ export const COMPETITION_DIVISIONS: Division[] = [
     hasLecturer: false,
     price: 'Rp. 120,000',
     priceUSD: '$7.50',
-    whatsappGroup: 'https://chat.whatsapp.com/D4Gr6PaoSzI2ZI4gTiRYnZ'
+    whatsappGroup: 'https://chat.whatsapp.com/D4Gr6PaoSzI2ZI4gTiRYnZ',
+    contactPersons: [
+      { name: 'David Alberto', waNumber: '6282124347415', label: 'Nasional' },
+      { name: 'Angela Eva', waNumber: '628567915845', label: 'Internasional' }
+    ]
   }
 ];
 

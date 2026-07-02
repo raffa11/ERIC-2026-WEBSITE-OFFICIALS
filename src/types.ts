@@ -3,6 +3,12 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+export interface ContactPerson {
+  name: string;
+  waNumber: string; // phone number only, no prefix
+  label: string; // e.g. "Nasional", "Internasional"
+}
+
 export interface Division {
   id: string;
   title: string;
@@ -22,6 +28,7 @@ export interface Division {
   price: string; // e.g. "Rp. 225,000"
   priceUSD: string; // e.g. "$14.00"
   whatsappGroup: string;
+  contactPersons: ContactPerson[];
 }
 
 export interface RobotMachine {
