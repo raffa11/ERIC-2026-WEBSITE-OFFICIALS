@@ -155,21 +155,26 @@ export default function Footer() {
 
         </div>
 
-        {/* Google Maps Embed */}
+        {/* Map Embed */}
         <div className="pb-12 border-b border-white/5 mb-8">
-          <div className="w-full overflow-hidden rounded-2xl border border-white/5">
+          <a
+            href="https://maps.google.com/?q=Jakarta+State+University+UNJ"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="block w-full overflow-hidden rounded-2xl border border-white/5 hover:border-white/20 transition-all group cursor-pointer"
+          >
             <iframe
-              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3966.524925131114!2d106.87646361098032!3d-6.194253660659953!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e69f4ed14403213%3A0x2412a91a0f6a01c8!2sJakarta%20State%20University!5e0!3m2!1sen!2sid!4v1782919839343!5m2!1sen!2sid"
+              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3966.524925131114!2d106.87646361098034!3d-6.194253660659953!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e69f4ed14403213%3A0x2412a91a0f6a01c8!2sJakarta%20State%20University!5e0!3m2!1sen!2sid!4v1782965191096!5m2!1sen!2sid"
               width="100%"
               height="300"
-              style={{ border: 0 }}
+              style={{ border: 0, pointerEvents: 'none' }}
               allowFullScreen
               loading="lazy"
               referrerPolicy="strict-origin-when-cross-origin"
               title="UNJ Campus Map"
               className="rounded-2xl"
             />
-          </div>
+          </a>
         </div>
 
         {/* Dynamic bottom section panel */}

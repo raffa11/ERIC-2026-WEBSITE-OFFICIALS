@@ -22,7 +22,7 @@ export default function Hero() {
 
   return (
     <section id="hero-section" className="relative min-h-screen bg-[#050505] flex flex-col justify-between pt-28 pb-12 overflow-hidden">
-      
+
       {/* Real-time Dynamic Cybernetic Canvas Network Background */}
       <NetworkBackground />
 
@@ -37,10 +37,10 @@ export default function Hero() {
       {/* Main Container */}
       <div className="max-w-7xl mx-auto px-6 w-full grow flex flex-col justify-center relative z-10 select-none">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center w-full">
-          
+
           {/* LEFT: Mirroring Lando Norris Next-Race Widgets (Gamer telemetry) */}
           <div className="lg:col-span-3 hidden lg:flex flex-col gap-6">
-            
+
             {/* Heat Info Card */}
             <motion.div
               id="hero-widget-heats"
@@ -57,7 +57,7 @@ export default function Hero() {
               </div>
               <div className="text-xs font-mono text-zinc-400 mt-2">
                 <span className="text-white font-bold">
-                {t('Campus A UNJ, JAKARTA, IND', 'Kampus A UNJ, JAKARTA TIMUR')}</span>
+                  {t('Campus A UNJ, JAKARTA, IND', 'Kampus A UNJ, JAKARTA TIMUR')}</span>
               </div>
             </motion.div>
 
@@ -87,7 +87,7 @@ export default function Hero() {
 
           {/* MIDDLE: Enormous Luxury Typographic Core & CTAs */}
           <div className="lg:col-span-9 text-left">
-            
+
             {/* Tagline label */}
             <motion.div
               id="hero-tagline-tag"
@@ -104,7 +104,7 @@ export default function Hero() {
 
             {/* Huge Headline: ERIC 2026 & BUILD THE FUTURE */}
             <h1 className="leading-none tracking-tighter select-none font-sans uppercase">
-              
+
               <motion.div
                 initial={{ y: 40, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
@@ -120,7 +120,7 @@ export default function Hero() {
                 transition={{ delay: 0.25, duration: 0.7 }}
                 className="text-transparent bg-clip-text bg-gradient-to-r from-[#00FF88] via-[#4DFFB8] to-[#0047AB] text-4xl sm:text-6xl md:text-8xl font-black block mt-1"
               >
-                {t('BUILD THE FUTURE', 'BULD THE FUTURE')}
+                {t('BUILD THE FUTURE', 'BUILD THE FUTURE')}
               </motion.div>
 
             </h1>
