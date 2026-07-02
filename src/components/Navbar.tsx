@@ -7,7 +7,7 @@ import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { useLanguage } from './LanguageContext';
 import EricLogo from './EricLogo';
-import { Menu, X, Globe, Trophy, ArrowUpRight, LogIn, LogOut, User } from 'lucide-react';
+import { Menu, X, Globe, Trophy, ArrowUpRight, LogIn, LogOut, User, Shield } from 'lucide-react';
 import { ADMIN_EMAILS } from '../types';
 
 interface NavbarProps {
@@ -292,6 +292,35 @@ export default function Navbar({
                       <div className="text-[10px] font-mono text-[#00FF88]">{currentUser.email}</div>
                     </div>
                   </div>
+                  {isAdmin ? (
+                    <button
+                      id="mobile-nav-admin"
+                      onClick={() => {
+                        setMobileMenuOpen(false);
+                        if (currentView === 'admin-dashboard') {
+                          onBackToHome();
+                        } else {
+                          onAdminDashboardClick();
+                        }
+                      }}
+                      className="w-full py-3 bg-[#FFD700]/10 border border-[#FFD700]/30 text-xs font-mono text-[#FFD700] font-bold uppercase tracking-wider rounded-xl transition-all cursor-pointer flex justify-center items-center gap-2"
+                    >
+                      <Shield className="w-4 h-4" />
+                      <span>{currentView === 'admin-dashboard' ? t('BACK TO BERANDA', 'KEMBALI KE BERANDA') : t('ADMIN DASHBOARD', 'DASHBOARD ADMIN')}</span>
+                    </button>
+                  ) : (
+                    <button
+                      id="mobile-nav-registrations"
+                      onClick={() => {
+                        setMobileMenuOpen(false);
+                        onMyRegistrationsClick();
+                      }}
+                      className="w-full py-3 bg-[#00FF88]/10 border border-[#00FF88]/20 text-xs font-mono text-[#00FF88] font-bold uppercase tracking-wider rounded-xl transition-all cursor-pointer flex justify-center items-center gap-2"
+                    >
+                      <Trophy className="w-4 h-4" />
+                      <span>{t('MY REGISTRATIONS', 'PENDAFTARAN SAYA')}</span>
+                    </button>
+                  )}
                   <button
                     id="mobile-nav-logout"
                     onClick={() => {
