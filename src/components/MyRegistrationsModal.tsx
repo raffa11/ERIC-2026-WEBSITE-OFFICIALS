@@ -9,8 +9,9 @@ import { useLanguage } from './LanguageContext';
 import { COMPETITION_DIVISIONS } from '../data';
 import { Registration } from '../types';
 import { 
-  Trophy, X, MessageCircle, CheckCircle
+  Trophy, X, MessageCircle, CheckCircle, Download
 } from 'lucide-react';
+import { generateRegistrationPDF } from '../lib/generatePDF';
 
 interface MyRegistrationsModalProps {
   isOpen: boolean;
@@ -118,17 +119,28 @@ export default function MyRegistrationsModal({
                         </div>
                       </div>
 
-                      {divObj?.whatsappGroup && (
-                        <a
-                          href={divObj.whatsappGroup}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="flex items-center justify-center gap-2 px-3 py-2 bg-emerald-950/20 border border-emerald-500/20 hover:border-emerald-400/40 rounded-xl text-[10px] font-mono text-emerald-300 hover:text-emerald-200 transition-all cursor-pointer"
+                      <div className="flex gap-2">
+                        {divObj?.whatsappGroup && (
+                          <a
+                            href={divObj.whatsappGroup}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="flex-1 flex items-center justify-center gap-2 px-3 py-2 bg-emerald-950/20 border border-emerald-500/20 hover:border-emerald-400/40 rounded-xl text-[10px] font-mono text-emerald-300 hover:text-emerald-200 transition-all cursor-pointer"
+                          >
+                            <MessageCircle className="w-3.5 h-3.5" />
+                            <span className="hidden sm:inline">{t('JOIN WHATSAPP', 'GABUNG WA')}</span>
+                            <span className="sm:hidden">WA</span>
+                          </a>
+                        )}
+                        <button
+                          onClick={() => generateRegistrationPDF(reg)}
+                          className="flex-1 flex items-center justify-center gap-2 px-3 py-2 bg-[#00FF88]/10 border border-[#00FF88]/20 hover:bg-[#00FF88]/20 hover:border-[#00FF88]/40 rounded-xl text-[10px] font-mono text-[#00FF88] hover:text-white transition-all cursor-pointer"
                         >
-                          <MessageCircle className="w-3.5 h-3.5" />
-                          {t('JOIN WHATSAPP GROUP', 'GABUNG GROUP WHATSAPP')}
-                        </a>
-                      )}
+                          <Download className="w-3.5 h-3.5" />
+                          <span className="hidden sm:inline">{t('DOWNLOAD PDF TICKET', 'DOWNLOAD TIKET PDF')}</span>
+                          <span className="sm:hidden">PDF</span>
+                        </button>
+                      </div>
                     </div>
                   );
                 })}
