@@ -7,6 +7,7 @@ import React, { useState, useEffect } from 'react';
 import { LanguageProvider } from './components/LanguageContext';
 import Navbar from './components/Navbar';
 import Hero from './components/Hero';
+import SupportedBySection from './components/SupportedBySection';
 import AboutEric from './components/AboutEric';
 import Divisions from './components/Divisions';
 import EventJourney from './components/EventJourney';
@@ -186,6 +187,9 @@ export default function App() {
           <>
             {/* Cinematic Header Block */}
             <Hero />
+
+            {/* Institutional Supporters */}
+            <SupportedBySection />
 
             {/* Epic About Section with Bento stats */}
             <AboutEric />

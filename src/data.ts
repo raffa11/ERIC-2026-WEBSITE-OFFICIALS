@@ -424,6 +424,34 @@ export const STATISTICS = [
 
 export const MAIN_WHATSAPP_GROUP = 'https://chat.whatsapp.com/GZEO4EwvIcaBxVqFUy4tBU?s=cl&p=a&ilr=0';
 
+export const SUPPORTED_BY = [
+  {
+    name: 'Ministry of Education',
+    logo: '/images/supported-by/kemendikbud.png',
+    initials: 'KEMENDIKBUD'
+  },
+  {
+    name: 'Universitas Negeri Jakarta',
+    logo: '/images/supported-by/unj.png',
+    initials: 'UNJ'
+  },
+  {
+    name: 'Faculty of Engineering UNJ',
+    logo: '/images/supported-by/ft-unj.png',
+    initials: 'FT UNJ'
+  },
+  {
+    name: 'Kampus Berdampak',
+    logo: '/images/supported-by/kampus-berdampak.png',
+    initials: 'KB'
+  },
+  {
+    name: 'FSI UNJ',
+    logo: '/images/supported-by/fsi.png',
+    initials: 'FSI'
+  }
+];
+
 export const SPONSORS = [
   { name: 'PDP Comon & fuel injection Pump', initials: 'PDP', logo: '/images/sponsors/pdp.png' },
   { name: 'ALPHA MECHATRONICS', initials: 'AP', logo: '/images/sponsors/ap-alpha.png' },
