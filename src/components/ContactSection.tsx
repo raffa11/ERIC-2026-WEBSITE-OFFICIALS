@@ -82,25 +82,25 @@ export default function ContactSection() {
       <div className="absolute left-[10%] bottom-[-10%] w-[450px] h-[450px] rounded-full bg-[#0047AB]/5 blur-[120px] pointer-events-none" />
 
       <div className="max-w-7xl mx-auto px-6 relative z-10">
-        
+
         {/* Section Heading */}
         <div className="mb-16 select-none">
           <div className="flex items-center gap-3 text-xs font-mono text-[#00FF88] tracking-[0.4em] uppercase mb-4">
             <ShieldAlert className="w-4 h-4 text-[#00FF88]" />
-            <span>INFORMASI KOMPETISI</span>
+            <span>COMPETITION INFORMATION</span>
           </div>
           <h2 className="text-4xl md:text-7xl font-sans font-black tracking-tighter text-white uppercase leading-none">
-            PUNYA PERTANYAAN? <br />
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#00FF88] to-[#4DFFB8]">KAMI SIAP MEMBANTU!</span>
+            HAVE ANY QUESTIONS? <br />
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#00FF88] to-[#4DFFB8]">WE READY TO HELP!</span>
           </h2>
           <p className="text-zinc-400 font-mono text-sm uppercase tracking-wider mt-4 max-w-2xl leading-relaxed">
-            Gunakan kontak berikut untuk menghubungi tim yang tepat
+            Use the following contacts to reach the appropriate team.
           </p>
         </div>
 
         {/* Left-Right Dual Column Editorial Grid Layout */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
-          
+
           {/* LEFT: Organizer details with high impact metal plates */}
           <div className="lg:col-span-5 space-y-6">
             <div className="bg-zinc-950 border border-white/5 rounded-3xl p-8 relative overflow-hidden shadow-[0_20px_45px_rgba(0,0,0,0.8)]">
