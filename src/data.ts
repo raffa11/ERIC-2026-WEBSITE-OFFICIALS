@@ -422,6 +422,8 @@ export const STATISTICS = [
   { value: '25+ Partners', label: 'Venture & Tech Networks' }
 ];
 
+export const MAIN_WHATSAPP_GROUP = 'https://chat.whatsapp.com/GZEO4EwvIcaBxVqFUy4tBU?s=cl&p=a&ilr=0';
+
 export const SPONSORS = [
   { name: 'PDP Comon & fuel injection Pump', initials: 'PDP', logo: '/images/sponsors/pdp.png' },
   { name: 'ALPHA MECHATRONICS', initials: 'AP', logo: '/images/sponsors/ap-alpha.png' },

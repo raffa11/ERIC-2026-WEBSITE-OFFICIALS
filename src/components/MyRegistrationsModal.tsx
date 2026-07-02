@@ -6,7 +6,7 @@
 import React from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { useLanguage } from './LanguageContext';
-import { COMPETITION_DIVISIONS } from '../data';
+import { COMPETITION_DIVISIONS, MAIN_WHATSAPP_GROUP } from '../data';
 import { Registration } from '../types';
 import { 
   Trophy, X, MessageCircle, CheckCircle, Download
@@ -141,6 +141,16 @@ export default function MyRegistrationsModal({
                           <span className="sm:hidden">PDF</span>
                         </button>
                       </div>
+
+                      <a
+                        href={MAIN_WHATSAPP_GROUP}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center justify-center gap-2 px-3 py-2 bg-[#00FF88]/5 border border-[#00FF88]/10 hover:bg-[#00FF88]/10 hover:border-[#00FF88]/30 rounded-xl text-[10px] font-mono text-[#00FF88] hover:text-white transition-all cursor-pointer"
+                      >
+                        <MessageCircle className="w-3.5 h-3.5 shrink-0" />
+                        <span>{t('JOIN MAIN WHATSAPP GROUP', 'GABUNG GRUP WHATSAPP UTAMA')}</span>
+                      </a>
                     </div>
                   );
                 })}

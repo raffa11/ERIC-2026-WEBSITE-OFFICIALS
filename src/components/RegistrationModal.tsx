@@ -6,7 +6,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { useLanguage } from './LanguageContext';
-import { COMPETITION_DIVISIONS } from '../data';
+import { COMPETITION_DIVISIONS, MAIN_WHATSAPP_GROUP } from '../data';
 import { Member, Registration } from '../types';
 import { 
   Trophy, User, Code, Terminal, Sparkles, Send, CheckCircle2, 
@@ -494,10 +494,29 @@ export default function RegistrationModal({
                       <MessageCircle className="w-5 h-5 text-emerald-400 group-hover:scale-110 transition-transform" />
                       <div className="text-left">
                         <div className="text-[9px] font-mono text-emerald-400 uppercase tracking-widest font-bold">
-                          {t('JOIN WHATSAPP GROUP', 'GABUNG GROUP WHATSAPP')}
+                          {t('JOIN DIVISION GROUP', 'GABUNG GRUP DIVISI')}
                         </div>
                         <div className="text-xs font-sans font-black text-white group-hover:text-emerald-300 transition-colors uppercase tracking-tight">
-                          {t('Click to join your division group', 'Klik untuk gabung group divisi Anda')}
+                          {t('Click to join your division group', 'Klik untuk gabung grup divisi Anda')}
+                        </div>
+                      </div>
+                    </div>
+                  </a>
+
+                  <a
+                    href={MAIN_WHATSAPP_GROUP}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="block bg-[#00FF88]/10 border border-[#00FF88]/20 hover:border-[#00FF88]/40 rounded-2xl p-4 transition-all duration-300 group cursor-pointer"
+                  >
+                    <div className="flex items-center justify-center gap-3">
+                      <MessageCircle className="w-5 h-5 text-[#00FF88] group-hover:scale-110 transition-transform" />
+                      <div className="text-left">
+                        <div className="text-[9px] font-mono text-[#00FF88] uppercase tracking-widest font-bold">
+                          {t('JOIN MAIN GROUP', 'GABUNG GRUP UTAMA')}
+                        </div>
+                        <div className="text-xs font-sans font-black text-white group-hover:text-[#00FF88] transition-colors uppercase tracking-tight">
+                          {t('All participants main group', 'Grup utama seluruh peserta')}
                         </div>
                       </div>
                     </div>
