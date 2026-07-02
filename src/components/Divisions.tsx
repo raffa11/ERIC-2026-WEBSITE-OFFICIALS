@@ -58,13 +58,13 @@ export default function Divisions({ onSelectDivision }: DivisionsProps) {
         <div className="mb-20 select-none">
           <div className="flex items-center gap-3 text-xs font-mono text-[#00FF88] tracking-[0.4em] uppercase mb-4">
             <LucideIcons.Trophy className="w-4 h-4 text-[#00FF88]" />
-            <span>COMPETITION DIVISIONS</span>
+            <span>{t('COMPETITION DIVISIONS', 'DIVISI PERLOMBAAN')}</span>
           </div>
           <h2 className="text-4xl md:text-7xl font-sans font-black tracking-tighter text-white uppercase leading-none">
-            THE <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#00FF88] to-[#4DFFB8]">ARENAS</span>
+            {t('THE', '')} <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#00FF88] to-[#4DFFB8]">{t('ARENAS', 'ARENA PERTANDINGAN')}</span>
           </h2>
           <p className="text-[#B3B3B3] font-mono text-sm uppercase max-w-xl mt-4">
-            Five competition categories built to test the limits of innovation, design, and practical electronics and robotics application.
+            {t('Five competition categories built to test the limits of innovation, design, and practical electronics and robotics application.', 'Lima kategori kompetisi yang dirancang untuk menguji batas inovasi, desain, dan aplikasi elektronika serta robotika praktis.')}
           </p>
         </div>
 
@@ -79,7 +79,7 @@ export default function Divisions({ onSelectDivision }: DivisionsProps) {
             <div className="flex items-center gap-3">
               <LucideIcons.FileText className="w-4 h-4 text-[#00FF88]" />
               <div className="text-left">
-                <div className="text-[9px] font-mono text-zinc-500 uppercase tracking-widest">INFO</div>
+                <div className="text-[9px] font-mono text-zinc-500 uppercase tracking-widest">{t('INFO', 'INFORMASI')}</div>
                 <div className="text-xs font-sans font-black text-white group-hover:text-[#00FF88] transition-colors uppercase tracking-tight">
                   {t('All Information', 'Semua Informasi')}
                 </div>
@@ -97,7 +97,7 @@ export default function Divisions({ onSelectDivision }: DivisionsProps) {
             <div className="flex items-center gap-3">
               <LucideIcons.BookOpen className="w-4 h-4 text-[#00FF88]" />
               <div className="text-left">
-                <div className="text-[9px] font-mono text-zinc-500 uppercase tracking-widest">GUIDE</div>
+                <div className="text-[9px] font-mono text-zinc-500 uppercase tracking-widest">{t('GUIDE', 'PANDUAN')}</div>
                 <div className="text-xs font-sans font-black text-white group-hover:text-[#00FF88] transition-colors uppercase tracking-tight">
                   {t('Guidebook', 'Buku Panduan')}
                 </div>
@@ -115,7 +115,7 @@ export default function Divisions({ onSelectDivision }: DivisionsProps) {
             <div className="flex items-center gap-3">
               <LucideIcons.Calendar className="w-4 h-4 text-[#00FF88]" />
               <div className="text-left">
-                <div className="text-[9px] font-mono text-zinc-500 uppercase tracking-widest">SCHEDULE</div>
+                <div className="text-[9px] font-mono text-zinc-500 uppercase tracking-widest">{t('SCHEDULE', 'JADWAL')}</div>
                 <div className="text-xs font-sans font-black text-white group-hover:text-[#00FF88] transition-colors uppercase tracking-tight">
                   {t('Event Schedule', 'Jadwal Acara')}
                 </div>
@@ -133,7 +133,7 @@ export default function Divisions({ onSelectDivision }: DivisionsProps) {
             <div className="flex items-center gap-3">
               <LucideIcons.Mail className="w-4 h-4 text-[#00FF88]" />
               <div className="text-left">
-                <div className="text-[9px] font-mono text-zinc-500 uppercase tracking-widest">LETTERS</div>
+                <div className="text-[9px] font-mono text-zinc-500 uppercase tracking-widest">{t('LETTERS', 'SURAT')}</div>
                 <div className="text-xs font-sans font-black text-white group-hover:text-[#00FF88] transition-colors uppercase tracking-tight">
                   {t('Official Letters', 'Surat Resmi')}
                 </div>
@@ -225,14 +225,14 @@ export default function Divisions({ onSelectDivision }: DivisionsProps) {
                   {/* Spec description bottom section */}
                   <div className="border-t border-white/5 pt-5 select-none space-y-3">
                     <div className="flex justify-between items-center text-[10px] font-mono">
-                      <span className="text-zinc-500">DIVISION SPECIFICATION</span>
+                      <span className="text-zinc-500">{t('SPECIFICATION', 'SPESIFIKASI')}</span>
                       <span className="text-white font-semibold uppercase">{division.specHighlight}</span>
                     </div>
 
                     {/* Hardware Difficulty intensity bar */}
                     <div>
                       <div className="flex justify-between items-center text-[9px] font-mono text-zinc-400 mb-1">
-                        <span>TECHNICAL INDEX</span>
+                        <span>{t('TECHNICAL INDEX', 'INDEKS TEKNIS')}</span>
                         <span>{division.intensityScore}%</span>
                       </div>
                       <div className="h-1 w-full bg-zinc-900 rounded-full overflow-hidden">

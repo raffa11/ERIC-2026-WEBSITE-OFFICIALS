@@ -19,10 +19,10 @@ export default function SponsorsSection() {
       <div className="max-w-7xl mx-auto px-6 relative z-10">
         <div className="text-center mb-16">
           <span className="text-[10px] font-mono text-zinc-500 tracking-[0.25em] uppercase">
-            OFFICIAL SPONSOR
+            {t('OFFICIAL SPONSOR', 'SPONSOR RESMI')}
           </span>
           <h3 className="text-2xl md:text-5xl font-sans font-black text-white uppercase tracking-tight mt-3">
-            OFFICIAL <span className="text-[#00FF88]">SPONSOR</span>
+            {t('OFFICIAL', '')} <span className="text-[#00FF88]">{t('SPONSOR', 'SPONSOR RESMI')}</span>
           </h3>
         </div>
 

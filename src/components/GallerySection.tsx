@@ -6,12 +6,20 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { GALLERY_ITEMS } from '../data';
+import { useLanguage } from './LanguageContext';
 import { Aperture, Compass, Filter, ZoomIn } from 'lucide-react';
 
 export default function GallerySection() {
+  const { t } = useLanguage();
   const [filter, setFilter] = useState('All');
 
-  const categories = ['All', 'Diagnostics', 'Arena Trials', 'Labs', 'Kinematics'];
+  const categories = [
+  { en: 'All', id: 'Semua' },
+  { en: 'Diagnostics', id: 'Diagnostik' },
+  { en: 'Arena Trials', id: 'Uji Coba Arena' },
+  { en: 'Labs', id: 'Laboratorium' },
+  { en: 'Kinematics', id: 'Kinematika' }
+];
 
   const filteredItems = filter === 'All'
     ? GALLERY_ITEMS
@@ -43,15 +51,15 @@ export default function GallerySection() {
             </span>
             {categories.map((cat) => (
               <button
-                key={cat}
-                onClick={() => setFilter(cat)}
+                key={cat.en}
+                onClick={() => setFilter(cat.en)}
                 className={`px-3 py-1.5 rounded text-xs font-mono uppercase transition-all duration-300 ${
-                  filter === cat
+                  filter === cat.en
                     ? 'bg-[#00FF88] text-black font-bold'
                     : 'text-zinc-400 hover:text-white hover:bg-white/5'
                 }`}
               >
-                {cat}
+                {t(cat.en, cat.id)}
               </button>
             ))}
           </div>
