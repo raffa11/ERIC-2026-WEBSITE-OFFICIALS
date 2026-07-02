@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-export default function EricLogo({ className = 'w-10 h-10', showText = true, src }: { className?: string; showText?: boolean; src?: string }) {
+export default function EricLogo({ className = 'w-10 h-10', showText = true, src, title, subtitle }: { className?: string; showText?: boolean; src?: string; title?: string; subtitle?: string }) {
   if (src) {
     return (
       <div className="flex items-center gap-3 select-none">
@@ -11,11 +11,13 @@ export default function EricLogo({ className = 'w-10 h-10', showText = true, src
         {showText && (
           <div className="flex flex-col">
             <span className="text-xl font-sans font-black tracking-tighter text-white leading-none">
-              ERIC <span className="text-[#FFEAA7]">2026</span>
+              {title || 'ERIC'} <span className="text-[#FFEAA7]">2026</span>
             </span>
-            <span className="text-[7.5px] font-mono text-zinc-400 tracking-[0.15em] uppercase leading-none mt-1">
-              ROBOTICS LIGA
-            </span>
+            {subtitle && (
+              <span className="text-[7.5px] font-mono text-zinc-400 tracking-[0.15em] uppercase leading-none mt-1">
+                {subtitle}
+              </span>
+            )}
           </div>
         )}
       </div>
@@ -142,11 +144,15 @@ export default function EricLogo({ className = 'w-10 h-10', showText = true, src
       {showText && (
         <div className="flex flex-col">
           <span className="text-xl font-sans font-black tracking-tighter text-white leading-none">
-            ERIC <span className="text-[#FFEAA7]">2026</span>
+            {title || 'ERIC'} <span className="text-[#FFEAA7]">2026</span>
           </span>
-          <span className="text-[7.5px] font-mono text-zinc-400 tracking-[0.15em] uppercase leading-none mt-1">
-            ROBOTICS LIGA
-          </span>
+          {subtitle !== undefined ? (
+            subtitle && <span className="text-[7.5px] font-mono text-zinc-400 tracking-[0.15em] uppercase leading-none mt-1">{subtitle}</span>
+          ) : (
+            <span className="text-[7.5px] font-mono text-zinc-400 tracking-[0.15em] uppercase leading-none mt-1">
+              ROBOTICS LIGA
+            </span>
+          )}
         </div>
       )}
     </div>

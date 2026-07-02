@@ -45,7 +45,7 @@ export default function Footer() {
           
           {/* Logo & Address (4 cols) */}
           <div className="md:col-span-4 space-y-6">
-            <EricLogo className="w-12 h-12" />
+            <EricLogo className="w-24 h-24" src="/images/eric-logo.png" showText={true} title="INTERNATIONAL ERIC" subtitle="ROBOTICS LIGA" />
             
             <p className="text-zinc-500 font-mono text-xs uppercase leading-relaxed max-w-sm">
               {t(
