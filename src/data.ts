@@ -327,7 +327,7 @@ export const TIMELINE_EVENTS: TimelineEvent[] = [
     title: 'Socialization Campaign',
     date: '1 January-30 June 2026',
     description: 'Interactive info-sessions, campus tours, and rulebook socialization across leading institutions in Indonesia.',
-    details: 'Kampanye sosialisasi regulasi kompetisi, buku panduan peserta, dan pengenalan divisi luring/daring ke kampus seluruh Indonesia.',
+    details: 'Competition regulation socialization campaign, participant guidebook distribution, and introduction of offline/online divisions across universities throughout Indonesia.',
     status: 'completed'
   },
   {
@@ -335,7 +335,7 @@ export const TIMELINE_EVENTS: TimelineEvent[] = [
     title: 'Roster Registration',
     date: 'July 01 - August 31, 2026',
     description: 'Secure mekatronika slots, upload structural schematics, and lock in telemetry signals for processing.',
-    details: 'Pendaftaran tim, pengisian administrasi, serta unggah cetak biru sirkuit dan abstrak proyek inovasi.',
+    details: 'Team registration, administrative filling, and submission of circuit blueprints and innovation project abstracts.',
     status: 'active'
   },
   {
@@ -343,7 +343,7 @@ export const TIMELINE_EVENTS: TimelineEvent[] = [
     title: 'Technical Meeting',
     date: '15 September 2026',
     description: 'Unveiling active arena dimensions, rules clarification, and code frequency locks with the engineering board.',
-    details: 'Pemberian arahan teknis arena, pengundian nomor urut tanding, dan sinkronisasi frekuensi radio kendali.',
+    details: 'Technical arena directives, match order drawing, and control radio frequency synchronization.',
     status: 'upcoming'
   },
   {
@@ -351,7 +351,7 @@ export const TIMELINE_EVENTS: TimelineEvent[] = [
     title: 'Championship Matches',
     date: '22-24 September 2026',
     description: 'High stakes combat, real-time autonomous racing, and mechatonics pitching at the grand sports arena.',
-    details: 'Pertarungan puncak tiga hari penuh aksi di bawah sorot lampu panggung bergengsi Universitas Negeri Jakarta.',
+    details: 'Three days of peak action-packed competition under the spotlight of the prestigious Jakarta State University stage.',
     status: 'upcoming'
   },
   {
@@ -359,7 +359,7 @@ export const TIMELINE_EVENTS: TimelineEvent[] = [
     title: 'Grand Victory Awards',
     date: 'September 24, 2026',
     description: 'Dispensing the Rp 60,000,000+ prize support pool, project scale-up funding, and corporate developer contracts.',
-    details: 'Malam penganugerahan piala kejuaraan, penyaluran opsi inkubasi, dan kontrak kemitraan laboratorium nasional.',
+    details: 'Championship trophy award night, incubation option distribution, and national laboratory partnership contracts.',
     status: 'upcoming'
   }
 ];
