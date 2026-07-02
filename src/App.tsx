@@ -47,7 +47,7 @@ export default function App() {
   // Load state on mount
   useEffect(() => {
     const init = async () => {
-      let loggedIn = false;
+      let userEmail: string | undefined;
 
       // 1. Try Supabase session first
       const auth = getSupabaseAuth();
@@ -62,25 +62,27 @@ export default function App() {
           };
           setCurrentUser(user);
           localStorage.setItem('eric_active_user', JSON.stringify(user));
-          loggedIn = true;
+          userEmail = user.email;
         }
       }
 
       // 2. Fallback to localStorage if no Supabase session
-      if (!loggedIn) {
+      if (!userEmail) {
         const storedUser = localStorage.getItem('eric_active_user');
         if (storedUser) {
           try {
-            setCurrentUser(JSON.parse(storedUser));
+            const parsed = JSON.parse(storedUser);
+            setCurrentUser(parsed);
+            userEmail = parsed.email;
           } catch (e) {
             localStorage.removeItem('eric_active_user');
           }
         }
       }
 
-      // 3. Load registrations
+      // 3. Load registrations (from localStorage + Supabase)
       try {
-        const data = await dbFetchRegistrations();
+        const data = await dbFetchRegistrations(userEmail);
         const filtered = data.filter((r: any) => r && r.id && !r.id.toString().startsWith('seed-'));
         setRegistrations(filtered);
       } catch (err) {
@@ -115,7 +117,7 @@ export default function App() {
     setRegistrations(updated);
     
     try {
-      await dbUpsertRegistration(newReg);
+      await dbUpsertRegistration(newReg, currentUser?.email);
     } catch (err) {
       console.error('Failed to save to Supabase:', err);
       alert('Registrasi tersimpan di lokal, gagal menyinkronkan ke cloud database: ' + err);
@@ -138,7 +140,7 @@ export default function App() {
       }
       // 2. Upsert modified or added registrations
       for (const reg of newRegs) {
-        await dbUpsertRegistration(reg);
+        await dbUpsertRegistration(reg, currentUser?.email);
       }
     } catch (err) {
       console.error('Failed to sync changes with Supabase:', err);
