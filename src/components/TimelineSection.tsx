@@ -192,7 +192,7 @@ export default function TimelineSection() {
                   <div className="flex items-center gap-2 mb-2">
                     <CornerDownRight className="w-3.5 h-3.5 text-[#C5A059]" />
                     <span className="text-[10px] font-mono text-[#C5A059] tracking-widest uppercase font-bold">
-                      Panduan Teknis (Bahasa Indonesia)
+                      Technical Guide
                     </span>
                   </div>
                   <p className="text-zinc-400 text-xs leading-relaxed italic">
