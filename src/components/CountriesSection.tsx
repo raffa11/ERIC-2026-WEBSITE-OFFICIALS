@@ -1,10 +1,10 @@
-import { useLanguage } from './LanguageContext';
+﻿import { useLanguage } from './LanguageContext';
 
 const COUNTRIES = [
-  { emoji: '????', name: 'Indonesia' },
-  { emoji: '????', name: 'Malaysia' },
-  { emoji: '????', name: 'Philippines' },
-  { emoji: '????', name: 'Vietnam' },
+  { emoji: '🇮🇩', name: 'Indonesia' },
+  { emoji: '🇲🇾', name: 'Malaysia' },
+  { emoji: '🇵🇭', name: 'Philippines' },
+  { emoji: '🇻🇳', name: 'Vietnam' },
 ];
 
 export default function CountriesSection() {
