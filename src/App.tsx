@@ -8,6 +8,7 @@ import { LanguageProvider } from './components/LanguageContext';
 import Navbar from './components/Navbar';
 import Hero from './components/Hero';
 import SupportedBySection from './components/SupportedBySection';
+import CountriesSection from './components/CountriesSection';
 import AboutEric from './components/AboutEric';
 import Divisions from './components/Divisions';
 import EventJourney from './components/EventJourney';
@@ -190,6 +191,9 @@ export default function App() {
 
             {/* Institutional Supporters */}
             <SupportedBySection />
+
+            {/* International Participants */}
+            <CountriesSection />
 
             {/* Epic About Section with Bento stats */}
             <AboutEric />
