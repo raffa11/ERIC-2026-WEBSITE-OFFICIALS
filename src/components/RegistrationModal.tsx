@@ -494,7 +494,7 @@ export default function RegistrationModal({
                       <MessageCircle className="w-5 h-5 text-emerald-400 group-hover:scale-110 transition-transform" />
                       <div className="text-left">
                         <div className="text-[9px] font-mono text-emerald-400 uppercase tracking-widest font-bold">
-                          {t('JOIN DIVISION GROUP', 'GABUNG GRUP DIVISI')}
+                          WHATSAPP GROUP — {(() => { const div = COMPETITION_DIVISIONS.find(d => d.id === successPopup.divisionId); return div?.title.toUpperCase() || ''; })()}
                         </div>
                         <div className="text-xs font-sans font-black text-white group-hover:text-emerald-300 transition-colors uppercase tracking-tight">
                           {t('Click to join your division group', 'Klik untuk gabung grup divisi Anda')}
@@ -513,10 +513,10 @@ export default function RegistrationModal({
                       <MessageCircle className="w-5 h-5 text-[#00FF88] group-hover:scale-110 transition-transform" />
                       <div className="text-left">
                         <div className="text-[9px] font-mono text-[#00FF88] uppercase tracking-widest font-bold">
-                          {t('JOIN MAIN GROUP', 'GABUNG GRUP UTAMA')}
+                          WHATSAPP GROUP — ALL PARTICIPANTS
                         </div>
                         <div className="text-xs font-sans font-black text-white group-hover:text-[#00FF88] transition-colors uppercase tracking-tight">
-                          {t('All participants main group', 'Grup utama seluruh peserta')}
+                          {t('Main group for all ERIC 2026 participants', 'Grup utama untuk seluruh peserta ERIC 2026')}
                         </div>
                       </div>
                     </div>
