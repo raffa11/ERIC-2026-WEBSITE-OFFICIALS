@@ -24,12 +24,12 @@ export default function TimelineSection() {
         {/* Section Header */}
         <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-16 select-none">
           <div>
-            <div className="flex items-center gap-3 text-xs font-mono text-[#00FF88] tracking-[0.4em] uppercase mb-4">
+            <div className="flex items-center gap-3 text-xs font-mono text-[#FFD700] tracking-[0.4em] uppercase mb-4">
               <Layers className="w-4 h-4 animate-spin-slow" />
               <span>Critical Milestones</span>
             </div>
             <h2 className="text-4xl md:text-7xl font-sans font-black tracking-tighter text-white uppercase leading-none">
-              THE <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#00FF88] to-[#C5A059]">TIMELINE</span>
+              THE <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#FFD700] to-[#C5A059]">TIMELINE</span>
             </h2>
           </div>
           <p className="text-zinc-500 font-mono text-xs max-w-sm mt-4 md:mt-0 uppercase">
@@ -45,7 +45,7 @@ export default function TimelineSection() {
           
           {/* Highlighted portion of the line */}
           <motion.div
-            className="absolute top-[28px] left-0 h-[2.5px] bg-gradient-to-r from-[#0047AB] via-[#00FF88] to-[#C5A059] pointer-events-none z-0 shadow-[0_0_10px_rgba(0,255,136,0.5)]"
+            className="absolute top-[28px] left-0 h-[2.5px] bg-gradient-to-r from-[#0047AB] via-[#FFD700] to-[#C5A059] pointer-events-none z-0 shadow-[0_0_10px_rgba(255, 215, 0, 0.5)]"
             initial={{ width: '0%' }}
             animate={{ width: `${(activeIdx / (TIMELINE_EVENTS.length - 1)) * 100}%` }}
             transition={{ type: 'spring', stiffness: 50, damping: 15 }}
@@ -69,9 +69,9 @@ export default function TimelineSection() {
                     <div
                       className={`w-14 h-14 rounded-full flex items-center justify-center border-2 transition-all duration-300 ${
                         active
-                          ? 'bg-black border-[#00FF88] text-[#00FF88] scale-110 shadow-[0_0_15px_rgba(0,255,136,0.3)]'
+                          ? 'bg-black border-[#FFD700] text-[#FFD700] scale-110 shadow-[0_0_15px_rgba(255, 215, 0, 0.3)]'
                           : completed
-                          ? 'bg-gradient-to-r from-[#0047AB] to-[#00FF88] border-transparent text-white'
+                          ? 'bg-gradient-to-r from-[#0047AB] to-[#FFD700] border-transparent text-white'
                           : 'bg-[#121212] border-zinc-700 text-zinc-500 group-hover:border-zinc-500 group-hover:text-zinc-300'
                       }`}
                     >
@@ -84,14 +84,14 @@ export default function TimelineSection() {
 
                     {/* Active dynamic ping pulse */}
                     {active && (
-                      <span className="absolute -inset-1 rounded-full border border-[#00FF88] animate-ping opacity-45 pointer-events-none" />
+                      <span className="absolute -inset-1 rounded-full border border-[#FFD700] animate-ping opacity-45 pointer-events-none" />
                     )}
                   </div>
 
                   {/* Phase number & Title banner */}
                   <span
                     className={`font-mono text-[9px] tracking-widest uppercase transition-colors duration-300 ${
-                      active ? 'text-[#00FF88] font-bold' : 'text-zinc-500'
+                      active ? 'text-[#FFD700] font-bold' : 'text-zinc-500'
                     }`}
                   >
                     {item.phase}
@@ -124,7 +124,7 @@ export default function TimelineSection() {
               
               {/* Left Column stats projection */}
               <div className="md:col-span-4 border-b md:border-b-0 md:border-r border-white/5 pb-6 md:pb-0 md:pr-8">
-                <span className="text-xs font-mono text-[#00FF88] tracking-[0.2em] uppercase block mb-1">
+                <span className="text-xs font-mono text-[#FFD700] tracking-[0.2em] uppercase block mb-1">
                   Selected Phase
                 </span>
                 <div className="text-4xl font-sans font-black text-white tracking-tighter mb-4">
@@ -132,7 +132,7 @@ export default function TimelineSection() {
                 </div>
 
                 <div className="flex items-center gap-2 text-white/90 bg-[#121212] px-3.5 py-2.5 rounded-lg border border-white/5 mb-4">
-                  <Calendar className="w-4 h-4 text-[#00FF88]" />
+                  <Calendar className="w-4 h-4 text-[#FFD700]" />
                   <span className="font-mono text-xs">{activeEvent.date}</span>
                 </div>
 
@@ -141,9 +141,9 @@ export default function TimelineSection() {
                   <span
                     className={`w-2.5 h-2.5 rounded-full ${
                       activeEvent.status === 'completed'
-                        ? 'bg-emerald-500 animate-pulse'
+                        ? 'bg-amber-500 animate-pulse'
                         : activeEvent.status === 'active'
-                        ? 'bg-[#00FF88] animate-pulse'
+                        ? 'bg-[#FFD700] animate-pulse'
                         : 'bg-zinc-600'
                     }`}
                   />
@@ -173,18 +173,18 @@ export default function TimelineSection() {
                   href="https://drive.google.com/drive/folders/1RPDtOuZvIp4wUPghS5LrQXQCm9JYpciU"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="group flex items-center justify-between px-5 py-4 bg-zinc-950 border border-white/10 hover:border-[#00FF88]/40 rounded-2xl transition-all duration-300 hover:scale-102 hover:shadow-[0_0_20px_rgba(0,255,136,0.1)] cursor-pointer"
+                  className="group flex items-center justify-between px-5 py-4 bg-zinc-950 border border-white/10 hover:border-[#FFD700]/40 rounded-2xl transition-all duration-300 hover:scale-102 hover:shadow-[0_0_20px_rgba(255, 215, 0, 0.1)] cursor-pointer"
                 >
                   <div className="flex items-center gap-3">
-                    <Calendar className="w-5 h-5 text-[#00FF88]" />
+                    <Calendar className="w-5 h-5 text-[#FFD700]" />
                     <div>
                       <div className="text-[9px] font-mono text-zinc-500 uppercase tracking-widest">SCHEDULE</div>
-                      <div className="text-sm font-sans font-black text-white group-hover:text-[#00FF88] transition-colors uppercase tracking-tight">
+                      <div className="text-sm font-sans font-black text-white group-hover:text-[#FFD700] transition-colors uppercase tracking-tight">
                         {t('View Full Event Schedule', 'Lihat Jadwal Lengkap')}
                       </div>
                     </div>
                   </div>
-                  <ExternalLink className="w-4 h-4 text-zinc-500 group-hover:text-[#00FF88] transition-colors" />
+                  <ExternalLink className="w-4 h-4 text-zinc-500 group-hover:text-[#FFD700] transition-colors" />
                 </a>
 
                 {/* Sub Indonesian Content panel (Authentic feel) */}

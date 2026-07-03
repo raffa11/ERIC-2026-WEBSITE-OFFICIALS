@@ -14,7 +14,7 @@ export default function SponsorsSection() {
 
   return (
     <section id="sponsors-section" className="relative py-24 bg-[#0D0D0D] border-t border-white/5 select-none overflow-hidden">
-      <div className="absolute right-[-10%] bottom-[10%] w-[350px] h-[350px] bg-[#00FF88]/5 rounded-full blur-[120px] pointer-events-none" />
+      <div className="absolute right-[-10%] bottom-[10%] w-[350px] h-[350px] bg-[#FFD700]/5 rounded-full blur-[120px] pointer-events-none" />
 
       <div className="max-w-7xl mx-auto px-6 relative z-10">
         <div className="text-center mb-16">
@@ -22,7 +22,7 @@ export default function SponsorsSection() {
             {t('OFFICIAL SPONSOR', 'SPONSOR RESMI')}
           </span>
           <h3 className="text-2xl md:text-5xl font-sans font-black text-white uppercase tracking-tight mt-3">
-            {t('OFFICIAL', '')} <span className="text-[#00FF88]">{t('SPONSOR', 'SPONSOR RESMI')}</span>
+            {t('OFFICIAL', '')} <span className="text-[#FFD700]">{t('SPONSOR', 'SPONSOR RESMI')}</span>
           </h3>
         </div>
 
@@ -37,7 +37,7 @@ export default function SponsorsSection() {
                 onMouseLeave={() => setHoveredSponsor(null)}
                 className={`relative flex flex-col items-center justify-center p-6 bg-zinc-950 rounded-2xl border transition-all duration-300 min-h-[220px] ${
                   hoveredSponsor === sponsor.name
-                    ? 'border-[#00FF88] shadow-[0_0_20px_rgba(0,255,136,0.15)] bg-[#050505]'
+                    ? 'border-[#FFD700] shadow-[0_0_20px_rgba(255, 215, 0, 0.15)] bg-[#050505]'
                     : 'border-white/5'
                 }`}
               >

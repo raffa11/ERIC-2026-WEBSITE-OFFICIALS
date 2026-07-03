@@ -26,8 +26,8 @@ export default function ContactSection() {
       label: 'WEBSITE ERIC',
       value: 'ft.unj.ac.id/elektronika/eric',
       href: 'https://ft.unj.ac.id/elektronika/eric',
-      accentColor: '#00FF88',
-      hoverGlow: 'rgba(0, 255, 136, 0.15)'
+      accentColor: '#FFD700',
+      hoverGlow: 'rgba(255, 215, 0, 0.15)'
     },
     {
       id: 'instagram',
@@ -44,7 +44,7 @@ export default function ContactSection() {
       label: 'WHATSAPP ADMIN',
       value: 'wa.me/+6285176706421 (Ariful)',
       href: 'https://wa.me/6285176706421',
-      accentColor: '#4DFFB8',
+      accentColor: '#FFE44D',
       hoverGlow: 'rgba(77, 255, 184, 0.15)'
     },
     {
@@ -71,7 +71,7 @@ export default function ContactSection() {
       label: 'HOTEL INFO',
       value: 'Hotel Information',
       href: 'https://drive.google.com/drive/folders/1WWtwQr2UulH9DyvNvscbGtvGo9_Q-oLl',
-      accentColor: '#4DFFB8',
+      accentColor: '#FFE44D',
       hoverGlow: 'rgba(77, 255, 184, 0.15)'
     }
   ];
@@ -85,13 +85,13 @@ export default function ContactSection() {
 
         {/* Section Heading */}
         <div className="mb-16 select-none">
-          <div className="flex items-center gap-3 text-xs font-mono text-[#00FF88] tracking-[0.4em] uppercase mb-4">
-            <ShieldAlert className="w-4 h-4 text-[#00FF88]" />
+          <div className="flex items-center gap-3 text-xs font-mono text-[#FFD700] tracking-[0.4em] uppercase mb-4">
+            <ShieldAlert className="w-4 h-4 text-[#FFD700]" />
             <span>COMPETITION INFORMATION</span>
           </div>
           <h2 className="text-4xl md:text-7xl font-sans font-black tracking-tighter text-white uppercase leading-none">
             HAVE ANY QUESTIONS? <br />
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#00FF88] to-[#4DFFB8]">WE'RE READY TO HELP!</span>
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#FFD700] to-[#FFE44D]">WE'RE READY TO HELP!</span>
           </h2>
           <p className="text-zinc-400 font-mono text-sm uppercase tracking-wider mt-4 max-w-2xl leading-relaxed">
             Use the following contacts to reach the appropriate team.
@@ -106,7 +106,7 @@ export default function ContactSection() {
             <div className="bg-zinc-950 border border-white/5 rounded-3xl p-8 relative overflow-hidden shadow-[0_20px_45px_rgba(0,0,0,0.8)]">
 
               <div className="flex items-center gap-3 mb-6 border-b border-white/5 pb-4">
-                <Building className="w-5 h-5 text-[#00FF88]" />
+                <Building className="w-5 h-5 text-[#FFD700]" />
                 <span className="font-mono text-xs text-zinc-400 uppercase tracking-widest font-black">
                   OFFICIAL ORGANIZER
                 </span>
@@ -114,7 +114,7 @@ export default function ContactSection() {
 
               <div className="space-y-4 select-none">
                 <div>
-                  <h4 className="text-sm font-mono text-[#00FF88] uppercase tracking-wide">
+                  <h4 className="text-sm font-mono text-[#FFD700] uppercase tracking-wide">
                     {t('DEPARTMENT', 'PROGRAM STUDI')}
                   </h4>
                   <p className="text-white text-lg font-sans font-extrabold tracking-tight uppercase leading-snug">
@@ -192,7 +192,7 @@ export default function ContactSection() {
                     <span className="text-[9.5px] font-mono text-zinc-500 tracking-wider block font-bold">
                       {channel.label}
                     </span>
-                    <span className="text-sm font-mono text-white group-hover:text-[#00FF88] transition-colors font-black block leading-none">
+                    <span className="text-sm font-mono text-white group-hover:text-[#FFD700] transition-colors font-black block leading-none">
                       {channel.value}
                     </span>
                     <span className="text-[8.5px] font-mono text-zinc-600 group-hover:text-zinc-400 block pt-1 uppercase">

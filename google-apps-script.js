@@ -57,7 +57,7 @@ function getOrCreateDivisionSheet(divisionId) {
   sheet.appendRow(headers);
   const headerRange = sheet.getRange(1, 1, 1, headers.length);
   headerRange.setFontWeight("bold");
-  headerRange.setBackground("#00FF88");
+  headerRange.setBackground("#FFD700");
   headerRange.setFontColor("#000000");
 
   return sheet;

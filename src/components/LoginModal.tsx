@@ -58,7 +58,7 @@ export default function LoginModal({ isOpen, onClose, onLoginSuccess }: LoginMod
             className="relative w-full max-w-md bg-zinc-950 border border-white/10 rounded-3xl p-6 md:p-8 shadow-[0_35px_80px_rgba(0,0,0,0.95)] overflow-hidden z-10"
           >
             <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.015)_1px,transparent_1px)] bg-[size:30px_30px] pointer-events-none" />
-            <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-[#00FF88] to-[#0047AB]" />
+            <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-[#FFD700] to-[#0047AB]" />
 
             <button
               onClick={onClose}
@@ -74,7 +74,7 @@ export default function LoginModal({ isOpen, onClose, onLoginSuccess }: LoginMod
                 animate={{ opacity: 1 }}
                 className="py-16 text-center space-y-6 select-none"
               >
-                <div className="w-16 h-16 border-2 border-[#00FF88] border-t-transparent rounded-full animate-spin mx-auto" />
+                <div className="w-16 h-16 border-2 border-[#FFD700] border-t-transparent rounded-full animate-spin mx-auto" />
                 <div className="space-y-1">
                   <h3 className="text-lg font-sans font-black text-white uppercase tracking-wider">
                     CONNECTING GOOGLE ACCOUNT

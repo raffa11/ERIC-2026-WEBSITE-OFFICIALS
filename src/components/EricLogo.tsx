@@ -128,7 +128,7 @@ export default function EricLogo({ className = 'w-10 h-10', showText = true, src
           {/* Eagle determined robot-eye */}
           <polygon
             points="120,75 145,82 125,90"
-            fill="#00FF88"
+            fill="#FFD700"
             filter="url(#neonGlow)"
           />
           <line

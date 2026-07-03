@@ -290,7 +290,7 @@ export default function RegistrationModal({
     return (
       <div className="space-y-1">
         <label className="text-[9px] font-mono text-zinc-400 uppercase tracking-widest block">
-          {label} <span className="text-[#00FF88]">*</span>
+          {label} <span className="text-[#FFD700]">*</span>
         </label>
         <div
           onDragOver={(e) => {
@@ -307,9 +307,9 @@ export default function RegistrationModal({
           onClick={() => document.getElementById(id)?.click()}
           className={`border border-dashed rounded-xl p-2.5 text-center transition-all cursor-pointer relative ${
             localDragging
-              ? 'border-[#00FF88] bg-[#00FF88]/5 scale-[0.99]'
+              ? 'border-[#FFD700] bg-[#FFD700]/5 scale-[0.99]'
               : fileUrl
-                ? 'border-emerald-500/30 bg-emerald-950/5'
+                ? 'border-amber-500/30 bg-amber-950/5'
                 : 'border-white/10 hover:border-white/20 bg-zinc-950/40'
           }`}
         >
@@ -326,7 +326,7 @@ export default function RegistrationModal({
           {fileUrl ? (
             <div className="flex items-center justify-between gap-1.5">
               <div className="flex items-center gap-1.5 min-w-0">
-                <Check className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+                <Check className="w-3.5 h-3.5 text-amber-400 shrink-0" />
                 <span className="text-[10px] font-mono text-white truncate max-w-[120px] md:max-w-[150px]">
                   {fileName || 'File uploaded'}
                 </span>
@@ -507,7 +507,7 @@ export default function RegistrationModal({
           >
             {/* Design grid outline - hide on mobile */}
             <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.012)_1px,transparent_1px)] bg-[size:25px_25px] pointer-events-none" />
-            <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-[#00FF88] to-[#0047AB]" />
+            <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-[#FFD700] to-[#0047AB]" />
 
             {/* Close Button */}
             {!successPopup && (
@@ -542,13 +542,13 @@ export default function RegistrationModal({
                   className="text-center space-y-6 select-none"
                 >
                   <div className="flex justify-center">
-                    <div className="w-16 h-16 bg-[#00FF88]/10 rounded-full flex items-center justify-center border border-[#00FF88] shadow-[0_0_20px_rgba(0,255,136,0.2)]">
-                      <CheckCircle2 className="w-8 h-8 text-[#00FF88]" />
+                    <div className="w-16 h-16 bg-[#FFD700]/10 rounded-full flex items-center justify-center border border-[#FFD700] shadow-[0_0_20px_rgba(255, 215, 0, 0.2)]">
+                      <CheckCircle2 className="w-8 h-8 text-[#FFD700]" />
                     </div>
                   </div>
 
                   <div className="space-y-1.5">
-                    <span className="text-[10px] font-mono text-[#00FF88] uppercase tracking-[0.3em] block">
+                    <span className="text-[10px] font-mono text-[#FFD700] uppercase tracking-[0.3em] block">
                       TRANSMISSION STATUS: ACCREDITED
                     </span>
                     <h3 className="text-3xl font-sans font-black text-white uppercase tracking-tighter">
@@ -566,7 +566,7 @@ export default function RegistrationModal({
                     <div className="text-[9px] font-mono text-[#C5A059] uppercase tracking-widest font-bold">
                       {t('YOUR TOURNAMENT KEY', 'KUNCI AKSES TURNAMEN ANDA')}
                     </div>
-                    <div className="text-2xl font-mono text-[#00FF88] font-black tracking-widest select-all">
+                    <div className="text-2xl font-mono text-[#FFD700] font-black tracking-widest select-all">
                       {successPopup.refCode}
                     </div>
                     <p className="text-[8.5px] font-mono text-zinc-500 uppercase leading-normal">
@@ -581,15 +581,15 @@ export default function RegistrationModal({
                     })()}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="block bg-emerald-950/20 border border-emerald-500/20 hover:border-emerald-400/40 rounded-2xl p-4 transition-all duration-300 group cursor-pointer"
+                    className="block bg-amber-950/20 border border-amber-500/20 hover:border-amber-400/40 rounded-2xl p-4 transition-all duration-300 group cursor-pointer"
                   >
                     <div className="flex items-center justify-center gap-3">
-                      <MessageCircle className="w-5 h-5 text-emerald-400 group-hover:scale-110 transition-transform" />
+                      <MessageCircle className="w-5 h-5 text-amber-400 group-hover:scale-110 transition-transform" />
                       <div className="text-left">
-                        <div className="text-[9px] font-mono text-emerald-400 uppercase tracking-widest font-bold">
+                        <div className="text-[9px] font-mono text-amber-400 uppercase tracking-widest font-bold">
                           WHATSAPP GROUP — {(() => { const div = COMPETITION_DIVISIONS.find(d => d.id === successPopup.divisionId); return div?.title.toUpperCase() || ''; })()}
                         </div>
-                        <div className="text-xs font-sans font-black text-white group-hover:text-emerald-300 transition-colors uppercase tracking-tight">
+                        <div className="text-xs font-sans font-black text-white group-hover:text-amber-300 transition-colors uppercase tracking-tight">
                           {t('Click to join your division group', 'Klik untuk gabung grup divisi Anda')}
                         </div>
                       </div>
@@ -600,15 +600,15 @@ export default function RegistrationModal({
                     href={MAIN_WHATSAPP_GROUP}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="block bg-[#00FF88]/10 border border-[#00FF88]/20 hover:border-[#00FF88]/40 rounded-2xl p-4 transition-all duration-300 group cursor-pointer"
+                    className="block bg-[#FFD700]/10 border border-[#FFD700]/20 hover:border-[#FFD700]/40 rounded-2xl p-4 transition-all duration-300 group cursor-pointer"
                   >
                     <div className="flex items-center justify-center gap-3">
-                      <MessageCircle className="w-5 h-5 text-[#00FF88] group-hover:scale-110 transition-transform" />
+                      <MessageCircle className="w-5 h-5 text-[#FFD700] group-hover:scale-110 transition-transform" />
                       <div className="text-left">
-                        <div className="text-[9px] font-mono text-[#00FF88] uppercase tracking-widest font-bold">
+                        <div className="text-[9px] font-mono text-[#FFD700] uppercase tracking-widest font-bold">
                           WHATSAPP GROUP — ALL PARTICIPANTS
                         </div>
-                        <div className="text-xs font-sans font-black text-white group-hover:text-[#00FF88] transition-colors uppercase tracking-tight">
+                        <div className="text-xs font-sans font-black text-white group-hover:text-[#FFD700] transition-colors uppercase tracking-tight">
                           {t('Main group for all ERIC 2026 participants', 'Grup utama untuk seluruh peserta ERIC 2026')}
                         </div>
                       </div>
@@ -616,14 +616,14 @@ export default function RegistrationModal({
                   </a>
 
                   <p className="text-xs text-zinc-400 font-mono uppercase leading-relaxed text-center px-4">
-                    {t('Thank you', 'Terima kasih')}, <span className="text-white font-bold">{successPopup.leader.name}</span>. {t('Your team', 'Tim Anda')} <span className="text-[#00FF88] font-bold">"{successPopup.teamName}"</span> {t('is registered. A confirmation has been logged.', 'telah terdaftar. Konfirmasi telah dicatat.')}
+                    {t('Thank you', 'Terima kasih')}, <span className="text-white font-bold">{successPopup.leader.name}</span>. {t('Your team', 'Tim Anda')} <span className="text-[#FFD700] font-bold">"{successPopup.teamName}"</span> {t('is registered. A confirmation has been logged.', 'telah terdaftar. Konfirmasi telah dicatat.')}
                   </p>
 
                   <div className="pt-2">
                     <button
                       type="button"
                       onClick={onClose}
-                      className="w-full py-3 bg-gradient-to-r from-[#00FF88] to-[#4DFFB8] text-black font-sans font-black text-xs tracking-wider uppercase rounded-xl shadow-[0_0_15px_rgba(0,255,136,0.15)] hover:scale-101 transition-transform cursor-pointer"
+                      className="w-full py-3 bg-gradient-to-r from-[#FFD700] to-[#FFE44D] text-black font-sans font-black text-xs tracking-wider uppercase rounded-xl shadow-[0_0_15px_rgba(255, 215, 0, 0.15)] hover:scale-101 transition-transform cursor-pointer"
                     >
                       {t('DONE', 'SELESAI')}
                     </button>
@@ -635,7 +635,7 @@ export default function RegistrationModal({
                   {/* Step indicators */}
                   <div className="flex items-center justify-between border-b border-white/5 pb-4 select-none">
                     <div className="space-y-1">
-                      <span className="text-[9px] font-mono text-[#00FF88] uppercase tracking-[0.25em] font-black block">
+                      <span className="text-[9px] font-mono text-[#FFD700] uppercase tracking-[0.25em] font-black block">
                         {t('CHAMPIONSHIP ROSTER DEPLOYER', 'REGISTRASI PERLOMBAAN RESMI')}
                       </span>
                       <h3 className="text-xl md:text-2xl font-sans font-black text-white uppercase tracking-tight">
@@ -644,7 +644,7 @@ export default function RegistrationModal({
                     </div>
 
                     <div className="text-right font-mono text-xs text-zinc-500">
-                      <span className="text-[#00FF88] font-bold">{wizardStep}</span> / 4
+                      <span className="text-[#FFD700] font-bold">{wizardStep}</span> / 4
                     </div>
                   </div>
 
@@ -654,7 +654,7 @@ export default function RegistrationModal({
                       <div
                         key={step}
                         className={`h-full flex-grow rounded-full transition-all duration-300 ${
-                          step <= wizardStep ? 'bg-[#00FF88]' : 'bg-zinc-800'
+                          step <= wizardStep ? 'bg-[#FFD700]' : 'bg-zinc-800'
                         }`}
                       />
                     ))}
@@ -670,12 +670,12 @@ export default function RegistrationModal({
                         className="space-y-4"
                       >
                         <div className="p-5 bg-zinc-900/40 border border-white/5 rounded-2xl space-y-4">
-                          <span className="text-[10px] font-mono text-[#00FF88] uppercase tracking-wider block font-bold">
+                          <span className="text-[10px] font-mono text-[#FFD700] uppercase tracking-wider block font-bold">
                             {t('SELECTED DIVISION DETAILS', 'DETAIL DIVISI PILIHAN')}
                           </span>
 
                           <div className="flex items-center gap-4">
-                            <div className="p-3 bg-zinc-950 rounded-xl border border-white/10 text-[#00FF88]">
+                            <div className="p-3 bg-zinc-950 rounded-xl border border-white/10 text-[#FFD700]">
                               <Trophy className="w-6 h-6" />
                             </div>
                             <div>
@@ -709,7 +709,7 @@ export default function RegistrationModal({
                           <select
                             value={selectedDivision}
                             onChange={(e) => setSelectedDivision(e.target.value)}
-                            className="w-full bg-zinc-900 border border-white/5 focus:border-[#00FF88] rounded-xl px-4 py-3 text-xs text-white focus:outline-none"
+                            className="w-full bg-zinc-900 border border-white/5 focus:border-[#FFD700] rounded-xl px-4 py-3 text-xs text-white focus:outline-none"
                           >
                             {COMPETITION_DIVISIONS.map((div) => (
                               <option key={div.id} value={div.id} className="bg-zinc-950 text-white">
@@ -727,7 +727,7 @@ export default function RegistrationModal({
                             <select
                               value={subCategory}
                               onChange={(e) => setSubCategory(e.target.value)}
-                              className="w-full bg-zinc-900 border border-[#00FF88]/40 focus:border-[#00FF88] rounded-xl px-4 py-3 text-xs text-white focus:outline-none"
+                              className="w-full bg-zinc-900 border border-[#FFD700]/40 focus:border-[#FFD700] rounded-xl px-4 py-3 text-xs text-white focus:outline-none"
                             >
                               {divisionObj.subCategories.map((sub) => (
                                 <option key={sub} value={sub} className="bg-zinc-950 text-white">
@@ -761,7 +761,7 @@ export default function RegistrationModal({
                           <button
                             type="button"
                             onClick={() => setWizardStep(2)}
-                            className="px-6 py-3 bg-[#00FF88] text-black font-sans font-black text-xs tracking-widest uppercase rounded-xl flex items-center gap-2 hover:scale-101 transition-all cursor-pointer shadow-[0_0_15px_rgba(0,255,136,0.2)]"
+                            className="px-6 py-3 bg-[#FFD700] text-black font-sans font-black text-xs tracking-widest uppercase rounded-xl flex items-center gap-2 hover:scale-101 transition-all cursor-pointer shadow-[0_0_15px_rgba(255, 215, 0, 0.2)]"
                           >
                             <span>{t('CONTINUE', 'LANJUT')}</span>
                             <ArrowRight className="w-4 h-4 text-black" />
@@ -787,7 +787,7 @@ export default function RegistrationModal({
                               placeholder="e.g., GARUDA UNJ 1"
                               value={teamName}
                               onChange={(e) => setTeamName(e.target.value.toUpperCase())}
-                              className="w-full bg-zinc-900 border border-white/5 focus:border-[#00FF88] rounded-xl px-4 py-2.5 text-xs text-white focus:outline-none"
+                              className="w-full bg-zinc-900 border border-white/5 focus:border-[#FFD700] rounded-xl px-4 py-2.5 text-xs text-white focus:outline-none"
                             />
                           </div>
 
@@ -799,7 +799,7 @@ export default function RegistrationModal({
                               placeholder="e.g., Fauzan Lubis"
                               value={leaderName}
                               onChange={(e) => setLeaderName(e.target.value)}
-                              className="w-full bg-zinc-900 border border-white/5 focus:border-[#00FF88] rounded-xl px-4 py-2.5 text-xs text-white focus:outline-none"
+                              className="w-full bg-zinc-900 border border-white/5 focus:border-[#FFD700] rounded-xl px-4 py-2.5 text-xs text-white focus:outline-none"
                             />
                           </div>
 
@@ -811,7 +811,7 @@ export default function RegistrationModal({
                               placeholder="e.g., +628123456789"
                               value={leaderWhatsapp}
                               onChange={(e) => setLeaderWhatsapp(e.target.value)}
-                              className="w-full bg-zinc-900 border border-white/5 focus:border-[#00FF88] rounded-xl px-4 py-2.5 text-xs text-white focus:outline-none"
+                              className="w-full bg-zinc-900 border border-white/5 focus:border-[#FFD700] rounded-xl px-4 py-2.5 text-xs text-white focus:outline-none"
                             />
                           </div>
 
@@ -823,7 +823,7 @@ export default function RegistrationModal({
                               placeholder="e.g., mail@unj.ac.id"
                               value={leaderEmail}
                               onChange={(e) => setLeaderEmail(e.target.value)}
-                              className="w-full bg-zinc-900 border border-white/5 focus:border-[#00FF88] rounded-xl px-4 py-2.5 text-xs text-white focus:outline-none"
+                              className="w-full bg-zinc-900 border border-white/5 focus:border-[#FFD700] rounded-xl px-4 py-2.5 text-xs text-white focus:outline-none"
                             />
                           </div>
 
@@ -835,7 +835,7 @@ export default function RegistrationModal({
                               placeholder="e.g., Universitas Negeri Jakarta"
                               value={leaderInstitution}
                               onChange={(e) => setLeaderInstitution(e.target.value)}
-                              className="w-full bg-zinc-900 border border-white/5 focus:border-[#00FF88] rounded-xl px-4 py-2.5 text-xs text-white focus:outline-none"
+                              className="w-full bg-zinc-900 border border-white/5 focus:border-[#FFD700] rounded-xl px-4 py-2.5 text-xs text-white focus:outline-none"
                             />
                           </div>
 
@@ -847,7 +847,7 @@ export default function RegistrationModal({
                               placeholder="e.g., Jl. Rawamangun Muka No. 1, Jakarta Timur"
                               value={leaderAddress}
                               onChange={(e) => setLeaderAddress(e.target.value)}
-                              className="w-full bg-zinc-900 border border-white/5 focus:border-[#00FF88] rounded-xl px-4 py-2.5 text-xs text-white focus:outline-none resize-none"
+                              className="w-full bg-zinc-900 border border-white/5 focus:border-[#FFD700] rounded-xl px-4 py-2.5 text-xs text-white focus:outline-none resize-none"
                             />
                           </div>
 
@@ -860,7 +860,7 @@ export default function RegistrationModal({
                               placeholder="e.g., Asthma, Maag (optional)"
                               value={leaderCongenitalDisease}
                               onChange={(e) => setLeaderCongenitalDisease(e.target.value)}
-                              className="w-full bg-zinc-900 border border-white/5 focus:border-[#00FF88] rounded-xl px-4 py-2.5 text-xs text-white focus:outline-none"
+                              className="w-full bg-zinc-900 border border-white/5 focus:border-[#FFD700] rounded-xl px-4 py-2.5 text-xs text-white focus:outline-none"
                             />
                           </div>
 
@@ -910,7 +910,7 @@ export default function RegistrationModal({
                               }
                               setWizardStep(3);
                             }}
-                            className="px-6 py-3 bg-[#00FF88] text-black font-sans font-black text-xs tracking-widest uppercase rounded-xl flex items-center gap-2 hover:scale-101 transition-all cursor-pointer shadow-[0_0_15px_rgba(0,255,136,0.2)]"
+                            className="px-6 py-3 bg-[#FFD700] text-black font-sans font-black text-xs tracking-widest uppercase rounded-xl flex items-center gap-2 hover:scale-101 transition-all cursor-pointer shadow-[0_0_15px_rgba(255, 215, 0, 0.2)]"
                           >
                             <span>{t('CONTINUE', 'LANJUT')}</span>
                             <ArrowRight className="w-4 h-4 text-black" />
@@ -931,10 +931,10 @@ export default function RegistrationModal({
                         <div className="p-4 bg-zinc-900/30 border border-white/5 rounded-2xl space-y-4">
                           <div className="flex justify-between items-center select-none border-b border-white/5 pb-2">
                             <h4 className="font-sans font-black text-xs text-white uppercase tracking-wider flex items-center gap-1.5">
-                              <span className="w-1.5 h-1.5 rounded-full bg-[#00FF88]" />
+                              <span className="w-1.5 h-1.5 rounded-full bg-[#FFD700]" />
                               {t('ANGGOTA TIM 1', 'ANGGOTA TIM 1')}
                             </h4>
-                            <span className="text-[8.5px] font-mono text-[#00FF88] uppercase font-bold tracking-widest border border-[#00FF88]/20 bg-[#00FF88]/5 px-2 py-0.5 rounded">
+                            <span className="text-[8.5px] font-mono text-[#FFD700] uppercase font-bold tracking-widest border border-[#FFD700]/20 bg-[#FFD700]/5 px-2 py-0.5 rounded">
                               {t('REQUIRED', 'WAJIB')}
                             </span>
                           </div>
@@ -948,7 +948,7 @@ export default function RegistrationModal({
                                 placeholder="e.g., Member One"
                                 value={members[0]?.name || ''}
                                 onChange={(e) => updateMemberField('member-1', 'name', e.target.value)}
-                                className="w-full bg-zinc-900 border border-white/5 focus:border-[#00FF88] rounded-xl px-3 py-2.5 text-xs text-white focus:outline-none"
+                                className="w-full bg-zinc-900 border border-white/5 focus:border-[#FFD700] rounded-xl px-3 py-2.5 text-xs text-white focus:outline-none"
                               />
                             </div>
 
@@ -960,7 +960,7 @@ export default function RegistrationModal({
                                 placeholder="e.g., +628..."
                                 value={members[0]?.whatsapp || ''}
                                 onChange={(e) => updateMemberField('member-1', 'whatsapp', e.target.value)}
-                                className="w-full bg-zinc-900 border border-white/5 focus:border-[#00FF88] rounded-xl px-3 py-2.5 text-xs text-white focus:outline-none"
+                                className="w-full bg-zinc-900 border border-white/5 focus:border-[#FFD700] rounded-xl px-3 py-2.5 text-xs text-white focus:outline-none"
                               />
                             </div>
 
@@ -973,7 +973,7 @@ export default function RegistrationModal({
                                 placeholder="e.g., Diabetes, Asthma (optional)"
                                 value={members[0]?.congenitalDisease || ''}
                                 onChange={(e) => updateMemberField('member-1', 'congenitalDisease', e.target.value)}
-                                className="w-full bg-zinc-900 border border-white/5 focus:border-[#00FF88] rounded-xl px-3 py-2.5 text-xs text-white focus:outline-none"
+                                className="w-full bg-zinc-900 border border-white/5 focus:border-[#FFD700] rounded-xl px-3 py-2.5 text-xs text-white focus:outline-none"
                               />
                             </div>
 
@@ -1023,7 +1023,7 @@ export default function RegistrationModal({
                                 placeholder="e.g., Member Two"
                                 value={members[1]?.name || ''}
                                 onChange={(e) => updateMemberField('member-2', 'name', e.target.value)}
-                                className="w-full bg-zinc-900 border border-white/5 focus:border-[#00FF88] rounded-xl px-3 py-2.5 text-xs text-white focus:outline-none"
+                                className="w-full bg-zinc-900 border border-white/5 focus:border-[#FFD700] rounded-xl px-3 py-2.5 text-xs text-white focus:outline-none"
                               />
                             </div>
 
@@ -1034,7 +1034,7 @@ export default function RegistrationModal({
                                 placeholder="e.g., +628..."
                                 value={members[1]?.whatsapp || ''}
                                 onChange={(e) => updateMemberField('member-2', 'whatsapp', e.target.value)}
-                                className="w-full bg-zinc-900 border border-white/5 focus:border-[#00FF88] rounded-xl px-3 py-2.5 text-xs text-white focus:outline-none"
+                                className="w-full bg-zinc-900 border border-white/5 focus:border-[#FFD700] rounded-xl px-3 py-2.5 text-xs text-white focus:outline-none"
                               />
                             </div>
 
@@ -1047,7 +1047,7 @@ export default function RegistrationModal({
                                 placeholder="e.g., Maag, Asthma (optional)"
                                 value={members[1]?.congenitalDisease || ''}
                                 onChange={(e) => updateMemberField('member-2', 'congenitalDisease', e.target.value)}
-                                className="w-full bg-zinc-900 border border-white/5 focus:border-[#00FF88] rounded-xl px-3 py-2.5 text-xs text-white focus:outline-none"
+                                className="w-full bg-zinc-900 border border-white/5 focus:border-[#FFD700] rounded-xl px-3 py-2.5 text-xs text-white focus:outline-none"
                               />
                             </div>
 
@@ -1214,7 +1214,7 @@ export default function RegistrationModal({
 
                               setWizardStep(4);
                             }}
-                            className="px-6 py-3 bg-[#00FF88] text-black font-sans font-black text-xs tracking-widest uppercase rounded-xl flex items-center gap-2 hover:scale-101 transition-all cursor-pointer shadow-[0_0_15px_rgba(0,255,136,0.2)]"
+                            className="px-6 py-3 bg-[#FFD700] text-black font-sans font-black text-xs tracking-widest uppercase rounded-xl flex items-center gap-2 hover:scale-101 transition-all cursor-pointer shadow-[0_0_15px_rgba(255, 215, 0, 0.2)]"
                           >
                             <span>{t('CONTINUE', 'LANJUT')}</span>
                             <ArrowRight className="w-4 h-4 text-black" />
@@ -1242,10 +1242,10 @@ export default function RegistrationModal({
                           </div>
 
                           <div className="text-right">
-                            <span className="text-[8.5px] font-mono text-emerald-400 border border-emerald-500/20 bg-emerald-950/20 px-2 py-0.5 rounded uppercase block mb-1 font-bold">
+                            <span className="text-[8.5px] font-mono text-amber-400 border border-amber-500/20 bg-amber-950/20 px-2 py-0.5 rounded uppercase block mb-1 font-bold">
                               {t('ALL INCLUSIVE', 'BIAYA TETAP')}
                             </span>
-                            <span className="text-xl font-mono text-[#00FF88] font-black tracking-tight block">
+                            <span className="text-xl font-mono text-[#FFD700] font-black tracking-tight block">
                               {divisionObj.price}
                             </span>
                             <span className="text-[10px] font-mono text-zinc-500 tracking-tight block">
@@ -1274,11 +1274,11 @@ export default function RegistrationModal({
                                 }}
                                 className={`p-3 bg-zinc-950 border rounded-xl text-center transition-all cursor-pointer ${
                                   paymentMethod === ch.id
-                                    ? 'border-[#00FF88] bg-[#00FF88]/5'
+                                    ? 'border-[#FFD700] bg-[#FFD700]/5'
                                     : 'border-white/5 hover:border-white/10 hover:bg-zinc-900/40'
                                 }`}
                               >
-                                <div className={`text-[11px] font-sans font-black ${paymentMethod === ch.id ? 'text-[#00FF88]' : 'text-white'}`}>
+                                <div className={`text-[11px] font-sans font-black ${paymentMethod === ch.id ? 'text-[#FFD700]' : 'text-white'}`}>
                                   {ch.name}
                                 </div>
                                 <div className="text-[8.5px] font-mono text-zinc-500 uppercase mt-0.5">{ch.desc}</div>
@@ -1304,7 +1304,7 @@ export default function RegistrationModal({
                                     onClick={() => setSelectedBank('bca')}
                                     className={`flex-1 py-1.5 px-3 rounded-lg font-sans font-bold text-[10px] tracking-wider uppercase transition-all border cursor-pointer ${
                                       selectedBank === 'bca'
-                                        ? 'bg-zinc-900 border-[#00FF88] text-[#00FF88]'
+                                        ? 'bg-zinc-900 border-[#FFD700] text-[#FFD700]'
                                         : 'bg-zinc-950 border-white/5 text-zinc-400 hover:text-white'
                                     }`}
                                   >
@@ -1315,7 +1315,7 @@ export default function RegistrationModal({
                                     onClick={() => setSelectedBank('seabank')}
                                     className={`flex-1 py-1.5 px-3 rounded-lg font-sans font-bold text-[10px] tracking-wider uppercase transition-all border cursor-pointer ${
                                       selectedBank === 'seabank'
-                                        ? 'bg-zinc-900 border-[#00FF88] text-[#00FF88]'
+                                        ? 'bg-zinc-900 border-[#FFD700] text-[#FFD700]'
                                         : 'bg-zinc-950 border-white/5 text-zinc-400 hover:text-white'
                                     }`}
                                   >
@@ -1332,7 +1332,7 @@ export default function RegistrationModal({
                                     <div className="flex justify-between items-center">
                                       <span className="text-[8.5px] font-mono text-zinc-500 uppercase">ACCOUNT NUMBER</span>
                                       <div className="flex items-center gap-1.5">
-                                        <span className="text-[11px] font-mono text-[#00FF88] font-bold select-all tracking-wider">004332897796</span>
+                                        <span className="text-[11px] font-mono text-[#FFD700] font-bold select-all tracking-wider">004332897796</span>
                                         <button
                                           type="button"
                                           onClick={() => handleCopy('004332897796', 'bca_acc')}
@@ -1340,7 +1340,7 @@ export default function RegistrationModal({
                                           title="Copy Account Number"
                                         >
                                           {copiedText === 'bca_acc' ? (
-                                            <span className="text-[8px] font-mono text-[#00FF88] font-bold">COPIED</span>
+                                            <span className="text-[8px] font-mono text-[#FFD700] font-bold">COPIED</span>
                                           ) : (
                                             <Copy className="w-3 h-3" />
                                           )}
@@ -1365,7 +1365,7 @@ export default function RegistrationModal({
                                     <div className="flex justify-between items-center">
                                       <span className="text-[8.5px] font-mono text-zinc-500 uppercase">ACCOUNT NUMBER</span>
                                       <div className="flex items-center gap-1.5">
-                                        <span className="text-[11px] font-mono text-[#00FF88] font-bold select-all tracking-wider">901641716770</span>
+                                        <span className="text-[11px] font-mono text-[#FFD700] font-bold select-all tracking-wider">901641716770</span>
                                         <button
                                           type="button"
                                           onClick={() => handleCopy('901641716770', 'seabank_acc')}
@@ -1373,7 +1373,7 @@ export default function RegistrationModal({
                                           title="Copy Account Number"
                                         >
                                           {copiedText === 'seabank_acc' ? (
-                                            <span className="text-[8px] font-mono text-[#00FF88] font-bold">COPIED</span>
+                                            <span className="text-[8px] font-mono text-[#FFD700] font-bold">COPIED</span>
                                           ) : (
                                             <Copy className="w-3 h-3" />
                                           )}
@@ -1404,7 +1404,7 @@ export default function RegistrationModal({
                                   <div className="flex justify-between items-center">
                                     <span className="text-[8.5px] font-mono text-zinc-500 uppercase">PAYPAL USERNAME</span>
                                     <div className="flex items-center gap-1.5">
-                                      <span className="text-[11px] font-mono text-[#00FF88] font-bold select-all">@MuhammadRaffaWijaya</span>
+                                      <span className="text-[11px] font-mono text-[#FFD700] font-bold select-all">@MuhammadRaffaWijaya</span>
                                       <button
                                         type="button"
                                         onClick={() => handleCopy('@MuhammadRaffaWijaya', 'pp_user')}
@@ -1412,7 +1412,7 @@ export default function RegistrationModal({
                                         title="Copy Username"
                                       >
                                         {copiedText === 'pp_user' ? (
-                                          <span className="text-[8px] font-mono text-[#00FF88] font-bold">COPIED</span>
+                                          <span className="text-[8px] font-mono text-[#FFD700] font-bold">COPIED</span>
                                         ) : (
                                           <Copy className="w-3 h-3" />
                                         )}
@@ -1430,7 +1430,7 @@ export default function RegistrationModal({
                                         title="Copy Email"
                                       >
                                         {copiedText === 'pp_email' ? (
-                                          <span className="text-[8px] font-mono text-[#00FF88] font-bold">COPIED</span>
+                                          <span className="text-[8px] font-mono text-[#FFD700] font-bold">COPIED</span>
                                         ) : (
                                           <Copy className="w-3 h-3" />
                                         )}
@@ -1468,9 +1468,9 @@ export default function RegistrationModal({
                             onClick={() => document.getElementById('proof-file-input')?.click()}
                             className={`border-2 border-dashed rounded-2xl p-5 text-center transition-all cursor-pointer ${
                               isDragging 
-                                ? 'border-[#00FF88] bg-[#00FF88]/5 scale-[0.99]'
+                                ? 'border-[#FFD700] bg-[#FFD700]/5 scale-[0.99]'
                                 : paymentProofUrl 
-                                  ? 'border-emerald-500/35 bg-emerald-950/5' 
+                                  ? 'border-amber-500/35 bg-amber-950/5' 
                                   : 'border-white/10 hover:border-white/20 bg-zinc-950/40'
                             }`}
                           >
@@ -1487,13 +1487,13 @@ export default function RegistrationModal({
                             
                             {paymentProofUrl ? (
                               <div className="space-y-1">
-                                <div className="mx-auto w-8 h-8 rounded-full bg-emerald-950/50 border border-emerald-500/20 flex items-center justify-center">
-                                  <Check className="w-4 h-4 text-emerald-400" />
+                                <div className="mx-auto w-8 h-8 rounded-full bg-amber-950/50 border border-amber-500/20 flex items-center justify-center">
+                                  <Check className="w-4 h-4 text-amber-400" />
                                 </div>
                                 <div className="text-[11px] font-mono font-bold text-white truncate max-w-xs mx-auto">
                                   {paymentProofName}
                                 </div>
-                                <p className="text-[9px] font-mono text-emerald-400 uppercase font-semibold">
+                                <p className="text-[9px] font-mono text-amber-400 uppercase font-semibold">
                                   {t('UPLOAD SUCCESSFUL! PRESS SUBMIT TO REGISTER', 'UNGGAH BERHASIL! TEKAN DAFTAR UNTUK MENYELESAIKAN')}
                                 </p>
                               </div>
@@ -1534,7 +1534,7 @@ export default function RegistrationModal({
                           <button
                             type="submit"
                             disabled={isProcessingPayment}
-                            className="px-8 py-3.5 bg-[#00FF88] text-black font-sans font-black text-xs tracking-widest uppercase rounded-xl flex items-center justify-center gap-2 shadow-[0_0_20px_rgba(0,255,136,0.25)] hover:shadow-[0_0_35px_rgba(0,255,136,0.55)] hover:scale-101 transition-all cursor-pointer disabled:opacity-50 font-bold"
+                            className="px-8 py-3.5 bg-[#FFD700] text-black font-sans font-black text-xs tracking-widest uppercase rounded-xl flex items-center justify-center gap-2 shadow-[0_0_20px_rgba(255, 215, 0, 0.25)] hover:shadow-[0_0_35px_rgba(255, 215, 0, 0.55)] hover:scale-101 transition-all cursor-pointer disabled:opacity-50 font-bold"
                           >
                             {isProcessingPayment ? (
                               <>

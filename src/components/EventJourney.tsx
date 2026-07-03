@@ -17,28 +17,28 @@ export default function EventJourney() {
 
   // Specific day parameters to style them like a high octane racing log
   const dayAccents = [
-    { color: '#00FF88', badge: 'bg-[#00FF88]/10 text-[#00FF88] border-[#00FF88]/20' },
-    { color: '#4DFFB8', badge: 'bg-[#4DFFB8]/10 text-[#4DFFB8] border-[#4DFFB8]/20' },
+    { color: '#FFD700', badge: 'bg-[#FFD700]/10 text-[#FFD700] border-[#FFD700]/20' },
+    { color: '#FFE44D', badge: 'bg-[#FFE44D]/10 text-[#FFE44D] border-[#FFE44D]/20' },
     { color: '#0047AB', badge: 'bg-[#0047AB]/10 text-white border-white/20' }
   ];
 
   return (
     <section id="journey-section" className="relative py-28 bg-[#050505] border-t border-white/5 overflow-hidden">
       {/* Laser glare from right edge */}
-      <div className="absolute right-[-10%] top-[20%] w-[400px] h-[400px] rounded-full bg-[#00FF88]/5 blur-[120px] pointer-events-none" />
+      <div className="absolute right-[-10%] top-[20%] w-[400px] h-[400px] rounded-full bg-[#FFD700]/5 blur-[120px] pointer-events-none" />
 
       <div className="max-w-7xl mx-auto px-6 relative z-10">
         
         {/* Section Heading */}
         <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-16 select-none">
           <div>
-            <div className="flex items-center gap-3 text-xs font-mono text-[#00FF88] tracking-[0.4em] uppercase mb-4 animate-pulse">
+            <div className="flex items-center gap-3 text-xs font-mono text-[#FFD700] tracking-[0.4em] uppercase mb-4 animate-pulse">
               <Sparkles className="w-3.5 h-3.5" />
               <span>THE CHALLENGE EXPERIENCE</span>
             </div>
             <h2 className="text-4xl md:text-7xl font-sans font-black tracking-tighter text-white uppercase leading-none">
               THREE DAYS.<br />
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#00FF88] via-[#4DFFB8] to-white">ONE LEGACY.</span>
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#FFD700] via-[#FFE44D] to-white">ONE LEGACY.</span>
             </h2>
           </div>
           <p className="text-zinc-500 font-mono text-sm max-w-sm mt-6 md:mt-0 uppercase leading-relaxed">
@@ -66,7 +66,7 @@ export default function EventJourney() {
                 {active && (
                   <motion.div
                     layoutId="dayLightIndicator"
-                    className="absolute top-0 left-0 right-0 h-[2.5px] bg-[#00FF88]"
+                    className="absolute top-0 left-0 right-0 h-[2.5px] bg-[#FFD700]"
                   />
                 )}
 
@@ -109,7 +109,7 @@ export default function EventJourney() {
                 
                 <div className="space-y-2">
                   <div className="flex items-center gap-2 text-xs font-mono text-zinc-500">
-                    <Timer className="w-4 h-4 text-[#00FF88]" />
+                    <Timer className="w-4 h-4 text-[#FFD700]" />
                     <span>TIMELINE SCHEDULE // {activeDay.dayNum}</span>
                   </div>
                   
@@ -140,7 +140,7 @@ export default function EventJourney() {
                       transition={{ delay: idx * 0.1, duration: 0.4 }}
                       className="group flex gap-4 items-start p-4 bg-zinc-950 border border-white/5 hover:border-white/10 rounded-xl transition-all duration-300"
                     >
-                      <div className="w-8 h-8 rounded-lg bg-zinc-900 border border-white/10 flex items-center justify-center font-sans font-black text-xs text-zinc-500 group-hover:text-[#00FF88] group-hover:border-[#00FF88]/20 transition-all duration-300 shrink-0">
+                      <div className="w-8 h-8 rounded-lg bg-zinc-900 border border-white/10 flex items-center justify-center font-sans font-black text-xs text-zinc-500 group-hover:text-[#FFD700] group-hover:border-[#FFD700]/20 transition-all duration-300 shrink-0">
                         0{idx + 1}
                       </div>
 
@@ -150,7 +150,7 @@ export default function EventJourney() {
                         </span>
                         
                         <div className="flex items-center gap-1.5 text-[8.5px] font-mono text-zinc-600">
-                          <CheckCircle className="w-3 h-3 text-[#00FF88]/60" />
+                          <CheckCircle className="w-3 h-3 text-[#FFD700]/60" />
                           <span>MAPPED TO DIRECT DIVISION RULEBOOK</span>
                         </div>
                       </div>

@@ -63,8 +63,8 @@ export default function NetworkBackground() {
 
     // Colors that look like high-tech telemetry
     const colors = [
-      'rgba(0, 255, 136, 0.45)', // Accent #00FF88
-      'rgba(77, 255, 184, 0.45)', // Alternative accent #4DFFB8
+      'rgba(255, 215, 0, 0.45)', // Accent #FFD700
+      'rgba(77, 255, 184, 0.45)', // Alternative accent #FFE44D
       'rgba(0, 71, 171, 0.35)',  // Royal Blue #0047AB
       'rgba(197, 160, 89, 0.35)', // Gold #C5A059
     ];
@@ -111,7 +111,7 @@ export default function NetworkBackground() {
 
           if (dist < 130) {
             const alpha = (1 - dist / 130) * 0.12;
-            ctx.strokeStyle = `rgba(0, 255, 136, ${alpha})`;
+            ctx.strokeStyle = `rgba(255, 215, 0, ${alpha})`;
             ctx.lineWidth = 0.5;
             ctx.beginPath();
             ctx.moveTo(nodeA.x, nodeA.y);
@@ -162,13 +162,13 @@ export default function NetworkBackground() {
 
       // Draw subtle telemetry circle around cursor
       if (mouse.x !== -1000) {
-        ctx.strokeStyle = 'rgba(0, 255, 136, 0.08)';
+        ctx.strokeStyle = 'rgba(255, 215, 0, 0.08)';
         ctx.lineWidth = 1;
         ctx.beginPath();
         ctx.arc(mouse.x, mouse.y, mouse.radius, 0, Math.PI * 2);
         ctx.stroke();
 
-        ctx.fillStyle = 'rgba(0, 255, 136, 0.02)';
+        ctx.fillStyle = 'rgba(255, 215, 0, 0.02)';
         ctx.beginPath();
         ctx.arc(mouse.x, mouse.y, 4, 0, Math.PI * 2);
         ctx.fill();

@@ -164,7 +164,7 @@ export default function App() {
 
   return (
     <LanguageProvider>
-      <div className="font-sans antialiased text-white bg-[#050505] min-h-screen selection:bg-[#00FF88] selection:text-[#050505]">
+      <div className="font-sans antialiased text-white bg-[#050505] min-h-screen selection:bg-[#FFD700] selection:text-[#050505]">
         
         {/* Floating Top Nav bar */}
         <Navbar 

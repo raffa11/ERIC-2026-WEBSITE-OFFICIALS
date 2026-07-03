@@ -28,7 +28,7 @@ export default function Hero() {
 
       {/* Extreme ambient laser light flares in corners */}
       <div className="absolute top-1/4 left-1/4 w-[500px] h-[500px] bg-gradient-to-tr from-[#0047AB]/10 to-transparent blur-[140px] pointer-events-none" />
-      <div className="absolute bottom-1/4 right-1/4 w-[450px] h-[450px] bg-gradient-to-b from-[#00FF88]/5 to-transparent blur-[130px] pointer-events-none" />
+      <div className="absolute bottom-1/4 right-1/4 w-[450px] h-[450px] bg-gradient-to-b from-[#FFD700]/5 to-transparent blur-[130px] pointer-events-none" />
 
       {/* Luxury digital scanner overlays (Apple Keynote visual) */}
       <div className="absolute inset-x-0 top-0 h-[100px] bg-gradient-to-b from-black via-black/80 to-transparent pointer-events-none" />
@@ -47,11 +47,11 @@ export default function Hero() {
               initial={{ x: -40, opacity: 0 }}
               animate={{ x: 0, opacity: 1 }}
               transition={{ delay: 0.3, duration: 0.6 }}
-              className="bg-black/75 backdrop-blur-md border-l-2 border-[#00FF88] border-y border-r border-white/5 p-4 rounded-r-xl max-w-xs"
+              className="bg-black/75 backdrop-blur-md border-l-2 border-[#FFD700] border-y border-r border-white/5 p-4 rounded-r-xl max-w-xs"
             >
               <div className="flex items-center gap-2 mb-2">
-                <Radio className="w-3.5 h-3.5 text-[#00FF88] animate-pulse" />
-                <span className="text-[10px] font-mono text-[#00FF88] tracking-widest uppercase">
+                <Radio className="w-3.5 h-3.5 text-[#FFD700] animate-pulse" />
+                <span className="text-[10px] font-mono text-[#FFD700] tracking-widest uppercase">
                   {t('Location', 'Lokasi')}
                 </span>
               </div>
@@ -96,7 +96,7 @@ export default function Hero() {
               transition={{ duration: 0.5 }}
               className="inline-flex items-center gap-2.5 bg-zinc-900 border border-white/5 py-1.5 px-3.5 rounded-full mb-6"
             >
-              <span className="w-1.5 h-1.5 bg-[#00FF88] rounded-full animate-ping" />
+              <span className="w-1.5 h-1.5 bg-[#FFD700] rounded-full animate-ping" />
               <span className="text-[9.5px] font-mono text-zinc-300 uppercase tracking-[0.22em] font-black">
                 {t("INDONESIA'S PREMIER ROBOTICS CONTEST", "KOMPETISI ROBOTIKA TERBESAR INDONESIA")}
               </span>
@@ -118,7 +118,7 @@ export default function Hero() {
                 initial={{ y: 40, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
                 transition={{ delay: 0.25, duration: 0.7 }}
-                className="text-transparent bg-clip-text bg-gradient-to-r from-[#00FF88] via-[#4DFFB8] to-[#0047AB] text-4xl sm:text-6xl md:text-8xl font-black block mt-1"
+                className="text-transparent bg-clip-text bg-gradient-to-r from-[#FFD700] via-[#FFE44D] to-[#0047AB] text-4xl sm:text-6xl md:text-8xl font-black block mt-1"
               >
                 {t('BUILD THE FUTURE', 'BUILD THE FUTURE')}
               </motion.div>
@@ -148,7 +148,7 @@ export default function Hero() {
               <button
                 id="hero-btn-cta-register"
                 onClick={() => handleScrollTo('#divisions-section')}
-                className="group relative px-8 py-4 w-full sm:w-auto bg-gradient-to-r from-[#002D62] via-[#0047AB] to-[#00FF88] text-white rounded-full font-sans text-xs font-black tracking-widest uppercase transition-all duration-300 hover:shadow-[0_0_25px_rgba(0,255,136,0.35)] select-none text-center"
+                className="group relative px-8 py-4 w-full sm:w-auto bg-gradient-to-r from-[#002D62] via-[#0047AB] to-[#FFD700] text-white rounded-full font-sans text-xs font-black tracking-widest uppercase transition-all duration-300 hover:shadow-[0_0_25px_rgba(255, 215, 0, 0.35)] select-none text-center"
               >
                 <span className="relative z-10 flex items-center justify-center gap-2">
                   {t('REGISTER FOR TRIAL', 'DAFTAR SEKARANG')}
@@ -176,7 +176,7 @@ export default function Hero() {
         <div className="flex flex-col md:flex-row justify-between items-center gap-6">
           <div className="flex items-center gap-8 text-[10px] font-mono text-zinc-500">
             <span className="flex items-center gap-1">
-              <Compass className="w-3.5 h-3.5 text-[#00FF88] animate-spin-slow" /> {t('COORD: 106.8229° E // 6.1944° S', 'KOORD: 106.8229° T // 6.1944° S')}
+              <Compass className="w-3.5 h-3.5 text-[#FFD700] animate-spin-slow" /> {t('COORD: 106.8229° E // 6.1944° S', 'KOORD: 106.8229° T // 6.1944° S')}
             </span>
             <span className="hidden md:inline text-white/20">|</span>
             <span className="hidden md:inline">{t('VERSION: F1-ME-2026-v2', 'VERSI: F1-ME-2026-v2')}</span>
@@ -185,7 +185,7 @@ export default function Hero() {
           <button
             id="hero-scroll-btn"
             onClick={() => handleScrollTo('#about-section')}
-            className="flex items-center gap-2 text-xs font-mono text-[#00FF88] hover:text-white transition-colors uppercase animate-bounce"
+            className="flex items-center gap-2 text-xs font-mono text-[#FFD700] hover:text-white transition-colors uppercase animate-bounce"
           >
             <span>{t('SCROLL TO LAUNCH', 'GULIR KE BAWAH')}</span>
             <ArrowDown className="w-3.5 h-3.5" />

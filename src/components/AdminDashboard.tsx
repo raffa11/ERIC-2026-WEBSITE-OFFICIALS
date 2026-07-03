@@ -224,7 +224,7 @@ export default function AdminDashboard({
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <button
           onClick={onBackToHome}
-          className="flex items-center gap-2 px-4 py-2 bg-zinc-900 border border-white/5 hover:border-[#00FF88]/20 hover:text-[#00FF88] text-xs font-mono font-bold uppercase rounded-xl transition-all cursor-pointer"
+          className="flex items-center gap-2 px-4 py-2 bg-zinc-900 border border-white/5 hover:border-[#FFD700]/20 hover:text-[#FFD700] text-xs font-mono font-bold uppercase rounded-xl transition-all cursor-pointer"
         >
           <ArrowLeft className="w-3.5 h-3.5" />
           <span>{t('Back to Landing Page', 'Kembali ke Beranda')}</span>
@@ -253,13 +253,13 @@ export default function AdminDashboard({
       {/* Database Statistics Cards grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         <div className="p-6 bg-zinc-950 border border-white/5 rounded-2xl relative overflow-hidden">
-          <div className="absolute top-0 left-0 right-0 h-[2px] bg-[#00FF88]" />
+          <div className="absolute top-0 left-0 right-0 h-[2px] bg-[#FFD700]" />
           <div className="flex justify-between items-start text-zinc-500">
             <span className="text-[9px] font-mono uppercase tracking-wider">Total Teams Registered</span>
-            <Trophy className="w-4 h-4 text-[#00FF88]" />
+            <Trophy className="w-4 h-4 text-[#FFD700]" />
           </div>
           <div className="text-3xl font-sans font-black text-white mt-4">{totalTeams}</div>
-          <div className="text-[8px] font-mono text-[#00FF88] uppercase tracking-wider mt-1">Across all arenas</div>
+          <div className="text-[8px] font-mono text-[#FFD700] uppercase tracking-wider mt-1">Across all arenas</div>
         </div>
 
         <div className="p-6 bg-zinc-950 border border-white/5 rounded-2xl relative overflow-hidden">
@@ -368,8 +368,8 @@ export default function AdminDashboard({
                         </td>
                         <td className="p-4">
                           <div className="flex flex-col">
-                            <span className="text-[#00FF88] font-bold">{divisionObj?.title || reg.divisionId}</span>
-                            {reg.subCategory && <span className="text-[10px] text-[#00FF88]">Sub: {reg.subCategory}</span>}
+                            <span className="text-[#FFD700] font-bold">{divisionObj?.title || reg.divisionId}</span>
+                            {reg.subCategory && <span className="text-[10px] text-[#FFD700]">Sub: {reg.subCategory}</span>}
                             {reg.level && <span className="text-[10px] text-[#C5A059]">Lvl: {reg.level}</span>}
                           </div>
                         </td>
@@ -394,14 +394,14 @@ export default function AdminDashboard({
                         </td>
                         <td className="p-4">
                           <div className="flex flex-col gap-1">
-                            <span className="text-[10px] text-[#00FF88] font-bold uppercase">{reg.paymentMethod}</span>
+                            <span className="text-[10px] text-[#FFD700] font-bold uppercase">{reg.paymentMethod}</span>
                             <span className="text-[9px] text-zinc-500">{reg.amount || COMPETITION_DIVISIONS.find(d => d.id === reg.divisionId)?.price || 'IDR 250,000'}</span>
                             {reg.paymentProofUrl ? (
                               <a
                                 href={reg.paymentProofUrl}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="inline-flex items-center gap-1 text-[9.5px] text-emerald-400 hover:text-[#00FF88] hover:underline font-bold"
+                                className="inline-flex items-center gap-1 text-[9.5px] text-amber-400 hover:text-[#FFD700] hover:underline font-bold"
                               >
                                 <Download className="w-2.5 h-2.5" />
                                 <span className="truncate max-w-[90px]">{reg.paymentProofName || 'View File'}</span>
@@ -448,7 +448,7 @@ export default function AdminDashboard({
           <div className="p-6 bg-zinc-950 border border-white/5 rounded-3xl space-y-4 flex flex-col justify-between">
             <div className="space-y-4">
               <div className="flex items-center gap-3">
-                <FileSpreadsheet className="w-6 h-6 text-[#00FF88]" />
+                <FileSpreadsheet className="w-6 h-6 text-[#FFD700]" />
                 <h4 className="font-sans font-black text-white uppercase tracking-wider text-sm">
                   OFFICIAL XLSX LEDGER GENERATION
                 </h4>
@@ -459,7 +459,7 @@ export default function AdminDashboard({
             </div>
             <button
               onClick={downloadExcelLedger}
-              className="w-full mt-6 py-3.5 bg-gradient-to-r from-[#00FF88] to-[#4DFFB8] text-black font-sans font-black text-xs tracking-wider uppercase rounded-xl hover:scale-101 transition-transform cursor-pointer flex justify-center items-center gap-2 shadow-[0_0_15px_rgba(0,255,136,0.2)]"
+              className="w-full mt-6 py-3.5 bg-gradient-to-r from-[#FFD700] to-[#FFE44D] text-black font-sans font-black text-xs tracking-wider uppercase rounded-xl hover:scale-101 transition-transform cursor-pointer flex justify-center items-center gap-2 shadow-[0_0_15px_rgba(255, 215, 0, 0.2)]"
             >
               <Download className="w-4 h-4" />
               <span>DOWNLOAD FULL EXCEL LEDGER</span>
@@ -483,8 +483,8 @@ export default function AdminDashboard({
                 <div className="flex justify-between items-center text-[10px] font-mono">
                   <span className="text-zinc-500 uppercase">WEB APP URL</span>
                   {googleScriptUrl ? (
-                    <span className="text-[#00FF88] font-bold uppercase flex items-center gap-1">
-                      <span className="w-1 h-1 bg-[#00FF88] rounded-full animate-pulse" />
+                    <span className="text-[#FFD700] font-bold uppercase flex items-center gap-1">
+                      <span className="w-1 h-1 bg-[#FFD700] rounded-full animate-pulse" />
                       ACTIVE SYNC
                     </span>
                   ) : (
@@ -533,7 +533,7 @@ export default function AdminDashboard({
               {t('You are authenticated as an official administrator. Roster updates performed here are synchronized directly with local storage nodes. Full export sheets represent structural schemas.', 'Anda terotentikasi sebagai administrator resmi. Pembaruan roster yang dilakukan di sini disinkronkan langsung dengan penyimpanan lokal.')}
             </p>
             <div className="p-4 bg-zinc-900 border border-white/5 rounded-xl flex items-center justify-between text-[9px] font-mono text-zinc-500 uppercase">
-              <div>STATUS: <span className="text-[#00FF88] font-bold">ONLINE</span></div>
+              <div>STATUS: <span className="text-[#FFD700] font-bold">ONLINE</span></div>
               <div>VERSION: <span className="text-white">v2.1.0-LIVE</span></div>
             </div>
           </div>
@@ -581,7 +581,7 @@ export default function AdminDashboard({
                     <li>Paste it into <code className="text-white bg-zinc-900 px-1 py-0.5 rounded">Code.gs</code>, saving any changes.</li>
                     <li>In the top-right corner, click <span className="text-white font-bold">Deploy</span> &rarr; <span className="text-white font-bold">New deployment</span>.</li>
                     <li>Click the gear icon, select <span className="text-white font-bold">Web app</span>.</li>
-                    <li>Set "Who has access" to <span className="text-[#00FF88] font-bold">Anyone</span> (crucial to allow direct submissions).</li>
+                    <li>Set "Who has access" to <span className="text-[#FFD700] font-bold">Anyone</span> (crucial to allow direct submissions).</li>
                     <li>Click <span className="text-white font-bold">Deploy</span>, approve requested Google permissions.</li>
                     <li>Copy the resulting Web App URL and paste it in the field on your left.</li>
                   </ol>
@@ -656,7 +656,7 @@ function doPost(e) {
       sheet.appendRow(headers);
       const headerRange = sheet.getRange(1, 1, 1, headers.length);
       headerRange.setFontWeight("bold");
-      headerRange.setBackground("#00FF88");
+      headerRange.setBackground("#FFD700");
       headerRange.setFontColor("#000000");
     }
     
@@ -844,7 +844,7 @@ function doPost(e) {
                         <button
                           type="button"
                           onClick={addMemberToEditing}
-                          className="px-2.5 py-1 bg-[#00FF88]/10 border border-[#00FF88]/20 text-[8px] font-mono text-[#00FF88] font-bold rounded"
+                          className="px-2.5 py-1 bg-[#FFD700]/10 border border-[#FFD700]/20 text-[8px] font-mono text-[#FFD700] font-bold rounded"
                         >
                           + ADD ROSTER
                         </button>
@@ -901,7 +901,7 @@ function doPost(e) {
                   </button>
                   <button
                     type="submit"
-                    className="px-5 py-2 bg-[#00FF88] text-black font-sans font-black text-xs tracking-wider uppercase rounded-xl hover:scale-101 transition-transform cursor-pointer"
+                    className="px-5 py-2 bg-[#FFD700] text-black font-sans font-black text-xs tracking-wider uppercase rounded-xl hover:scale-101 transition-transform cursor-pointer"
                   >
                     {t('SAVE CHANGES', 'SIMPAN PERUBAHAN')}
                   </button>

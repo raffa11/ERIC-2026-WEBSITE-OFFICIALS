@@ -35,7 +35,7 @@ export default function Footer() {
           <h2 className="text-[12vw] sm:text-[10vw] font-sans font-black tracking-tighter text-transparent bg-clip-text bg-gradient-to-b from-white to-zinc-600 leading-none uppercase text-center pointer-events-none mb-4">
             ERIC 2026
           </h2>
-          <div className="text-center font-mono text-[#00FF88] tracking-[0.3em] uppercase text-xs sm:text-sm font-bold block">
+          <div className="text-center font-mono text-[#FFD700] tracking-[0.3em] uppercase text-xs sm:text-sm font-bold block">
             WHERE ENGINEERS BECOME CHAMPIONS
           </div>
           <div className="text-center font-mono text-zinc-500 tracking-wider text-[10px] mt-2 block uppercase">
@@ -59,17 +59,17 @@ export default function Footer() {
 
             <div className="space-y-3.5 text-xs font-mono text-zinc-400">
               <div className="flex items-center gap-3">
-                <MapPin className="w-4 h-4 text-[#00FF88]" />
+                <MapPin className="w-4 h-4 text-[#FFD700]" />
                 <span>Kampus A Universitas Negeri Jakarta, Jakarta Timur</span>
               </div>
               <div className="flex items-center gap-3">
-                <Mail className="w-4 h-4 text-[#00FF88]" />
+                <Mail className="w-4 h-4 text-[#FFD700]" />
                 <a href="mailto:telemetry@eric2026.or.id" className="hover:text-white transition-colors">
                   telemetry@eric2026.or.id
                 </a>
               </div>
               <div className="flex items-center gap-3">
-                <Phone className="w-4 h-4 text-[#00FF88]" />
+                <Phone className="w-4 h-4 text-[#FFD700]" />
                 <span>+62 (21) 5005-2026</span>
               </div>
             </div>
@@ -82,27 +82,27 @@ export default function Footer() {
             </span>
             <ul className="space-y-2 text-sm font-sans font-extrabold text-zinc-300 uppercase">
               <li>
-                <button onClick={() => handleScrollTo('#about-section')} className="hover:text-[#00FF88] transition-colors">
+                <button onClick={() => handleScrollTo('#about-section')} className="hover:text-[#FFD700] transition-colors">
                   {t('ABOUT MISSION', 'TENTANG MISI')}
                 </button>
               </li>
               <li>
-                <button onClick={() => handleScrollTo('#divisions-section')} className="hover:text-[#00FF88] transition-colors">
+                <button onClick={() => handleScrollTo('#divisions-section')} className="hover:text-[#FFD700] transition-colors">
                   {t('OPERATIONAL DIVISIONS', 'DIVISI UTAMA')}
                 </button>
               </li>
               <li>
-                <button onClick={() => handleScrollTo('#registration-section')} className="hover:text-[#00FF88] transition-colors">
+                <button onClick={() => handleScrollTo('#registration-section')} className="hover:text-[#FFD700] transition-colors">
                   {t('CHAMPIONSHIP PORTAL', 'PORTAL CHAMPIONSHIP')}
                 </button>
               </li>
               <li>
-                <button onClick={() => handleScrollTo('#timeline-section')} className="hover:text-[#00FF88] transition-colors">
+                <button onClick={() => handleScrollTo('#timeline-section')} className="hover:text-[#FFD700] transition-colors">
                   {t('DIAGNOSTIC TIMELINE', 'LINI MASA INTEGRASI')}
                 </button>
               </li>
               <li>
-                <button onClick={() => handleScrollTo('#gallery-section')} className="hover:text-[#00FF88] transition-colors">
+                <button onClick={() => handleScrollTo('#gallery-section')} className="hover:text-[#FFD700] transition-colors">
                   {t('COMMUNITY GALLERY', 'GALERI FOTO')}
                 </button>
               </li>
@@ -116,22 +116,22 @@ export default function Footer() {
             </span>
             <ul className="space-y-2 text-sm font-sans font-extrabold text-zinc-300 uppercase">
               <li>
-                <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" className="hover:text-[#00FF88] transition-colors">
+                <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" className="hover:text-[#FFD700] transition-colors">
                   INSTAGRAM
                 </a>
               </li>
               <li>
-                <a href="https://youtube.com" target="_blank" rel="noopener noreferrer" className="hover:text-[#00FF88] transition-colors">
+                <a href="https://youtube.com" target="_blank" rel="noopener noreferrer" className="hover:text-[#FFD700] transition-colors">
                   YOUTUBE
                 </a>
               </li>
               <li>
-                <a href="https://twitter.com" target="_blank" rel="noopener noreferrer" className="hover:text-[#00FF88] transition-colors">
+                <a href="https://twitter.com" target="_blank" rel="noopener noreferrer" className="hover:text-[#FFD700] transition-colors">
                   X / TWITTER
                 </a>
               </li>
               <li>
-                <a href="https://github.com" target="_blank" rel="noopener noreferrer" className="hover:text-[#00FF88] transition-colors">
+                <a href="https://github.com" target="_blank" rel="noopener noreferrer" className="hover:text-[#FFD700] transition-colors">
                   GITHUB LABS
                 </a>
               </li>
@@ -149,9 +149,9 @@ export default function Footer() {
             <a
               id="footer-press-link"
               href="mailto:partners@eric2026.or.id"
-              className="flex items-center gap-2 justify-center w-full bg-zinc-900 hover:bg-zinc-800 border border-white/10 text-white font-mono text-xs uppercase py-3.5 px-4 rounded-xl transition-all duration-300 hover:border-[#00FF88]/40"
+              className="flex items-center gap-2 justify-center w-full bg-zinc-900 hover:bg-zinc-800 border border-white/10 text-white font-mono text-xs uppercase py-3.5 px-4 rounded-xl transition-all duration-300 hover:border-[#FFD700]/40"
             >
-              <MessageSquare className="w-4 h-4 text-[#00FF88]" />
+              <MessageSquare className="w-4 h-4 text-[#FFD700]" />
               <span>PRESS ENQUIRIES ↗</span>
             </a>
           </div>
@@ -225,7 +225,7 @@ export default function Footer() {
 
           <div className="text-[10px] font-mono text-zinc-500 flex items-center gap-1.5 hover:text-white transition-colors duration-300">
             <span>CREATED WITH</span>
-            <Heart className="w-3.5 h-3.5 text-[#00FF88] animate-pulse fill-[#00FF88]" />
+            <Heart className="w-3.5 h-3.5 text-[#FFD700] animate-pulse fill-[#FFD700]" />
             <span>FOR INDONESIAN ROBOTICISTS</span>
           </div>
 

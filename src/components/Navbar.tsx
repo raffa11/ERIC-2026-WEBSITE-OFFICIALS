@@ -95,10 +95,10 @@ export default function Navbar({
                   id={`nav-link-${link.href}`}
                   key={link.href}
                   onClick={() => handleLinkClick(link.href)}
-                  className="font-sans text-[11px] font-bold tracking-widest text-[#B3B3B3] hover:text-[#00FF88] transition-colors uppercase relative group"
+                  className="font-sans text-[11px] font-bold tracking-widest text-[#B3B3B3] hover:text-[#FFD700] transition-colors uppercase relative group"
                 >
                   {link.label}
-                  <span className="absolute -bottom-1 left-0 w-0 h-[2px] bg-[#00FF88] transition-all duration-300 group-hover:w-full" />
+                  <span className="absolute -bottom-1 left-0 w-0 h-[2px] bg-[#FFD700] transition-all duration-300 group-hover:w-full" />
                 </button>
               ))}
             </div>
@@ -133,7 +133,7 @@ export default function Navbar({
             {currentUser ? (
               <div className="flex items-center gap-2">
                 <div className={`flex items-center gap-2 bg-zinc-900 border ${isAdmin ? 'border-[#FFD700]/30' : 'border-white/5'} rounded-full pl-2.5 pr-4 py-1.5 select-none`}>
-                  <div className={`w-5 h-5 rounded-full ${isAdmin ? 'bg-gradient-to-tr from-[#D4AF37] to-[#FFD700]' : 'bg-gradient-to-tr from-[#0047AB] to-[#00FF88]'} flex items-center justify-center font-sans font-black text-[9px] text-white`}>
+                  <div className={`w-5 h-5 rounded-full ${isAdmin ? 'bg-gradient-to-tr from-[#D4AF37] to-[#FFD700]' : 'bg-gradient-to-tr from-[#0047AB] to-[#FFD700]'} flex items-center justify-center font-sans font-black text-[9px] text-white`}>
                     {currentUser.name[0]}
                   </div>
                   <div className="flex flex-col">
@@ -162,7 +162,7 @@ export default function Navbar({
                 onClick={onLoginClick}
                 className="flex items-center gap-1.5 bg-zinc-900 hover:bg-zinc-800 text-white font-mono text-[10px] font-bold uppercase px-4 py-2 rounded-full border border-white/10 hover:border-white/20 transition-all cursor-pointer"
               >
-                <LogIn className="w-3.5 h-3.5 text-[#00FF88]" />
+                <LogIn className="w-3.5 h-3.5 text-[#FFD700]" />
                 <span>{t('LOGIN', 'MASUK')}</span>
               </button>
             )}
@@ -188,7 +188,7 @@ export default function Navbar({
               ) : (
                 <button
                   onClick={onMyRegistrationsClick}
-                  className="px-3.5 py-1.5 bg-[#00FF88]/10 hover:bg-[#00FF88]/25 border border-[#00FF88]/30 hover:border-[#00FF88] text-[10px] font-mono text-[#00FF88] font-bold rounded-full transition-all cursor-pointer uppercase"
+                  className="px-3.5 py-1.5 bg-[#FFD700]/10 hover:bg-[#FFD700]/25 border border-[#FFD700]/30 hover:border-[#FFD700] text-[10px] font-mono text-[#FFD700] font-bold rounded-full transition-all cursor-pointer uppercase"
                 >
                   {t('MY REGISTRATIONS', 'PENDAFTARAN SAYA')}
                 </button>
@@ -205,7 +205,7 @@ export default function Navbar({
               onClick={() => setLang(lang === 'EN' ? 'ID' : 'EN')}
               className="flex items-center gap-1 text-[10px] font-mono text-zinc-400 bg-zinc-900 border border-white/5 px-2 py-1 rounded"
             >
-              <Globe className="w-3.5 h-3.5 text-[#00FF88]" />
+              <Globe className="w-3.5 h-3.5 text-[#FFD700]" />
               <span>{lang}</span>
             </button>
 
@@ -250,7 +250,7 @@ export default function Navbar({
             transition={{ type: 'tween', duration: 0.35, ease: 'easeInOut' }}
           >
             {/* Background design accents */}
-            <div className="absolute right-0 bottom-0 w-80 h-80 rounded-full bg-[#00FF88]/5 blur-[90px] pointer-events-none" />
+            <div className="absolute right-0 bottom-0 w-80 h-80 rounded-full bg-[#FFD700]/5 blur-[90px] pointer-events-none" />
 
             <div className="space-y-6 mt-6">
               {navLinks.map((link, idx) => (
@@ -258,7 +258,7 @@ export default function Navbar({
                   id={`mobile-nav-link-${link.href}`}
                   key={link.href}
                   onClick={() => handleLinkClick(link.href)}
-                  className="w-full text-left text-3xl font-sans font-black text-white hover:text-[#00FF88] transition-colors uppercase tracking-tight block"
+                  className="w-full text-left text-3xl font-sans font-black text-white hover:text-[#FFD700] transition-colors uppercase tracking-tight block"
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: idx * 0.05 }}
@@ -272,7 +272,7 @@ export default function Navbar({
               {currentUser ? (
                 <div className="space-y-4 pt-4 border-t border-white/5 select-none">
                   <div className={`flex items-center gap-3 bg-zinc-900 border ${isAdmin ? 'border-[#FFD700]/30' : 'border-white/5'} rounded-2xl p-4`}>
-                    <div className={`w-10 h-10 rounded-full ${isAdmin ? 'bg-gradient-to-tr from-[#D4AF37] to-[#FFD700]' : 'bg-gradient-to-tr from-[#0047AB] to-[#00FF88]'} flex items-center justify-center font-sans font-black text-xs text-white`}>
+                    <div className={`w-10 h-10 rounded-full ${isAdmin ? 'bg-gradient-to-tr from-[#D4AF37] to-[#FFD700]' : 'bg-gradient-to-tr from-[#0047AB] to-[#FFD700]'} flex items-center justify-center font-sans font-black text-xs text-white`}>
                       {currentUser.name[0]}
                     </div>
                     <div>
@@ -282,7 +282,7 @@ export default function Navbar({
                       <div className="text-sm font-sans font-black text-white uppercase tracking-tight">
                         {currentUser.name}
                       </div>
-                      <div className="text-[10px] font-mono text-[#00FF88]">{currentUser.email}</div>
+                      <div className="text-[10px] font-mono text-[#FFD700]">{currentUser.email}</div>
                     </div>
                   </div>
                   {isAdmin ? (
@@ -308,7 +308,7 @@ export default function Navbar({
                         setMobileMenuOpen(false);
                         onMyRegistrationsClick();
                       }}
-                      className="w-full py-3 bg-[#00FF88]/10 border border-[#00FF88]/20 text-xs font-mono text-[#00FF88] font-bold uppercase tracking-wider rounded-xl transition-all cursor-pointer flex justify-center items-center gap-2"
+                      className="w-full py-3 bg-[#FFD700]/10 border border-[#FFD700]/20 text-xs font-mono text-[#FFD700] font-bold uppercase tracking-wider rounded-xl transition-all cursor-pointer flex justify-center items-center gap-2"
                     >
                       <Trophy className="w-4 h-4" />
                       <span>{t('MY REGISTRATIONS', 'PENDAFTARAN SAYA')}</span>
@@ -336,7 +336,7 @@ export default function Navbar({
                     }}
                     className="w-full py-3 bg-zinc-900 hover:bg-zinc-800 text-white font-mono text-xs font-bold uppercase tracking-wider rounded-xl border border-white/5 hover:border-white/15 transition-all cursor-pointer flex justify-center items-center gap-2"
                   >
-                    <LogIn className="w-4 h-4 text-[#00FF88]" />
+                    <LogIn className="w-4 h-4 text-[#FFD700]" />
                     <span>{t('SIGN IN TO HUB', 'MASUK KE PORTAL')}</span>
                   </button>
                 </div>

@@ -28,19 +28,19 @@ export default function GallerySection() {
   return (
     <section id="gallery-section" className="relative py-24 bg-[#050505] border-t border-white/5 overflow-hidden">
       {/* Light highlights */}
-      <div className="absolute right-[5%] bottom-[30%] w-[400px] h-[400px] rounded-full bg-[#4DFFB8]/5 blur-[140px] pointer-events-none" />
+      <div className="absolute right-[5%] bottom-[30%] w-[400px] h-[400px] rounded-full bg-[#FFE44D]/5 blur-[140px] pointer-events-none" />
 
       <div className="max-w-7xl mx-auto px-6 relative z-10">
         
         {/* Section Header */}
         <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-16 select-none">
           <div>
-            <div className="flex items-center gap-3 text-xs font-mono text-[#00FF88] tracking-[0.4em] uppercase mb-4">
+            <div className="flex items-center gap-3 text-xs font-mono text-[#FFD700] tracking-[0.4em] uppercase mb-4">
               <Aperture className="w-4 h-4 animate-spin-slow" />
               <span>Diagnostic Snapshots</span>
             </div>
             <h2 className="text-4xl md:text-7xl font-sans font-black tracking-tighter text-white uppercase leading-none">
-              THE <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#00FF88] to-[#4DFFB8]">GALLERY</span>
+              THE <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#FFD700] to-[#FFE44D]">GALLERY</span>
             </h2>
           </div>
 
@@ -55,7 +55,7 @@ export default function GallerySection() {
                 onClick={() => setFilter(cat.en)}
                 className={`px-3 py-1.5 rounded text-xs font-mono uppercase transition-all duration-300 ${
                   filter === cat.en
-                    ? 'bg-[#00FF88] text-black font-bold'
+                    ? 'bg-[#FFD700] text-black font-bold'
                     : 'text-zinc-400 hover:text-white hover:bg-white/5'
                 }`}
               >
@@ -92,16 +92,16 @@ export default function GallerySection() {
                 </div>
 
                 {/* Reticle borders layout */}
-                <div className="absolute inset-4 border border-white/10 group-hover:border-[#00FF88]/20 transition-all duration-300 pointer-events-none rounded-xl" />
+                <div className="absolute inset-4 border border-white/10 group-hover:border-[#FFD700]/20 transition-all duration-300 pointer-events-none rounded-xl" />
 
                 {/* Left corner calibration coordinates (Formula E look) */}
-                <div className="absolute top-6 left-6 font-mono text-[8px] text-white/30 group-hover:text-[#00FF88]/50 transition-colors duration-300 select-none">
+                <div className="absolute top-6 left-6 font-mono text-[8px] text-white/30 group-hover:text-[#FFD700]/50 transition-colors duration-300 select-none">
                   CAM_ID_[00{idx + 1}] // FOV_84°
                 </div>
 
                 {/* Right corner magnifying indicator */}
                 <div className="absolute top-6 right-6 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                  <span className="flex items-center gap-1.5 bg-black/80 border border-[#00FF88]/20 px-2 py-1 rounded text-[9px] font-mono text-[#00FF88]">
+                  <span className="flex items-center gap-1.5 bg-black/80 border border-[#FFD700]/20 px-2 py-1 rounded text-[9px] font-mono text-[#FFD700]">
                     <ZoomIn className="w-3 h-3" /> RESOLVE_LENS
                   </span>
                 </div>
@@ -117,7 +117,7 @@ export default function GallerySection() {
                   <div className="h-[1px] bg-white/10 my-3 w-0 group-hover:w-full transition-all duration-500 ease-out" />
                   <div className="flex justify-between items-center opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-y-2 group-hover:translate-y-0 text-[10px] font-mono text-zinc-400">
                     <span>LENS_SYS: CALIBRATED</span>
-                    <span className="flex items-center gap-1 text-[#00FF88]">
+                    <span className="flex items-center gap-1 text-[#FFD700]">
                       <Compass className="w-3.5 h-3.5 animate-spin-slow" /> COORD_STABLE
                     </span>
                   </div>

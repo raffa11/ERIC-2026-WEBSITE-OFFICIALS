@@ -49,7 +49,7 @@ export default function AboutEric() {
 
               {/* Grid overlay */}
               <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent pointer-events-none" />
-              <div className="absolute inset-0 bg-[radial-gradient(rgba(0,255,136,0.15)_1px,transparent_1px)] bg-[size:16px_16px] opacity-40 pointer-events-none" />
+              <div className="absolute inset-0 bg-[radial-gradient(rgba(255, 215, 0, 0.15)_1px,transparent_1px)] bg-[size:16px_16px] opacity-40 pointer-events-none" />
 
             </div>
 
@@ -60,7 +60,7 @@ export default function AboutEric() {
                   <div className="text-2xl md:text-3xl font-sans font-black text-white tracking-widest">
                     {item.value}
                   </div>
-                  <div className="text-[9.5px] font-mono text-[#00FF88] uppercase tracking-wide mt-1.5 leading-tight">
+                  <div className="text-[9.5px] font-mono text-[#FFD700] uppercase tracking-wide mt-1.5 leading-tight">
                     {item.label}
                   </div>
                 </div>
@@ -99,15 +99,15 @@ export default function AboutEric() {
                     key={tab.id}
                     onClick={() => setActiveTab(tab.id)}
                     className={`flex items-center gap-2 pb-3.5 px-4 font-mono text-[10px] md:text-xs uppercase tracking-wider relative transition-colors duration-300 ${
-                      active ? 'text-[#00FF88] font-bold' : 'text-zinc-500 hover:text-zinc-300'
+                      active ? 'text-[#FFD700] font-bold' : 'text-zinc-500 hover:text-zinc-300'
                     }`}
                   >
-                    <Icon className={`w-3.5 h-3.5 ${active ? 'text-[#00FF88]' : 'text-zinc-500'}`} />
+                    <Icon className={`w-3.5 h-3.5 ${active ? 'text-[#FFD700]' : 'text-zinc-500'}`} />
                     {tab.label}
                     {active && (
                       <motion.div
                         layoutId="activeTabUnderline"
-                        className="absolute bottom-0 left-0 right-0 h-[2.5px] bg-[#00FF88]"
+                        className="absolute bottom-0 left-0 right-0 h-[2.5px] bg-[#FFD700]"
                         transition={{ type: 'spring', stiffness: 350, damping: 30 }}
                       />
                     )}
@@ -137,13 +137,13 @@ export default function AboutEric() {
 
                   {activeTab === 'tujuan' && (
                     <div className="space-y-3">
-                      <div className="text-[10px] font-mono text-[#00FF88] uppercase tracking-widest mb-1">
+                      <div className="text-[10px] font-mono text-[#FFD700] uppercase tracking-widest mb-1">
                         {t('OBJECTIVES', 'TUJUAN')}
                       </div>
                       <ul className="space-y-2.5">
                         {(t(CORE_VISION_MISSION.tujuan as any, CORE_VISION_MISSION.tujuanID as any) as string[]).map((m: string, i: number) => (
                           <li key={i} className="text-zinc-400 text-xs flex items-start gap-2.5 uppercase font-mono">
-                            <span className="text-[#00FF88]">0{i + 1}.</span>
+                            <span className="text-[#FFD700]">0{i + 1}.</span>
                             <span className="text-zinc-300">{m}</span>
                           </li>
                         ))}

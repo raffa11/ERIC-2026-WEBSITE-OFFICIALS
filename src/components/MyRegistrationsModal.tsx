@@ -52,7 +52,7 @@ export default function MyRegistrationsModal({
           {/* Header */}
           <div className="flex justify-between items-center border-b border-white/5 pb-4">
             <div className="space-y-0.5">
-              <span className="text-[9px] font-mono text-[#00FF88] uppercase tracking-widest block font-black">
+              <span className="text-[9px] font-mono text-[#FFD700] uppercase tracking-widest block font-black">
                 CANDIDATE PANEL
               </span>
               <h4 className="text-xl font-sans font-black text-white uppercase tracking-tight">
@@ -85,7 +85,7 @@ export default function MyRegistrationsModal({
                     onClose();
                     onRegisterNewTeamClick();
                   }}
-                  className="px-4 py-2 bg-[#00FF88]/10 hover:bg-[#00FF88]/20 border border-[#00FF88]/20 text-xs font-mono text-[#00FF88] rounded-xl cursor-pointer font-bold"
+                  className="px-4 py-2 bg-[#FFD700]/10 hover:bg-[#FFD700]/20 border border-[#FFD700]/20 text-xs font-mono text-[#FFD700] rounded-xl cursor-pointer font-bold"
                 >
                   {t('REGISTER NOW', 'DAFTAR SEKARANG')}
                 </button>
@@ -96,12 +96,12 @@ export default function MyRegistrationsModal({
                   const divObj = COMPETITION_DIVISIONS.find(d => d.id === reg.divisionId);
                   return (
                     <div key={reg.id} className="p-5 bg-zinc-950 border border-white/5 rounded-2xl space-y-4 relative overflow-hidden group">
-                      <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-[#00FF88] to-[#0047AB]" />
+                      <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-[#FFD700] to-[#0047AB]" />
                       
                       <div className="flex items-center gap-2">
-                        <CheckCircle className="w-4 h-4 text-[#00FF88] shrink-0" />
+                        <CheckCircle className="w-4 h-4 text-[#FFD700] shrink-0" />
                         <div>
-                          <span className="text-[8px] font-mono text-[#00FF88] uppercase tracking-widest block font-black">
+                          <span className="text-[8px] font-mono text-[#FFD700] uppercase tracking-widest block font-black">
                             {t('COMPETITION', 'KOMPETISI')}
                           </span>
                           <h5 className="text-base font-sans font-black text-white uppercase tracking-tight">
@@ -123,7 +123,7 @@ export default function MyRegistrationsModal({
                             href={divObj.whatsappGroup}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="flex-1 flex items-center justify-center gap-2 px-3 py-2 bg-emerald-950/20 border border-emerald-500/20 hover:border-emerald-400/40 rounded-xl text-[10px] font-mono text-emerald-300 hover:text-emerald-200 transition-all cursor-pointer"
+                            className="flex-1 flex items-center justify-center gap-2 px-3 py-2 bg-amber-950/20 border border-amber-500/20 hover:border-amber-400/40 rounded-xl text-[10px] font-mono text-amber-300 hover:text-amber-200 transition-all cursor-pointer"
                           >
                             <MessageCircle className="w-3.5 h-3.5" />
                             <span className="hidden sm:inline">WHATSAPP GROUP — {divObj?.title.toUpperCase()}</span>
@@ -132,7 +132,7 @@ export default function MyRegistrationsModal({
                         )}
                         <button
                           onClick={() => generateRegistrationPDF(reg)}
-                          className="flex-1 flex items-center justify-center gap-2 px-3 py-2 bg-[#00FF88]/10 border border-[#00FF88]/20 hover:bg-[#00FF88]/20 hover:border-[#00FF88]/40 rounded-xl text-[10px] font-mono text-[#00FF88] hover:text-white transition-all cursor-pointer"
+                          className="flex-1 flex items-center justify-center gap-2 px-3 py-2 bg-[#FFD700]/10 border border-[#FFD700]/20 hover:bg-[#FFD700]/20 hover:border-[#FFD700]/40 rounded-xl text-[10px] font-mono text-[#FFD700] hover:text-white transition-all cursor-pointer"
                         >
                           <Download className="w-3.5 h-3.5" />
                           <span className="hidden sm:inline">DOWNLOAD PDF TICKET</span>
@@ -144,7 +144,7 @@ export default function MyRegistrationsModal({
                         href={MAIN_WHATSAPP_GROUP}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="flex items-center justify-center gap-2 px-3 py-2 bg-[#00FF88]/5 border border-[#00FF88]/10 hover:bg-[#00FF88]/10 hover:border-[#00FF88]/30 rounded-xl text-[10px] font-mono text-[#00FF88] hover:text-white transition-all cursor-pointer"
+                        className="flex items-center justify-center gap-2 px-3 py-2 bg-[#FFD700]/5 border border-[#FFD700]/10 hover:bg-[#FFD700]/10 hover:border-[#FFD700]/30 rounded-xl text-[10px] font-mono text-[#FFD700] hover:text-white transition-all cursor-pointer"
                       >
                         <MessageCircle className="w-3.5 h-3.5 shrink-0" />
                         <span>WHATSAPP GROUP — ALL PARTICIPANTS</span>
