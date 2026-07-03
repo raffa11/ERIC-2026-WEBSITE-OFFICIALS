@@ -106,7 +106,8 @@ function doPost(e) {
       "Payment Method", 
       "Payment Status", 
       "Amount Paid", 
-      "Ref Code"
+      "Ref Code",
+      "Check In Time"
     ];
     
     // Setup headers if the sheet is completely empty
@@ -153,7 +154,8 @@ function doPost(e) {
       data.paymentMethod,
       data.paymentStatus,
       data.amount || "IDR 150,000",
-      data.refCode
+      data.refCode,
+      ""
     ];
     
     sheet.appendRow(row);
@@ -161,6 +163,62 @@ function doPost(e) {
     return ContentService.createTextOutput(JSON.stringify({ status: "success", id: data.id }))
       .setMimeType(ContentService.MimeType.JSON);
       
+  } catch (err) {
+    return ContentService.createTextOutput(JSON.stringify({ status: "error", message: err.toString() }))
+      .setMimeType(ContentService.MimeType.JSON);
+  }
+}
+
+function doGet(e) {
+  try {
+    const action = e.parameter.action;
+    const refCode = e.parameter.refCode;
+
+    if (action === "checkin" && refCode) {
+      const ss = SpreadsheetApp.openById(SPREADSHEET_ID);
+      const sheet = ss.getActiveSheet();
+      const data = sheet.getDataRange().getValues();
+      const headers = data[0];
+
+      const refCodeCol = headers.indexOf("Ref Code") + 1;
+      const checkInCol = headers.indexOf("Check In Time") + 1;
+      const paymentStatusCol = headers.indexOf("Payment Status") + 1;
+
+      if (refCodeCol === 0 || checkInCol === 0 || paymentStatusCol === 0) {
+        return ContentService.createTextOutput(JSON.stringify({ status: "error", message: "Required columns not found" }))
+          .setMimeType(ContentService.MimeType.JSON);
+      }
+
+      let foundRow = -1;
+      for (let i = 1; i < data.length; i++) {
+        if (String(data[i][refCodeCol - 1]).toUpperCase() === refCode.toUpperCase()) {
+          foundRow = i + 1;
+          break;
+        }
+      }
+
+      if (foundRow === -1) {
+        return ContentService.createTextOutput(JSON.stringify({ status: "error", message: "Ref code not found" }))
+          .setMimeType(ContentService.MimeType.JSON);
+      }
+
+      const currentStatus = sheet.getRange(foundRow, paymentStatusCol).getValue();
+      if (currentStatus === "CHECKED IN") {
+        return ContentService.createTextOutput(JSON.stringify({ status: "success", message: "Already checked in", alreadyCheckedIn: true }))
+          .setMimeType(ContentService.MimeType.JSON);
+      }
+
+      const now = new Date();
+      sheet.getRange(foundRow, paymentStatusCol).setValue("CHECKED IN");
+      sheet.getRange(foundRow, checkInCol).setValue(now.toLocaleString());
+
+      return ContentService.createTextOutput(JSON.stringify({ status: "success", message: "Checked in successfully" }))
+        .setMimeType(ContentService.MimeType.JSON);
+    }
+
+    return ContentService.createTextOutput(JSON.stringify({ status: "error", message: 'Invalid action. Use ?action=checkin&refCode=...' }))
+      .setMimeType(ContentService.MimeType.JSON);
+
   } catch (err) {
     return ContentService.createTextOutput(JSON.stringify({ status: "error", message: err.toString() }))
       .setMimeType(ContentService.MimeType.JSON);

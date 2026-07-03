@@ -8,7 +8,7 @@ import { Registration } from '../types';
 export const getGoogleScriptUrl = (): string => {
   let storedUrl = localStorage.getItem('eric_google_script_url');
   const oldUrl = 'https://script.google.com/macros/s/AKfycbzNqpRx3HP9ILYKh7FdZiXfCnKgKHCVjM9hAd_-vdRu7SGmAVsIkJrgWQI7m2BI_ykZ/exec';
-  const newUrl = 'https://script.google.com/macros/s/AKfycbywz5HaWVtC3a8GRiLAtPKl7Wgtc2hjIAHZcWW58_SQRpGDqtnbEtovWALVf1L7fgI/exec';
+  const newUrl = 'https://script.google.com/macros/s/AKfycby_4IAZgXTDkZGemSSUutgPklyar_Ybq7Uia8Muwt_16vjFL4it9nShmYk-yBGK7T0t/exec';
 
   if (storedUrl === oldUrl || (storedUrl && storedUrl.includes('AKfycbzNqpRx3HP9ILYKh7FdZiXfCnKgKHCVjM9hAd_-vdRu7SGmAVsIkJrgWQI7m2BI_ykZ'))) {
     localStorage.setItem('eric_google_script_url', newUrl);
