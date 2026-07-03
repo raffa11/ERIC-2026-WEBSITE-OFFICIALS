@@ -11,6 +11,7 @@ const supabaseUrl = (metaEnv.VITE_SUPABASE_URL || '').trim();
 const supabaseAnonKey = (metaEnv.VITE_SUPABASE_ANON_KEY || '').trim();
 
 const REGISTRATIONS_TABLE = 'competition_registrations';
+const LS_KEY = 'eric_live_registrations';
 
 // Check if Supabase keys are provided in environment
 export const isSupabaseConfigured = !!(supabaseUrl && supabaseAnonKey);
@@ -38,12 +39,48 @@ export function getSupabaseAuth() {
 }
 
 /**
+ * Remove base64 image data from a Registration to keep localStorage small.
+ * Images are only needed during submission (sent to Apps Script), not in cache.
+ */
+function stripImages(reg: Registration): Registration {
+  const clone = structuredClone(reg);
+  clone.leader.idCardUrl = clone.leader.idCardUrl?.startsWith('data:') ? '[stripped]' : (clone.leader.idCardUrl || '');
+  clone.leader.twibbonUrl = clone.leader.twibbonUrl?.startsWith('data:') ? '[stripped]' : (clone.leader.twibbonUrl || '');
+  clone.members = clone.members.map(m => ({
+    ...m,
+    idCardUrl: m.idCardUrl?.startsWith('data:') ? '[stripped]' : (m.idCardUrl || ''),
+    twibbonUrl: m.twibbonUrl?.startsWith('data:') ? '[stripped]' : (m.twibbonUrl || ''),
+  }));
+  clone.lecturerIdCardUrl = clone.lecturerIdCardUrl?.startsWith('data:') ? '[stripped]' : (clone.lecturerIdCardUrl || '');
+  clone.lecturerTwibbonUrl = clone.lecturerTwibbonUrl?.startsWith('data:') ? '[stripped]' : (clone.lecturerTwibbonUrl || '');
+  clone.paymentProofUrl = clone.paymentProofUrl?.startsWith('data:') ? '[stripped]' : (clone.paymentProofUrl || '');
+  return clone;
+}
+
+function safeGetItem(): Registration[] {
+  try {
+    const raw = localStorage.getItem(LS_KEY);
+    return raw ? JSON.parse(raw) : [];
+  } catch {
+    return [];
+  }
+}
+
+function safeSetItem(list: Registration[]): void {
+  try {
+    const stripped = list.map(stripImages);
+    localStorage.setItem(LS_KEY, JSON.stringify(stripped));
+  } catch (err) {
+    console.warn('localStorage quota exceeded or unavailable. Registrations not cached locally.', err);
+  }
+}
+
+/**
  * Fetch registrations from localStorage + Supabase, merged by id.
  * Supabase results take priority.
  */
 export async function dbFetchRegistrations(userEmail?: string): Promise<Registration[]> {
-  const local = localStorage.getItem('eric_live_registrations');
-  const localRegs: Registration[] = local ? JSON.parse(local) : [];
+  const localRegs = safeGetItem();
 
   if (!userEmail) {
     return localRegs;
@@ -82,16 +119,15 @@ export async function dbFetchRegistrations(userEmail?: string): Promise<Registra
  * Save registration to localStorage + Supabase.
  */
 export async function dbUpsertRegistration(reg: Registration, userEmail?: string): Promise<void> {
-  // localStorage
-  const local = localStorage.getItem('eric_live_registrations');
-  const list: Registration[] = local ? JSON.parse(local) : [];
+  // localStorage (strip images to avoid quota issues)
+  const list = safeGetItem();
   const index = list.findIndex(r => r.id === reg.id);
   if (index >= 0) {
     list[index] = reg;
   } else {
     list.push(reg);
   }
-  localStorage.setItem('eric_live_registrations', JSON.stringify(list));
+  safeSetItem(list);
 
   // Supabase
   if (userEmail) {
@@ -113,12 +149,9 @@ export async function dbUpsertRegistration(reg: Registration, userEmail?: string
  */
 export async function dbDeleteRegistration(id: string): Promise<void> {
   // localStorage
-  const local = localStorage.getItem('eric_live_registrations');
-  if (local) {
-    const list: Registration[] = JSON.parse(local);
-    const filtered = list.filter(r => r.id !== id);
-    localStorage.setItem('eric_live_registrations', JSON.stringify(filtered));
-  }
+  const list = safeGetItem();
+  const filtered = list.filter(r => r.id !== id);
+  safeSetItem(filtered);
 
   // Supabase
   try {

@@ -179,6 +179,7 @@ function doGet(e) {
       const sheet = ss.getActiveSheet();
       const data = sheet.getDataRange().getValues();
       const headers = data[0];
+      const lastCol = headers.length;
 
       const refCodeCol = headers.indexOf("Ref Code") + 1;
       const checkInCol = headers.indexOf("Check In Time") + 1;
@@ -203,17 +204,24 @@ function doGet(e) {
       }
 
       const currentStatus = sheet.getRange(foundRow, paymentStatusCol).getValue();
-      if (currentStatus === "CHECKED IN") {
-        return ContentService.createTextOutput(JSON.stringify({ status: "success", message: "Already checked in", alreadyCheckedIn: true }))
-          .setMimeType(ContentService.MimeType.JSON);
+      const alreadyCheckedIn = currentStatus === "CHECKED IN";
+
+      if (!alreadyCheckedIn) {
+        const now = new Date();
+        sheet.getRange(foundRow, paymentStatusCol).setValue("CHECKED IN");
+        sheet.getRange(foundRow, checkInCol).setValue(now.toLocaleString());
       }
 
-      const now = new Date();
-      sheet.getRange(foundRow, paymentStatusCol).setValue("CHECKED IN");
-      sheet.getRange(foundRow, checkInCol).setValue(now.toLocaleString());
+      // Color the entire row green to mark as checked in & validated
+      const rowRange = sheet.getRange(foundRow, 1, 1, lastCol);
+      rowRange.setBackground("#002F1F");   // dark green background
+      rowRange.setFontColor("#00FF88");    // neon green text
 
-      return ContentService.createTextOutput(JSON.stringify({ status: "success", message: "Checked in successfully" }))
-        .setMimeType(ContentService.MimeType.JSON);
+      return ContentService.createTextOutput(JSON.stringify({
+        status: "success",
+        message: alreadyCheckedIn ? "Already checked in" : "Checked in successfully",
+        alreadyCheckedIn: alreadyCheckedIn
+      })).setMimeType(ContentService.MimeType.JSON);
     }
 
     return ContentService.createTextOutput(JSON.stringify({ status: "error", message: 'Invalid action. Use ?action=checkin&refCode=...' }))
