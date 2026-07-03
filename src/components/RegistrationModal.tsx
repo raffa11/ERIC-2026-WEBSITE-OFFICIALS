@@ -13,6 +13,7 @@ import {
   Plus, Trash2, ArrowRight, ArrowLeft, CreditCard, 
   QrCode, AlertCircle, X, Check, Globe, Upload, Copy, MessageCircle
 } from 'lucide-react';
+import { QRCodeCanvas } from 'qrcode.react';
 import { syncToGoogleSheet } from '../lib/googleSheet';
 
 interface RegistrationModalProps {
@@ -466,7 +467,7 @@ export default function RegistrationModal({
                     </p>
                   </div>
 
-                  <div className="bg-black border border-white/5 p-6 rounded-2xl text-center space-y-2 relative">
+                  <div className="bg-black border border-white/5 p-6 rounded-2xl text-center space-y-3 relative">
                     <span className="absolute top-2 right-3 text-[7px] font-mono text-white/5 select-none font-bold">
                       ERIC_DATABASE_COORDINATE
                     </span>
@@ -475,6 +476,11 @@ export default function RegistrationModal({
                     </div>
                     <div className="text-2xl font-mono text-[#00FF88] font-black tracking-widest select-all">
                       {successPopup.refCode}
+                    </div>
+                    <div className="flex justify-center">
+                      <div className="bg-white p-2 rounded-xl inline-block">
+                        <QRCodeCanvas value={successPopup.refCode} size={140} level="M" />
+                      </div>
                     </div>
                     <p className="text-[8.5px] font-mono text-zinc-500 uppercase leading-normal">
                       {t('Save or copy this registration code to manage rosters and unlock access locks.', 'Simpan atau salin kode registrasi ini untuk mengelola roster dan membuka kunci akses.')}

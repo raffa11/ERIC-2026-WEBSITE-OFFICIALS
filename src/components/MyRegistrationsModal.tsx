@@ -8,9 +8,8 @@ import { motion, AnimatePresence } from 'motion/react';
 import { useLanguage } from './LanguageContext';
 import { COMPETITION_DIVISIONS, MAIN_WHATSAPP_GROUP } from '../data';
 import { Registration } from '../types';
-import { 
-  Trophy, X, MessageCircle, CheckCircle, Download
-} from 'lucide-react';
+import { Trophy, X, MessageCircle, CheckCircle, Download } from 'lucide-react';
+import { QRCodeCanvas } from 'qrcode.react';
 import { generateRegistrationPDF } from '../lib/generatePDF';
 
 interface MyRegistrationsModalProps {
@@ -114,6 +113,11 @@ export default function MyRegistrationsModal({
 
                       <div className="text-[10px] font-mono text-zinc-400 space-y-1.5 border-t border-b border-white/5 py-3">
                         <div>REF CODE: <span className="text-[#C5A059] select-all font-bold">{reg.refCode}</span></div>
+                        <div className="flex justify-center pt-1">
+                          <div className="bg-white p-1.5 rounded-lg inline-block">
+                            <QRCodeCanvas value={reg.refCode} size={80} level="M" />
+                          </div>
+                        </div>
                         <div className="text-[9px] text-zinc-500">
                           {t('Confirmed', 'Terkonfirmasi')}: {reg.paymentStatus}
                         </div>
