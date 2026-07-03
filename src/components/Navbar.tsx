@@ -7,7 +7,7 @@ import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { useLanguage } from './LanguageContext';
 import EricLogo from './EricLogo';
-import { Menu, X, Globe, Trophy, ArrowUpRight, LogIn, LogOut, User, Shield } from 'lucide-react';
+import { Menu, X, Globe, Trophy, LogIn, LogOut, User, Shield } from 'lucide-react';
 import { ADMIN_EMAILS } from '../types';
 import { SUPPORTED_BY } from '../data';
 
@@ -89,7 +89,7 @@ export default function Navbar({
 
           {/* Desktop Nav Actions */}
           <div className="hidden lg:flex items-center gap-6">
-            <div className="flex items-center gap-7">
+            <div className="flex items-center gap-6">
               {navLinks.map((link) => (
                 <button
                   id={`nav-link-${link.href}`}
@@ -160,7 +160,7 @@ export default function Navbar({
               <button
                 id="nav-btn-login"
                 onClick={onLoginClick}
-                className="flex items-center gap-1.5 bg-zinc-900 hover:bg-zinc-850 text-white font-mono text-[10px] font-bold uppercase px-4 py-2 rounded-full border border-white/10 hover:border-white/20 transition-all cursor-pointer"
+                className="flex items-center gap-1.5 bg-zinc-900 hover:bg-zinc-800 text-white font-mono text-[10px] font-bold uppercase px-4 py-2 rounded-full border border-white/10 hover:border-white/20 transition-all cursor-pointer"
               >
                 <LogIn className="w-3.5 h-3.5 text-[#00FF88]" />
                 <span>{t('LOGIN', 'MASUK')}</span>
@@ -195,18 +195,6 @@ export default function Navbar({
               )
             )}
 
-            {/* Glowing F1-style CTA Registration Pill */}
-            {currentView === 'landing' && (
-              <button
-                id="nav-btn-register"
-                onClick={() => handleLinkClick('#divisions-section')}
-                className="flex items-center gap-2 bg-gradient-to-r from-[#00FF88] to-[#4DFFB8] hover:scale-103 text-black font-sans text-xs font-black tracking-wider uppercase px-5 py-2.5 rounded-full select-none shadow-[0_0_20px_rgba(0,255,136,0.25)] transition-all duration-300 hover:shadow-[0_0_30px_rgba(0,255,136,0.45)]"
-              >
-                <Trophy className="w-3.5 h-3.5 text-black" />
-                <span>{t('THE ARENAS', 'ARENA TANDING')}</span>
-                <ArrowUpRight className="w-3.5 h-3.5 text-black" />
-              </button>
-            )}
           </div>
 
           {/* Right Mobile Actions */}
@@ -280,18 +268,6 @@ export default function Navbar({
                 </motion.button>
               ))}
 
-              <motion.button
-                id="mobile-nav-register"
-                onClick={() => handleLinkClick('#divisions-section')}
-                className="w-full text-left text-3xl font-sans font-black text-[#00FF88] uppercase tracking-tight block mt-4"
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: navLinks.length * 0.05 }}
-              >
-                <span className="text-zinc-600 font-mono text-sm mr-4">✓</span>
-                {t('THE ARENAS', 'ARENA TANDING')}
-              </motion.button>
-
               {/* Mobile Profile or Login buttons */}
               {currentUser ? (
                 <div className="space-y-4 pt-4 border-t border-white/5 select-none">
@@ -358,7 +334,7 @@ export default function Navbar({
                       setMobileMenuOpen(false);
                       onLoginClick();
                     }}
-                    className="w-full py-3 bg-zinc-900 hover:bg-zinc-850 text-white font-mono text-xs font-bold uppercase tracking-wider rounded-xl border border-white/5 hover:border-white/15 transition-all cursor-pointer flex justify-center items-center gap-2"
+                    className="w-full py-3 bg-zinc-900 hover:bg-zinc-800 text-white font-mono text-xs font-bold uppercase tracking-wider rounded-xl border border-white/5 hover:border-white/15 transition-all cursor-pointer flex justify-center items-center gap-2"
                   >
                     <LogIn className="w-4 h-4 text-[#00FF88]" />
                     <span>{t('SIGN IN TO HUB', 'MASUK KE PORTAL')}</span>

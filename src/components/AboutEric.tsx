@@ -41,10 +41,10 @@ export default function AboutEric() {
               
               {/* Image with slow zoom */}
               <img
-                src="/images/robotics_workbench_1780298686024.png"
-                alt="Robotics development mekatronika workbench"
+                src="/images/gallery/DSC01947.jpg"
+                alt="ERIC Competition Documentation"
                 referrerPolicy="no-referrer"
-                className="w-full h-[400px] object-cover filter brightness-90 contrast-105 group-hover:scale-103 transition-transform duration-700"
+                className="w-full max-h-[400px] h-[250px] sm:h-[350px] md:h-[400px] object-cover filter brightness-90 contrast-105 group-hover:scale-103 transition-transform duration-700"
               />
 
               {/* Grid overlay */}

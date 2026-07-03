@@ -561,7 +561,7 @@ export default function RegistrationModal({
                       <div
                         key={step}
                         className={`h-full flex-grow rounded-full transition-all duration-300 ${
-                          step <= wizardStep ? 'bg-[#00FF88]' : 'bg-zinc-850'
+                          step <= wizardStep ? 'bg-[#00FF88]' : 'bg-zinc-800'
                         }`}
                       />
                     ))}

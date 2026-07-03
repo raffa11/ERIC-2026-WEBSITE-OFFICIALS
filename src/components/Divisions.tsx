@@ -177,7 +177,7 @@ export default function Divisions({ onSelectDivision }: DivisionsProps) {
 
                 {/* Main Card Shell */}
                 <div
-                  className="relative overflow-hidden bg-gradient-to-b from-zinc-900/90 to-black border border-white/5 group-hover:border-white/20 p-8 h-[400px] rounded-2xl flex flex-col justify-between transition-all duration-200 ease-out shadow-[0_15px_35px_rgba(0,0,0,0.6)]"
+                  className="relative overflow-hidden bg-gradient-to-b from-zinc-900/90 to-black border border-white/5 group-hover:border-white/20 p-8 min-h-[400px] rounded-2xl flex flex-col justify-between transition-all duration-200 ease-out shadow-[0_15px_35px_rgba(0,0,0,0.6)]"
                   style={{
                     transform: `rotateX(${tilt.x}deg) rotateY(${tilt.y}deg) scale(${isHovered ? 1.03 : 1.0})`,
                   }}
@@ -185,7 +185,7 @@ export default function Divisions({ onSelectDivision }: DivisionsProps) {
                   
                   {/* Dynamic glare ray sweep */}
                   <div
-                    className="absolute inset-0 pointer-events-none transition-opacity duration-300 pointer-events-none"
+                    className="absolute inset-0 pointer-events-none transition-opacity duration-300"
                     style={{
                       opacity: isHovered ? 0.28 : 0,
                       background: `radial-gradient(circle 180px at ${tilt.gx}% ${tilt.gy}%, white, transparent)`,

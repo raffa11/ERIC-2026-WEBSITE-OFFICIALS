@@ -41,7 +41,7 @@ export default function EventJourney() {
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#00FF88] via-[#4DFFB8] to-white">ONE LEGACY.</span>
             </h2>
           </div>
-          <p className="text-zinc-450 font-mono text-sm max-w-sm mt-6 md:mt-0 uppercase leading-relaxed">
+          <p className="text-zinc-500 font-mono text-sm max-w-sm mt-6 md:mt-0 uppercase leading-relaxed">
             The full championship schedule. Follow our dynamic phases, academic tests, and live exhibitions.
           </p>
         </div>

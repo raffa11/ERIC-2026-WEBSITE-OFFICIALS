@@ -15,10 +15,10 @@ export default function GallerySection() {
 
   const categories = [
   { en: 'All', id: 'Semua' },
-  { en: 'Diagnostics', id: 'Diagnostik' },
-  { en: 'Arena Trials', id: 'Uji Coba Arena' },
-  { en: 'Labs', id: 'Laboratorium' },
-  { en: 'Kinematics', id: 'Kinematika' }
+  { en: 'Competition', id: 'Kompetisi' },
+  { en: 'Arena', id: 'Arena' },
+  { en: 'Participants', id: 'Peserta' },
+  { en: 'Documentation', id: 'Dokumentasi' }
 ];
 
   const filteredItems = filter === 'All'
@@ -65,15 +65,15 @@ export default function GallerySection() {
           </div>
         </div>
 
-        {/* Pinterest style layout Grid */}
-        <div id="gallery-masonry" className="grid grid-cols-12 gap-6 items-start">
+        {/* Uniform grid layout */}
+        <div id="gallery-masonry" className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
           <AnimatePresence mode="popLayout">
             {filteredItems.map((item, idx) => (
               <motion.div
                 key={item.id}
                 layout
                 id={`gallery-item-${item.id}`}
-                className={`${item.aspectClassName} group relative overflow-hidden bg-zinc-950 border border-white/5 rounded-2xl h-96`}
+                className="group relative overflow-hidden bg-zinc-950 border border-white/5 rounded-2xl min-h-80"
                 initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0, scale: 0.95 }}

@@ -3,6 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+import { useState } from 'react';
 import { useLanguage } from './LanguageContext';
 import EricLogo from './EricLogo';
 import { Mail, Phone, MapPin, Send, MessageSquare, Heart } from 'lucide-react';
@@ -10,6 +11,7 @@ import { SUPPORTED_BY } from '../data';
 
 export default function Footer() {
   const { t } = useLanguage();
+  const [imgErrors, setImgErrors] = useState<Record<string, boolean>>({});
 
   const handleScrollTo = (id: string) => {
     const element = document.querySelector(id);
@@ -162,17 +164,29 @@ export default function Footer() {
             <span className="text-[9px] font-mono text-zinc-600 tracking-[0.3em] uppercase">
               {t('SUPPORTED BY', 'DIDUKUNG OLEH')}
             </span>
-            <div className="flex flex-wrap items-center justify-center gap-x-8 gap-y-4">
-              {SUPPORTED_BY.map((org) => (
-                <div key={org.name} className="flex flex-col items-center gap-1">
-                  <span className="text-xs font-sans font-black text-zinc-500 uppercase tracking-wider hover:text-white transition-colors">
-                    {org.initials}
-                  </span>
-                  <span className="text-[7px] font-mono text-zinc-600 text-center max-w-[80px] leading-tight">
-                    {org.name}
-                  </span>
-                </div>
-              ))}
+            <div className="flex flex-wrap items-center justify-center gap-x-10 gap-y-6">
+              {SUPPORTED_BY.map((org) => {
+                const showLogo = org.logo && !imgErrors[org.name];
+                return (
+                  <div key={org.name} className="flex flex-col items-center gap-1.5">
+                    {showLogo ? (
+                      <img
+                        src={org.logo}
+                        alt={org.name}
+                        onError={() => setImgErrors(prev => ({ ...prev, [org.name]: true }))}
+                        className="h-16 md:h-20 w-auto object-contain opacity-80 hover:opacity-100 transition-opacity"
+                      />
+                    ) : (
+                      <span className="text-xs font-sans font-black text-zinc-500 uppercase tracking-wider hover:text-white transition-colors">
+                        {org.initials}
+                      </span>
+                    )}
+                    <span className="text-[7px] font-mono text-zinc-600 text-center max-w-[90px] leading-tight">
+                      {org.name}
+                    </span>
+                  </div>
+                );
+              })}
             </div>
           </div>
         </div>

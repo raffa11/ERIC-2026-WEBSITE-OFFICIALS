@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useLanguage } from './LanguageContext';
 import { SPONSORS } from '../data';
 
@@ -26,7 +26,7 @@ export default function SponsorsSection() {
           </h3>
         </div>
 
-        <div className="flex flex-wrap justify-center gap-6">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 max-w-4xl mx-auto">
           {SPONSORS.map((sponsor) => {
             const showLogo = sponsor.logo && !imgErrors[sponsor.name];
             return (
@@ -35,40 +35,28 @@ export default function SponsorsSection() {
                 key={sponsor.name}
                 onMouseEnter={() => setHoveredSponsor(sponsor.name)}
                 onMouseLeave={() => setHoveredSponsor(null)}
-                className={`relative flex flex-col items-center justify-center p-6 bg-zinc-950 rounded-2xl border transition-all duration-300 w-full sm:w-[calc(50%-0.75rem)] lg:w-[calc(33.333%-1rem)] max-w-md min-h-[240px] ${
+                className={`relative flex flex-col items-center justify-center p-6 bg-zinc-950 rounded-2xl border transition-all duration-300 min-h-[220px] ${
                   hoveredSponsor === sponsor.name
-                    ? 'border-[#00FF88] scale-102 shadow-[0_0_20px_rgba(0,255,136,0.15)] bg-[#050505]'
+                    ? 'border-[#00FF88] shadow-[0_0_20px_rgba(0,255,136,0.15)] bg-[#050505]'
                     : 'border-white/5'
                 }`}
               >
-                <div className="absolute top-3 left-3 text-[6px] font-mono text-white/20">
-                  ERIC_PARTNER_2026
-                </div>
-
                 {showLogo ? (
                   <img
                     src={sponsor.logo}
                     alt={sponsor.name}
                     onError={() => setImgErrors(prev => ({ ...prev, [sponsor.name]: true }))}
-                    className="max-h-48 max-w-72 w-auto h-auto object-contain"
+                    className="max-h-32 w-auto object-contain"
                   />
                 ) : (
-                  <div
-                    className={`text-2xl font-sans font-black tracking-widest transition-colors duration-300 ${
-                      hoveredSponsor === sponsor.name ? 'text-white' : 'text-zinc-500'
-                    }`}
-                  >
+                  <span className="text-xl font-sans font-black tracking-widest text-zinc-500">
                     {sponsor.initials}
-                  </div>
+                  </span>
                 )}
 
-                <div
-                  className={`text-[10px] font-mono text-center mt-3 uppercase tracking-tight max-w-xs transition-colors duration-200 ${
-                    hoveredSponsor === sponsor.name ? 'text-[#00FF88]' : 'text-zinc-400'
-                  }`}
-                >
+                <span className="text-[9px] font-mono text-zinc-500 mt-3 uppercase tracking-tight text-center leading-tight">
                   {sponsor.name}
-                </div>
+                </span>
               </div>
             );
           })}

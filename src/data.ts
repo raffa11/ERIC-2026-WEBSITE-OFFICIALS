@@ -367,31 +367,59 @@ export const TIMELINE_EVENTS: TimelineEvent[] = [
 export const GALLERY_ITEMS: GalleryItem[] = [
   {
     id: 'g-01',
-    title: 'Under the Hood Electronics Diagnostics',
-    category: 'Diagnostics',
-    imageUrl: '/images/robotics_workbench_1780298686024.png',
-    aspectClassName: 'col-span-12 md:col-span-6 lg:col-span-8'
+    title: 'Tim Robot Berlaga di Arena Sumobot',
+    category: 'Competition',
+    imageUrl: '/images/gallery/DSC01430.jpg',
+    aspectClassName: ''
   },
   {
     id: 'g-02',
-    title: 'Championship Live Arena Spotlights',
-    category: 'Arena Trials',
-    imageUrl: '/images/robot_arena_1780298668316.png',
-    aspectClassName: 'col-span-12 md:col-span-6 lg:col-span-4'
+    title: 'Suasana Lomba Robotik ERIC',
+    category: 'Arena',
+    imageUrl: '/images/gallery/DSC01530.jpg',
+    aspectClassName: ''
   },
   {
     id: 'g-03',
-    title: 'Heavy Sumobot Dynamic Collision Focus',
-    category: 'Combat sumo',
-    imageUrl: '/images/cyber_sumobot_1780299691137.png',
-    aspectClassName: 'col-span-12 md:col-span-6 lg:col-span-4'
+    title: 'Tim Peserta dan Karya Robot Mereka',
+    category: 'Participants',
+    imageUrl: '/images/gallery/DSC01947.jpg',
+    aspectClassName: ''
   },
   {
     id: 'g-04',
-    title: 'Aviation Flight-Dynamics Drone Calibrating',
-    category: 'Aerospace',
-    imageUrl: '/images/championship_drone_1780299711288.png',
-    aspectClassName: 'col-span-12 md:col-span-6 lg:col-span-8'
+    title: 'Dokumentasi Kegiatan ERIC',
+    category: 'Documentation',
+    imageUrl: '/images/gallery/IMG_8032.JPG',
+    aspectClassName: ''
+  },
+  {
+    id: 'g-05',
+    title: 'Robot Karya Peserta ERIC',
+    category: 'Competition',
+    imageUrl: '/images/gallery/DSC00719.jpg',
+    aspectClassName: ''
+  },
+  {
+    id: 'g-06',
+    title: 'Keseruan Acara ERIC 2026',
+    category: 'Arena',
+    imageUrl: '/images/gallery/DSC01115.jpg',
+    aspectClassName: ''
+  },
+  {
+    id: 'g-07',
+    title: 'Foto Bersama Peserta ERIC',
+    category: 'Participants',
+    imageUrl: '/images/gallery/DSC_0812.JPG',
+    aspectClassName: ''
+  },
+  {
+    id: 'g-08',
+    title: 'Momen Persiapan Robot',
+    category: 'Competition',
+    imageUrl: '/images/gallery/DSC_0545.JPG',
+    aspectClassName: ''
   }
 ];
 
@@ -453,9 +481,9 @@ export const SUPPORTED_BY = [
 ];
 
 export const SPONSORS = [
-  { name: 'PDP Comon & fuel injection Pump', initials: 'PDP', logo: '/images/sponsors/pdp.png' },
   { name: 'ALPHA MECHATRONICS', initials: 'AP', logo: '/images/sponsors/ap-alpha.png' },
   { name: 'CYTRON TECHNOLOGIES', initials: 'CT', logo: '/images/sponsors/ct-cytron.png' },
+  { name: 'PDP Comon & fuel injection Pump', initials: 'PDP', logo: '/images/sponsors/pdp.png' },
   { name: 'iSee Electronic and robotics store', initials: 'iSee', logo: '/images/sponsors/isee.png' }
 ];
 

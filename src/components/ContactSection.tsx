@@ -60,8 +60,8 @@ export default function ContactSection() {
       id: 'linktree',
       icon: Link2,
       label: 'LINKTREE',
-      value: 'linktr.ee/ERICUNJ',
-      href: 'https://linktr.ee/ERICUNJ',
+       value: 'linktr.ee/eric2026',
+      href: 'https://linktr.ee/eric2026',
       accentColor: '#C5A059',
       hoverGlow: 'rgba(197, 160, 89, 0.15)'
     },
@@ -91,7 +91,7 @@ export default function ContactSection() {
           </div>
           <h2 className="text-4xl md:text-7xl font-sans font-black tracking-tighter text-white uppercase leading-none">
             HAVE ANY QUESTIONS? <br />
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#00FF88] to-[#4DFFB8]">WE READY TO HELP!</span>
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#00FF88] to-[#4DFFB8]">WE'RE READY TO HELP!</span>
           </h2>
           <p className="text-zinc-400 font-mono text-sm uppercase tracking-wider mt-4 max-w-2xl leading-relaxed">
             Use the following contacts to reach the appropriate team.
@@ -162,7 +162,7 @@ export default function ContactSection() {
                   href={channel.href}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="group relative p-6 bg-zinc-950 border border-white/5 rounded-2xl flex flex-col justify-between h-[180px] hover:border-white/20 transition-all duration-300 shadow-[0_15px_30px_rgba(0,0,0,0.6)]"
+                  className="group relative p-6 bg-zinc-950 border border-white/5 rounded-2xl flex flex-col justify-between min-h-[180px] hover:border-white/20 transition-all duration-300 shadow-[0_15px_30px_rgba(0,0,0,0.6)]"
                   whileHover={{ y: -4 }}
                 >
                   {/* Glowing background */}
