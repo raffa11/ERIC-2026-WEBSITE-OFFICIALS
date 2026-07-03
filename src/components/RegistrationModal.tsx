@@ -14,6 +14,7 @@ import {
   AlertCircle, X, Check, Globe, Upload, Copy, MessageCircle
 } from 'lucide-react';
 import { syncToGoogleSheet } from '../lib/googleSheet';
+import { saveDraft, loadDraft, clearDraft } from '../lib/draftStorage';
 
 interface RegistrationModalProps {
   isOpen: boolean;
@@ -86,13 +87,44 @@ export default function RegistrationModal({
   // Synchronization error state
   const [syncError, setSyncError] = useState('');
 
-  // Sync state on open or division update
+  // Restore draft or reset form on open
   useEffect(() => {
-    if (isOpen) {
+    if (!isOpen) return;
+    setSuccessPopup(null);
+
+    const draft = loadDraft(initialDivisionId);
+    if (draft) {
+      setSelectedDivision(draft.selectedDivision);
+      setWizardStep(draft.wizardStep);
+      setTeamName(draft.teamName);
+      setLeaderName(draft.leaderName);
+      setLeaderEmail(draft.leaderEmail);
+      setLeaderWhatsapp(draft.leaderWhatsapp);
+      setLeaderInstitution(draft.leaderInstitution);
+      setLeaderIdCardName(draft.leaderIdCardName);
+      setLeaderIdCardUrl(draft.leaderIdCardUrl);
+      setLeaderTwibbonName(draft.leaderTwibbonName);
+      setLeaderTwibbonUrl(draft.leaderTwibbonUrl);
+      setLeaderAddress(draft.leaderAddress);
+      setLeaderCongenitalDisease(draft.leaderCongenitalDisease);
+      setMembers(draft.members);
+      setSubCategory(draft.subCategory);
+      setLevel(draft.level);
+      setLecturerName(draft.lecturerName);
+      setLecturerEmail(draft.lecturerEmail);
+      setLecturerWhatsapp(draft.lecturerWhatsapp);
+      setLecturerIdCardName(draft.lecturerIdCardName);
+      setLecturerIdCardUrl(draft.lecturerIdCardUrl);
+      setLecturerTwibbonName(draft.lecturerTwibbonName);
+      setLecturerTwibbonUrl(draft.lecturerTwibbonUrl);
+      setLecturerCongenitalDisease(draft.lecturerCongenitalDisease);
+      setPaymentMethod(draft.paymentMethod as 'transfer_bank' | 'paypal');
+      setSelectedBank(draft.selectedBank as 'bca' | 'seabank');
+      setPaymentProofName(draft.paymentProofName);
+      setPaymentProofUrl(draft.paymentProofUrl);
+    } else {
       setSelectedDivision(initialDivisionId);
       setWizardStep(1);
-      setSuccessPopup(null);
-
       setTeamName('');
       setLeaderName(currentUser?.name || '');
       setLeaderEmail(currentUser?.email || '');
@@ -162,7 +194,54 @@ export default function RegistrationModal({
     }
   }, [selectedDivision]);
 
-  // Generic File Upload handler
+  // Debounced draft save: persists form progress to localStorage
+  useEffect(() => {
+    if (!isOpen || successPopup) return;
+    const timer = setTimeout(() => {
+      saveDraft(selectedDivision, {
+        wizardStep,
+        selectedDivision,
+        teamName,
+        leaderName,
+        leaderEmail,
+        leaderWhatsapp,
+        leaderInstitution,
+        leaderIdCardName,
+        leaderIdCardUrl,
+        leaderTwibbonName,
+        leaderTwibbonUrl,
+        leaderAddress,
+        leaderCongenitalDisease,
+        members,
+        subCategory,
+        level,
+        lecturerName,
+        lecturerEmail,
+        lecturerWhatsapp,
+        lecturerIdCardName,
+        lecturerIdCardUrl,
+        lecturerTwibbonName,
+        lecturerTwibbonUrl,
+        lecturerCongenitalDisease,
+        paymentMethod,
+        selectedBank,
+        paymentProofName,
+        paymentProofUrl,
+      });
+    }, 1500);
+    return () => clearTimeout(timer);
+  }, [
+    isOpen, successPopup,
+    selectedDivision, wizardStep,
+    teamName, leaderName, leaderEmail, leaderWhatsapp, leaderInstitution,
+    leaderIdCardName, leaderIdCardUrl, leaderTwibbonName, leaderTwibbonUrl,
+    leaderAddress, leaderCongenitalDisease,
+    members, subCategory, level,
+    lecturerName, lecturerEmail, lecturerWhatsapp,
+    lecturerIdCardName, lecturerIdCardUrl, lecturerTwibbonName, lecturerTwibbonUrl,
+    lecturerCongenitalDisease,
+    paymentMethod, selectedBank, paymentProofName, paymentProofUrl,
+  ]);
   const processFileUpload = (
     file: File,
     onSetFilename: (name: string) => void,
@@ -402,6 +481,7 @@ export default function RegistrationModal({
         console.error('Failed to sync to Google Sheet:', err);
       })
       .finally(() => {
+        clearDraft(selectedDivision);
         onRegistrationSuccess(finalRegistration);
         setSuccessPopup(finalRegistration);
         setIsProcessingPayment(false);
@@ -432,7 +512,20 @@ export default function RegistrationModal({
             {/* Close Button */}
             {!successPopup && (
               <button
-                onClick={onClose}
+                onClick={() => {
+                  saveDraft(selectedDivision, {
+                    wizardStep,
+                    selectedDivision, teamName, leaderName, leaderEmail, leaderWhatsapp, leaderInstitution,
+                    leaderIdCardName, leaderIdCardUrl, leaderTwibbonName, leaderTwibbonUrl,
+                    leaderAddress, leaderCongenitalDisease,
+                    members, subCategory, level,
+                    lecturerName, lecturerEmail, lecturerWhatsapp,
+                    lecturerIdCardName, lecturerIdCardUrl, lecturerTwibbonName, lecturerTwibbonUrl,
+                    lecturerCongenitalDisease,
+                    paymentMethod, selectedBank, paymentProofName, paymentProofUrl,
+                  });
+                  onClose();
+                }}
                 className="absolute top-4 right-4 p-2 bg-zinc-900 border border-white/5 hover:border-white/10 text-zinc-400 hover:text-white rounded-xl transition-all cursor-pointer z-20"
               >
                 <X className="w-4 h-4" />
