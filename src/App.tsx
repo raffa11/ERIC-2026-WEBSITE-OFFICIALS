@@ -6,6 +6,7 @@
 import React, { useState, useEffect } from 'react';
 import { LanguageProvider } from './components/LanguageContext';
 import Navbar from './components/Navbar';
+import ScrollReveal from './components/ScrollReveal';
 import Hero from './components/Hero';
 import CountriesSection from './components/CountriesSection';
 import AboutEric from './components/AboutEric';
@@ -189,28 +190,44 @@ export default function App() {
             <Hero />
 
             {/* International Participants */}
-            <CountriesSection />
+            <ScrollReveal>
+              <CountriesSection />
+            </ScrollReveal>
 
             {/* Epic About Section with Bento stats */}
-            <AboutEric />
+            <ScrollReveal>
+              <AboutEric />
+            </ScrollReveal>
 
             {/* Competition Categories Artifact Showcase */}
-            <Divisions onSelectDivision={handleSelectDivision} />
+            <ScrollReveal>
+              <Divisions onSelectDivision={handleSelectDivision} />
+            </ScrollReveal>
 
             {/* Storytelling Event Journey documentary schedule */}
-            <EventJourney />
+            <ScrollReveal>
+              <EventJourney />
+            </ScrollReveal>
 
             {/* Storytelling Mission Milestones */}
-            <TimelineSection />
+            <ScrollReveal>
+              <TimelineSection />
+            </ScrollReveal>
 
             {/* Diagnostic Action Gallery Grid */}
-            <GallerySection />
+            <ScrollReveal>
+              <GallerySection />
+            </ScrollReveal>
 
             {/* Official Sponsors & Partners */}
-            <SponsorsSection />
+            <ScrollReveal>
+              <SponsorsSection />
+            </ScrollReveal>
 
             {/* Section 09: Contact Telemetry channel */}
-            <ContactSection />
+            <ScrollReveal>
+              <ContactSection />
+            </ScrollReveal>
           </>
         )}
 
