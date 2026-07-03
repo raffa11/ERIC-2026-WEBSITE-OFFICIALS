@@ -367,56 +367,56 @@ export const TIMELINE_EVENTS: TimelineEvent[] = [
 export const GALLERY_ITEMS: GalleryItem[] = [
   {
     id: 'g-01',
-    title: 'Tim Robot Berlaga di Arena Sumobot',
+    title: 'Robot Team Competing in the Sumobot Arena',
     category: 'Competition',
     imageUrl: '/images/gallery/DSC01430.jpg',
     aspectClassName: ''
   },
   {
     id: 'g-02',
-    title: 'Suasana Lomba Robotik ERIC',
+    title: 'ERIC Robotics Competition Atmosphere',
     category: 'Arena',
     imageUrl: '/images/gallery/DSC01530.jpg',
     aspectClassName: ''
   },
   {
     id: 'g-03',
-    title: 'Tim Peserta dan Karya Robot Mereka',
+    title: 'Participating Teams and Their Robot Creations',
     category: 'Participants',
     imageUrl: '/images/gallery/DSC01947.jpg',
     aspectClassName: ''
   },
   {
     id: 'g-04',
-    title: 'Dokumentasi Kegiatan ERIC',
+    title: 'ERIC Event Documentation',
     category: 'Documentation',
     imageUrl: '/images/gallery/IMG_8032.JPG',
     aspectClassName: ''
   },
   {
     id: 'g-05',
-    title: 'Robot Karya Peserta ERIC',
+    title: 'Robot Creations by ERIC Participants',
     category: 'Competition',
     imageUrl: '/images/gallery/DSC00719.jpg',
     aspectClassName: ''
   },
   {
     id: 'g-06',
-    title: 'Keseruan Acara ERIC 2026',
+    title: 'Excitement at ERIC 2026 Event',
     category: 'Arena',
     imageUrl: '/images/gallery/DSC01115.jpg',
     aspectClassName: ''
   },
   {
     id: 'g-07',
-    title: 'Foto Bersama Peserta ERIC',
+    title: 'Group Photo with ERIC Participants',
     category: 'Participants',
     imageUrl: '/images/gallery/DSC_0812.JPG',
     aspectClassName: ''
   },
   {
     id: 'g-08',
-    title: 'Momen Persiapan Robot',
+    title: 'Robot Preparation Moments',
     category: 'Competition',
     imageUrl: '/images/gallery/DSC_0545.JPG',
     aspectClassName: ''
