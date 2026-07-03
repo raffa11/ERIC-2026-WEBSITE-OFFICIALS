@@ -1,27 +1,25 @@
 /**
  * @license
  * SPDX-License-Identifier: Apache-2.0
+ *
+ * Authentication: Supabase Auth (Google SSO only).
+ * Data persistence: Google Sheets (primary) + localStorage (cache).
  */
 
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
 import { Registration } from '../types';
+import { fetchUserRegistrations } from './googleSheet';
 
 const metaEnv = (import.meta as any).env || {};
 const supabaseUrl = (metaEnv.VITE_SUPABASE_URL || '').trim();
 const supabaseAnonKey = (metaEnv.VITE_SUPABASE_ANON_KEY || '').trim();
 
-const REGISTRATIONS_TABLE = 'competition_registrations';
-const LS_KEY = 'eric_live_registrations';
-
-// Check if Supabase keys are provided in environment
 export const isSupabaseConfigured = !!(supabaseUrl && supabaseAnonKey);
 
 let supabaseInstance: SupabaseClient | null = null;
 
 export function getSupabase(): SupabaseClient | null {
-  if (!isSupabaseConfigured) {
-    return null;
-  }
+  if (!isSupabaseConfigured) return null;
   if (!supabaseInstance) {
     supabaseInstance = createClient(supabaseUrl, supabaseAnonKey, {
       auth: {
@@ -38,10 +36,8 @@ export function getSupabaseAuth() {
   return supabase?.auth ?? null;
 }
 
-/**
- * Remove base64 image data from a Registration to keep localStorage small.
- * Images are only needed during submission (sent to Apps Script), not in cache.
- */
+const LS_KEY = 'eric_live_registrations';
+
 function stripImages(reg: Registration): Registration {
   const clone = structuredClone(reg);
   clone.leader.idCardUrl = clone.leader.idCardUrl?.startsWith('data:') ? '[stripped]' : (clone.leader.idCardUrl || '');
@@ -61,9 +57,7 @@ function safeGetItem(): Registration[] {
   try {
     const raw = localStorage.getItem(LS_KEY);
     return raw ? JSON.parse(raw) : [];
-  } catch {
-    return [];
-  }
+  } catch { return []; }
 }
 
 function safeSetItem(list: Registration[]): void {
@@ -71,95 +65,53 @@ function safeSetItem(list: Registration[]): void {
     const stripped = list.map(stripImages);
     localStorage.setItem(LS_KEY, JSON.stringify(stripped));
   } catch (err) {
-    console.warn('localStorage quota exceeded or unavailable. Registrations not cached locally.', err);
+    console.warn('localStorage quota exceeded. Registrations not cached locally.', err);
   }
 }
 
 /**
- * Fetch registrations from localStorage + Supabase, merged by id.
- * Supabase results take priority.
+ * Fetch registrations from localStorage + Google Sheets.
+ * Google Sheets is the primary source (survives browser clears).
  */
 export async function dbFetchRegistrations(userEmail?: string): Promise<Registration[]> {
   const localRegs = safeGetItem();
-
-  if (!userEmail) {
-    return localRegs;
-  }
+  if (!userEmail) return localRegs;
 
   try {
-    const supabase = getSupabase();
-    if (supabase) {
-      const { data, error } = await supabase
-        .from(REGISTRATIONS_TABLE)
-        .select('data')
-        .eq('user_email', userEmail);
-
-      if (!error && data && data.length > 0) {
-        const supabaseRegs: Registration[] = data.map((d: any) => d.data);
-        const merged = [...localRegs];
-        for (const sReg of supabaseRegs) {
-          const idx = merged.findIndex(r => r.id === sReg.id);
-          if (idx >= 0) {
-            merged[idx] = sReg;
-          } else {
-            merged.push(sReg);
-          }
-        }
-        return merged;
+    const sheetRegs = await fetchUserRegistrations(userEmail);
+    if (sheetRegs && sheetRegs.length > 0) {
+      const merged = [...localRegs];
+      for (const sReg of sheetRegs) {
+        const idx = merged.findIndex(r => r.id === sReg.id);
+        if (idx >= 0) merged[idx] = sReg;
+        else merged.push(sReg);
       }
+      safeSetItem(merged);
+      return merged;
     }
   } catch (err) {
-    console.error('Failed to fetch from Supabase:', err);
+    console.warn('Google Sheets fetch failed, using localStorage:', err);
   }
 
   return localRegs;
 }
 
 /**
- * Save registration to localStorage + Supabase.
+ * Save registration to localStorage.
+ * Google Sheets sync is handled separately by syncToGoogleSheet().
  */
-export async function dbUpsertRegistration(reg: Registration, userEmail?: string): Promise<void> {
-  // localStorage (strip images to avoid quota issues)
+export async function dbUpsertRegistration(reg: Registration, _userEmail?: string): Promise<void> {
   const list = safeGetItem();
   const index = list.findIndex(r => r.id === reg.id);
-  if (index >= 0) {
-    list[index] = reg;
-  } else {
-    list.push(reg);
-  }
+  if (index >= 0) list[index] = reg;
+  else list.push(reg);
   safeSetItem(list);
-
-  // Supabase
-  if (userEmail) {
-    try {
-      const supabase = getSupabase();
-      if (supabase) {
-        await supabase
-          .from(REGISTRATIONS_TABLE)
-          .upsert({ id: reg.id, user_email: userEmail, data: reg }, { onConflict: 'id' });
-      }
-    } catch (err) {
-      console.error('Failed to save to Supabase:', err);
-    }
-  }
 }
 
 /**
- * Delete registration from localStorage + Supabase.
+ * Delete registration from localStorage.
  */
 export async function dbDeleteRegistration(id: string): Promise<void> {
-  // localStorage
   const list = safeGetItem();
-  const filtered = list.filter(r => r.id !== id);
-  safeSetItem(filtered);
-
-  // Supabase
-  try {
-    const supabase = getSupabase();
-    if (supabase) {
-      await supabase.from(REGISTRATIONS_TABLE).delete().eq('id', id);
-    }
-  } catch (err) {
-    console.error('Failed to delete from Supabase:', err);
-  }
+  safeSetItem(list.filter(r => r.id !== id));
 }

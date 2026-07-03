@@ -89,7 +89,7 @@ export const syncToGoogleSheet = async (reg: Registration): Promise<boolean> => 
 
     await fetch(url, {
       method: 'POST',
-      mode: 'no-cors', // Solves Google Apps Script redirect CORS block
+      mode: 'no-cors',
       headers: {
         'Content-Type': 'application/json',
       },
@@ -101,5 +101,27 @@ export const syncToGoogleSheet = async (reg: Registration): Promise<boolean> => 
   } catch (error) {
     console.error('Error syncing to Google Sheet:', error);
     return false;
+  }
+};
+
+/**
+ * Fetch user registrations from Google Sheets via Apps Script doGet.
+ * Falls back to localStorage if the fetch fails.
+ */
+export const fetchUserRegistrations = async (email: string): Promise<Registration[] | null> => {
+  const url = getGoogleScriptUrl();
+  if (!url) return null;
+
+  try {
+    const res = await fetch(`${url}?action=getRegistrations&email=${encodeURIComponent(email)}`, {
+      method: 'GET',
+    });
+    if (!res.ok) return null;
+    const data = await res.json();
+    if (Array.isArray(data)) return data as Registration[];
+    return null;
+  } catch (err) {
+    console.warn('Failed to fetch registrations from Google Sheet:', err);
+    return null;
   }
 };
