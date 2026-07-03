@@ -13,11 +13,9 @@ import {
   Trophy, User, Code, Terminal, Sparkles, Plus, Trash2, 
   Edit2, Check, AlertCircle, Building2, Download, 
   FileSpreadsheet, Database, Search, ArrowLeft, X,
-  Hash, ShieldAlert, CreditCard, Users, Globe, Copy, ExternalLink,
-  Camera
+  Hash, ShieldAlert, CreditCard, Users, Globe, Copy, ExternalLink
 } from 'lucide-react';
 import { getGoogleScriptUrl, setGoogleScriptUrl } from '../lib/googleSheet';
-import CheckInPanel from './CheckInPanel';
 
 interface AdminDashboardProps {
   currentUser: { name: string; email: string; method: string } | null;
@@ -43,9 +41,6 @@ export default function AdminDashboard({
   const [googleScriptUrl, setGoogleScriptUrlState] = useState(getGoogleScriptUrl());
   const [showScriptGuide, setShowScriptGuide] = useState(false);
   const [copiedText, setCopiedText] = useState('');
-
-  // Check-in view toggle
-  const [showCheckIn, setShowCheckIn] = useState(false);
 
   const saveGoogleScriptUrl = (url: string) => {
     setGoogleScriptUrlState(url);
@@ -236,31 +231,12 @@ export default function AdminDashboard({
         </button>
 
         <div className="flex items-center gap-3">
-          <button
-            onClick={() => setShowCheckIn(!showCheckIn)}
-            className={`px-4 py-2 text-xs font-mono font-bold uppercase rounded-xl transition-all cursor-pointer flex items-center gap-2 ${
-              showCheckIn
-                ? 'bg-emerald-500/20 border border-emerald-500/40 text-emerald-300'
-                : 'bg-zinc-900 border border-white/10 hover:border-emerald-500/30 text-zinc-400 hover:text-emerald-300'
-            }`}
-          >
-            <Camera className="w-3.5 h-3.5" />
-            <span>{showCheckIn ? t('BACK TO REGISTRATIONS', 'KEMBALI') : t('CHECK-IN', 'CHECK-IN')}</span>
-          </button>
           <div className="px-3 py-1 bg-[#FFD700]/10 border border-[#FFD700]/30 rounded-full text-[9px] font-mono text-[#FFD700] uppercase font-black tracking-widest animate-pulse">
             ADMIN SECURE NETWORK ACCESS
           </div>
         </div>
       </div>
 
-      {showCheckIn ? (
-        <CheckInPanel
-          registrations={registrations}
-          onUpdateRegistrations={onUpdateRegistrations}
-          onBack={() => setShowCheckIn(false)}
-        />
-      ) : (
-        <>
       {/* Main Big Title Block */}
       <div className="space-y-2">
         <span className="text-[10px] font-mono text-[#FFD700] tracking-[0.25em] uppercase font-black">
@@ -935,8 +911,6 @@ function doPost(e) {
           </motion.div>
         )}
       </AnimatePresence>
-        </>
-      )}
 
     </div>
   );
