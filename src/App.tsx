@@ -7,7 +7,6 @@ import React, { useState, useEffect } from 'react';
 import { LanguageProvider } from './components/LanguageContext';
 import Navbar from './components/Navbar';
 import Hero from './components/Hero';
-import SupportedBySection from './components/SupportedBySection';
 import CountriesSection from './components/CountriesSection';
 import AboutEric from './components/AboutEric';
 import Divisions from './components/Divisions';
@@ -188,9 +187,6 @@ export default function App() {
           <>
             {/* Cinematic Header Block */}
             <Hero />
-
-            {/* Institutional Supporters */}
-            <SupportedBySection />
 
             {/* International Participants */}
             <CountriesSection />
