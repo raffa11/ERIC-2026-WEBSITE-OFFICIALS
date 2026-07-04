@@ -5,6 +5,8 @@ const COUNTRIES = [
   { emoji: '🇲🇾', name: 'Malaysia' },
   { emoji: '🇵🇭', name: 'Philippines' },
   { emoji: '🇻🇳', name: 'Vietnam' },
+  { emoji: '🇲🇺', name: 'Mauritius' },
+  { emoji: '🇹🇼', name: 'Taiwan' },
 ];
 
 export default function CountriesSection() {
@@ -15,7 +17,7 @@ export default function CountriesSection() {
       <div className="max-w-7xl mx-auto px-6">
         <div className="text-center mb-6">
           <span className="text-[9px] font-mono text-zinc-600 tracking-[0.3em] uppercase">
-            {t('INTERNATIONAL PARTICIPANTS', 'PESERTA INTERNASIONAL')}
+            {t('ERIC 2025 INTERNATIONAL PARTICIPANTS', 'PESERTA INTERNASIONAL ERIC 2025')}
           </span>
         </div>
 

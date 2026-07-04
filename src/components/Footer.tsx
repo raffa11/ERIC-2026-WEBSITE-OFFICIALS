@@ -52,8 +52,8 @@ export default function Footer() {
             
             <p className="text-zinc-500 font-mono text-xs uppercase leading-relaxed max-w-sm">
               {t(
-                "Indonesia's premier electronic Convergence, mekatronika convergence and autonomous robotics competition engineering event.",
-                "Gelaran kompetisi mekatronika terbesar, konvergensi elektronik mekatronika, dan robotika otonom paling bergengsi di Indonesia."
+                "Electronics and Robotics Innovation Competition — Indonesia's premier electronic convergence, mekatronika convergence and autonomous robotics competition engineering event.",
+                "Electronics and Robotics Innovation Competition — Gelaran kompetisi mekatronika terbesar, konvergensi elektronik mekatronika, dan robotika otonom paling bergengsi di Indonesia."
               )}
             </p>
 
@@ -219,7 +219,7 @@ export default function Footer() {
           <div className="text-[10px] font-mono text-zinc-500 uppercase tracking-wider text-center md:text-left">
             <span>© 2026 Electronics Robotics Innovation Competition. </span>
             <span className="block md:inline mt-1 md:mt-0 text-white/30">
-              Indonesia's Premier Electronics Platform.
+              Electronics and Robotics Innovation Competition.
             </span>
           </div>
 

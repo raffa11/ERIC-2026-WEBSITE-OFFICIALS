@@ -1,6 +1,6 @@
 {
   "name": "ERIC 2026",
-  "description": "Indonesia's Premier Electronics & Robotics Competition. Experience high-octane innovation, storytelling, and elite robotics technology.",
+  "description": "Electronics and Robotics Innovation Competition. Experience high-octane innovation, storytelling, and elite robotics technology.",
   "requestFramePermissions": [],
   "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
 }

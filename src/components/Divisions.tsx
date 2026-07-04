@@ -69,7 +69,7 @@ export default function Divisions({ onSelectDivision }: DivisionsProps) {
         </div>
 
         {/* Resource Links */}
-        <div className="flex flex-wrap justify-center gap-4 mb-16 select-none">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-16 max-w-4xl mx-auto select-none">
           <a
             href="https://drive.google.com/drive/folders/1co00vzy633xZzgyBG0G4dvWEtvsHenXt"
             target="_blank"

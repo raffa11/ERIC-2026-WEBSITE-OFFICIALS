@@ -345,7 +345,7 @@ export default function Navbar({
 
             <div className="mt-auto mb-10 text-xs font-mono text-zinc-500 border-t border-white/5 pt-6 space-y-2 select-none">
               <div>ERIC 2026 // ROBOTICS GRAND CHAMPIONSHIP</div>
-              <div>INDONESIA'S PREMIER ELECTRONICS HUB</div>
+              <div>ELECTRONICS AND ROBOTICS INNOVATION COMPETITION</div>
             </div>
           </motion.div>
         )}

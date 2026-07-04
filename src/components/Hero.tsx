@@ -98,7 +98,7 @@ export default function Hero() {
             >
               <span className="w-1.5 h-1.5 bg-[#FFD700] rounded-full animate-ping" />
               <span className="text-[9.5px] font-mono text-zinc-300 uppercase tracking-[0.22em] font-black">
-                {t("INDONESIA'S PREMIER ROBOTICS CONTEST", "KOMPETISI ROBOTIKA TERBESAR INDONESIA")}
+                {t("ELECTRONICS AND ROBOTICS INNOVATION COMPETITION", "ELECTRONICS AND ROBOTICS INNOVATION COMPETITION")}
               </span>
             </motion.div>
 
