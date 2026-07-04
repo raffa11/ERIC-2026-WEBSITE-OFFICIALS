@@ -79,7 +79,7 @@ export default function Hero() {
                 RP 62,000,000+
               </div>
               <div className="text-[9px] font-mono text-[#B3B3B3]">
-                {t('Project Funding & Incubation', 'Pendanaan Proyek & Inkubasi')}
+                {t('Total Door Prize', 'Total Door Prize')}
               </div>
             </motion.div>
 
