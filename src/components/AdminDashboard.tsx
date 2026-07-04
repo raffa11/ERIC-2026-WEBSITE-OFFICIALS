@@ -6,6 +6,7 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { useLanguage } from './LanguageContext';
+import { useAlert } from './AlertModal';
 import { COMPETITION_DIVISIONS } from '../data';
 import { Member, Registration } from '../types';
 import * as XLSX from 'xlsx';
@@ -31,6 +32,7 @@ export default function AdminDashboard({
   onBackToHome
 }: AdminDashboardProps) {
   const { t } = useLanguage();
+  const { showAlert, showConfirm } = useAlert();
 
   // Search and filter states
   const [searchQuery, setSearchQuery] = useState('');
@@ -155,10 +157,16 @@ export default function AdminDashboard({
 
   // Delete registration handler
   const handleDeleteRegistration = (id: string) => {
-    if (confirm(t('Are you sure you want to withdraw this registration? This cannot be undone.', 'Apakah Anda yakin ingin menarik pendaftaran ini? Tindakan ini tidak dapat dibatalkan.'))) {
-      const updated = registrations.filter(r => r.id !== id);
-      onUpdateRegistrations(updated);
-    }
+    showConfirm({
+      message: t('Are you sure you want to withdraw this registration? This cannot be undone.', 'Apakah Anda yakin ingin menarik pendaftaran ini? Tindakan ini tidak dapat dibatalkan.'),
+      type: 'danger',
+      confirmLabel: t('DELETE', 'HAPUS'),
+      cancelLabel: t('CANCEL', 'BATAL'),
+      onConfirm: () => {
+        const updated = registrations.filter(r => r.id !== id);
+        onUpdateRegistrations(updated);
+      }
+    });
   };
 
   // Save edited registration
@@ -169,7 +177,7 @@ export default function AdminDashboard({
     const updated = registrations.map(r => r.id === editingReg.id ? editingReg : r);
     onUpdateRegistrations(updated);
     setEditingReg(null);
-    alert(t(' Roster changes synchronized successfully!', ' Perubahan roster berhasil disinkronkan!'));
+    showAlert({ message: t('Roster changes synchronized successfully!', 'Perubahan roster berhasil disinkronkan!'), type: 'success' });
   };
 
   // Inline editor helper state modifiers

@@ -5,6 +5,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { LanguageProvider } from './components/LanguageContext';
+import { AlertProvider, useAlert } from './components/AlertModal';
 import Navbar from './components/Navbar';
 import ScrollReveal from './components/ScrollReveal';
 import Hero from './components/Hero';
@@ -32,7 +33,9 @@ import {
   getSupabaseAuth
 } from './lib/supabase';
 
-export default function App() {
+function AppContent() {
+  const { showAlert } = useAlert();
+
   // Authentication states
   const [currentUser, setCurrentUser] = useState<{ name: string; email: string; method: string } | null>(null);
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
@@ -122,7 +125,7 @@ export default function App() {
       await dbUpsertRegistration(newReg, currentUser?.email);
     } catch (err) {
       console.error('Failed to save to Supabase:', err);
-      alert('Registrasi tersimpan di lokal, gagal menyinkronkan ke cloud database: ' + err);
+      showAlert({ message: 'Registrasi tersimpan di lokal, gagal menyinkronkan ke cloud database: ' + err, type: 'warning' });
     }
   };
 
@@ -149,14 +152,14 @@ export default function App() {
     }
   };
 
-  // Division selection from cards
-  const handleSelectDivision = (divisionId: string) => {
-    // If not logged in, prompt them to login first to maintain a clean authorized roster flow
-    if (!currentUser) {
-      alert('Untuk mendaftar perlombaan, harap login/masuk akun terlebih dahulu lewat formulir otentikasi.');
-      setIsLoginModalOpen(true);
-      return;
-    }
+    // Division selection from cards
+    const handleSelectDivision = (divisionId: string) => {
+      // If not logged in, prompt them to login first to maintain a clean authorized roster flow
+      if (!currentUser) {
+        showAlert({ message: 'Untuk mendaftar perlombaan, harap login/masuk akun terlebih dahulu lewat formulir otentikasi.', type: 'warning' });
+        setIsLoginModalOpen(true);
+        return;
+      }
     
     setSelectedDivisionId(divisionId);
     setIsRegistrationModalOpen(true);
@@ -186,62 +189,42 @@ export default function App() {
           />
         ) : (
           <>
-            {/* Cinematic Header Block */}
             <Hero />
-
-            {/* International Participants */}
             <ScrollReveal>
               <CountriesSection />
             </ScrollReveal>
-
-            {/* Epic About Section with Bento stats */}
             <ScrollReveal>
               <AboutEric />
             </ScrollReveal>
-
-            {/* Competition Categories Artifact Showcase */}
             <ScrollReveal>
               <Divisions onSelectDivision={handleSelectDivision} />
             </ScrollReveal>
-
-            {/* Storytelling Event Journey documentary schedule */}
             <ScrollReveal>
               <EventJourney />
             </ScrollReveal>
-
-            {/* Storytelling Mission Milestones */}
             <ScrollReveal>
               <TimelineSection />
             </ScrollReveal>
-
-            {/* Diagnostic Action Gallery Grid */}
             <ScrollReveal>
               <GallerySection />
             </ScrollReveal>
-
-            {/* Official Sponsors & Partners */}
             <ScrollReveal>
               <SponsorsSection />
             </ScrollReveal>
-
-            {/* Section 09: Contact Telemetry channel */}
             <ScrollReveal>
               <ContactSection />
             </ScrollReveal>
           </>
         )}
 
-        {/* Elite Contact & Legal coordinates Footer */}
         <Footer />
 
-        {/* Auth modal portal */}
         <LoginModal 
           isOpen={isLoginModalOpen}
           onClose={() => setIsLoginModalOpen(false)}
           onLoginSuccess={handleLoginSuccess}
         />
 
-        {/* Registration multi-stage wizard modal */}
         <RegistrationModal 
           isOpen={isRegistrationModalOpen}
           onClose={() => setIsRegistrationModalOpen(false)}
@@ -250,7 +233,6 @@ export default function App() {
           onRegistrationSuccess={handleRegistrationSuccess}
         />
 
-        {/* Candidate registrations modal panel */}
         <MyRegistrationsModal
           isOpen={isMyRegsModalOpen}
           onClose={() => setIsMyRegsModalOpen(false)}
@@ -267,5 +249,13 @@ export default function App() {
 
       </div>
     </LanguageProvider>
+  );
+}
+
+export default function App() {
+  return (
+    <AlertProvider>
+      <AppContent />
+    </AlertProvider>
   );
 }

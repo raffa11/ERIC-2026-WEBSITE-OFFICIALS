@@ -6,6 +6,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { useLanguage } from './LanguageContext';
+import { useAlert } from './AlertModal';
 import { COMPETITION_DIVISIONS, MAIN_WHATSAPP_GROUP } from '../data';
 import { Member, Registration } from '../types';
 import { 
@@ -32,6 +33,7 @@ export default function RegistrationModal({
   onRegistrationSuccess
 }: RegistrationModalProps) {
   const { t } = useLanguage();
+  const { showAlert } = useAlert();
 
   // Wizard Multi-stage Form State
   const [wizardStep, setWizardStep] = useState(1);
@@ -248,7 +250,7 @@ export default function RegistrationModal({
     onSetUrl: (url: string) => void
   ) => {
     if (file.size > 5 * 1024 * 1024) {
-      alert(t('File size must be under 5MB!', 'Ukuran file harus di bawah 5MB!'));
+      showAlert({ message: t('File size must be under 5MB!', 'Ukuran file harus di bawah 5MB!'), type: 'error' });
       return;
     }
     onSetFilename(file.name);
@@ -362,10 +364,10 @@ export default function RegistrationModal({
       if (wizardStep === 1 && !selectedDivision) return;
       if (wizardStep === 2) {
         if (!teamName || !leaderName || !leaderEmail || !leaderWhatsapp || !leaderInstitution || !leaderAddress || !leaderIdCardUrl || !leaderTwibbonUrl) {
-          alert(t(
+          showAlert({ message: t(
             'Please fill out all Team Leader details and upload required documents (ID Card & Twibbon).',
             'Mohon lengkapi seluruh data Ketua Tim dan unggah dokumen wajib (Kartu Identitas & Twibbon).'
-          ));
+          ), type: 'error' });
           return;
         }
       }
@@ -373,10 +375,10 @@ export default function RegistrationModal({
         // Validate Anggota Tim 1 (Required)
         const m1 = members[0];
         if (!m1 || !m1.name.trim() || !m1.whatsapp.trim() || !m1.idCardUrl || !m1.twibbonUrl) {
-          alert(t(
+          showAlert({ message: t(
             'Please fill out Anggota Tim 1 details and upload required documents (ID Card & Twibbon).',
             'Mohon lengkapi seluruh data Anggota Tim 1 dan unggah dokumen wajib (Kartu Identitas & Twibbon).'
-          ));
+          ), type: 'error' });
           return;
         }
 
@@ -384,10 +386,10 @@ export default function RegistrationModal({
         const m2 = members[1];
         if (m2 && m2.name.trim() !== '') {
           if (!m2.whatsapp.trim() || !m2.idCardUrl || !m2.twibbonUrl) {
-            alert(t(
+            showAlert({ message: t(
               'Please fill out all Anggota Tim 2 details or clear their name if not registered.',
               'Mohon lengkapi seluruh data Anggota Tim 2 atau kosongkan nama jika tidak terdaftar.'
-            ));
+            ), type: 'error' });
             return;
           }
         }
@@ -395,10 +397,10 @@ export default function RegistrationModal({
         // Validate Lecturer / Advisor
         if (divisionObj.hasLecturer) {
           if (!lecturerName.trim() || !lecturerEmail.trim() || !lecturerWhatsapp.trim() || !lecturerIdCardUrl || !lecturerTwibbonUrl) {
-            alert(t(
+            showAlert({ message: t(
               'Please fill out all Lecturer / Advisor details and upload required documents (ID Card & Twibbon).',
               'Mohon lengkapi seluruh data Dosen / Guru Pembimbing dan unggah dokumen wajib (Kartu Identitas & Twibbon).'
-            ));
+            ), type: 'error' });
             return;
           }
         }
@@ -409,7 +411,7 @@ export default function RegistrationModal({
 
     // Step 4 is Payment Submission
     if (!paymentProofUrl) {
-      alert(t('Please upload your proof of payment file first!', 'Mohon unggah file bukti pembayaran Anda terlebih dahulu!'));
+      showAlert({ message: t('Please upload your proof of payment file first!', 'Mohon unggah file bukti pembayaran Anda terlebih dahulu!'), type: 'error' });
       return;
     }
 
@@ -902,10 +904,10 @@ export default function RegistrationModal({
                             type="button"
                             onClick={() => {
                               if (!teamName || !leaderName || !leaderEmail || !leaderWhatsapp || !leaderInstitution || !leaderAddress || !leaderIdCardUrl || !leaderTwibbonUrl) {
-                                alert(t(
+                                showAlert({ message: t(
                                   'Please fill out all Team Leader details and upload required files (ID Card & Twibbon).',
                                   'Mohon lengkapi seluruh kolom Ketua Tim dan unggah berkas wajib (Kartu Identitas & Twibbon).'
-                                ));
+                                ), type: 'error' });
                                 return;
                               }
                               setWizardStep(3);
@@ -1182,10 +1184,10 @@ export default function RegistrationModal({
                               // Validate Anggota Tim 1 (Required)
                               const m1 = members[0];
                               if (!m1 || !m1.name.trim() || !m1.whatsapp.trim() || !m1.idCardUrl || !m1.twibbonUrl) {
-                                alert(t(
+                                showAlert({ message: t(
                                   'Please fill out Anggota Tim 1 details and upload required documents (ID Card & Twibbon).',
                                   'Mohon lengkapi seluruh data Anggota Tim 1 dan unggah dokumen wajib (Kartu Identitas & Twibbon).'
-                                ));
+                                ), type: 'error' });
                                 return;
                               }
 
@@ -1193,10 +1195,10 @@ export default function RegistrationModal({
                               const m2 = members[1];
                               if (m2 && m2.name.trim() !== '') {
                                 if (!m2.whatsapp.trim() || !m2.idCardUrl || !m2.twibbonUrl) {
-                                  alert(t(
+                                  showAlert({ message: t(
                                     'Please fill out all Anggota Tim 2 details or clear their name if not registered.',
                                     'Mohon lengkapi seluruh data Anggota Tim 2 atau kosongkan nama jika tidak terdaftar.'
-                                  ));
+                                  ), type: 'error' });
                                   return;
                                 }
                               }
@@ -1204,10 +1206,10 @@ export default function RegistrationModal({
                               // Validate Lecturer / Advisor
                               if (divisionObj.hasLecturer) {
                                 if (!lecturerName.trim() || !lecturerEmail.trim() || !lecturerWhatsapp.trim() || !lecturerIdCardUrl || !lecturerTwibbonUrl) {
-                                  alert(t(
+                                  showAlert({ message: t(
                                     'Please fill out all Lecturer / Advisor details and upload required documents (ID Card & Twibbon).',
                                     'Mohon lengkapi seluruh data Dosen / Guru Pembimbing dan unggah dokumen wajib (Kartu Identitas & Twibbon).'
-                                  ));
+                                  ), type: 'error' });
                                   return;
                                 }
                               }
