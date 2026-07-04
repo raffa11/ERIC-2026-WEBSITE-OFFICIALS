@@ -156,7 +156,7 @@ function AppContent() {
     const handleSelectDivision = (divisionId: string) => {
       // If not logged in, prompt them to login first to maintain a clean authorized roster flow
       if (!currentUser) {
-        showAlert({ message: 'Untuk mendaftar perlombaan, harap login/masuk akun terlebih dahulu lewat formulir otentikasi.', type: 'warning' });
+        showAlert({ message: 'Please sign in first to register for a competition division.', type: 'warning' });
         setIsLoginModalOpen(true);
         return;
       }
