@@ -17,7 +17,7 @@ export default function ContactSection() {
     facultyID: 'Fakultas Teknik',
     university: 'Jakarta State University (UNJ)',
     address: 'BEM - Program Studi Pendidikan Teknik Elektronika, Fakultas Teknik - Jakarta State University (UNJ), Kampus A (Kampus Utama), Jl. Rawamangun Muka, Jakarta Timur 13220, Indonesia',
-    addressEN: 'Student Executive Board (BEM) - Electronics Engineering Education Program, Faculty of Engineering - Jakarta State University (UNJ), Main Campus (Kampus A), Jl. Rawamangun Muka, East Jakarta 13220, Indonesia'
+    addressEN: 'Student Executive Board (BEM) - Electronics Engineering Education Program, Faculty of Engineering - Jakarta State University (UNJ), Kampus A, Jl. Rawamangun Muka, East Jakarta 13220, Indonesia'
   };
 
   const contactChannels = [
