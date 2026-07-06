@@ -18,6 +18,7 @@ export default function NetworkBackground() {
     let animationFrameId: number;
     let width = (canvas.width = window.innerWidth);
     let height = (canvas.height = window.innerHeight);
+    let isVisible = true;
 
     // Mouse coordinates
     const mouse = {
@@ -26,13 +27,12 @@ export default function NetworkBackground() {
       radius: 180,
     };
 
-    const handleResize = () => {
-      if (!canvas) return;
-      width = canvas.width = window.innerWidth;
-      height = canvas.height = window.innerHeight;
-    };
-
+    // Throttle mouse events for mobile perf
+    let lastMouseTime = 0;
     const handleMouseMove = (e: MouseEvent) => {
+      const now = performance.now();
+      if (now - lastMouseTime < 16) return;
+      lastMouseTime = now;
       mouse.x = e.clientX;
       mouse.y = e.clientY;
     };
@@ -42,8 +42,32 @@ export default function NetworkBackground() {
       mouse.y = -1000;
     };
 
-    window.addEventListener('resize', handleResize);
-    window.addEventListener('mousemove', handleMouseMove);
+    const handleResize = () => {
+      if (!canvas) return;
+      width = canvas.width = window.innerWidth;
+      height = canvas.height = window.innerHeight;
+    };
+
+    // Pause canvas when off-screen
+    const observer = new IntersectionObserver(
+      ([entry]) => { isVisible = entry.isIntersecting; },
+      { threshold: 0 }
+    );
+    observer.observe(canvas);
+
+    // Lower node count on mobile
+    const isMobile = window.matchMedia('(pointer: coarse)').matches;
+    const maxNodes = isMobile ? 30 : 65;
+
+    // Debounced resize
+    let resizeTimer: ReturnType<typeof setTimeout>;
+    const handleResizeDebounced = () => {
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(handleResize, 200);
+    };
+
+    window.addEventListener('resize', handleResizeDebounced);
+    window.addEventListener('mousemove', handleMouseMove, { passive: true });
     window.addEventListener('mouseleave', handleMouseLeave);
 
     // Nodes definition
@@ -58,7 +82,7 @@ export default function NetworkBackground() {
       pulseAngle: number;
     }
 
-    const nodeCount = Math.min(65, Math.floor((width * height) / 22000));
+    const nodeCount = Math.min(maxNodes, Math.floor((width * height) / (isMobile ? 35000 : 22000)));
     const nodes: Node[] = [];
 
     // Colors that look like high-tech telemetry
@@ -83,6 +107,10 @@ export default function NetworkBackground() {
     }
 
     const draw = () => {
+      if (!isVisible) {
+        animationFrameId = requestAnimationFrame(draw);
+        return;
+      }
       ctx.clearRect(0, 0, width, height);
 
       // Draw electronic background scan grid lines (luxury effect)
@@ -181,7 +209,9 @@ export default function NetworkBackground() {
 
     return () => {
       cancelAnimationFrame(animationFrameId);
-      window.removeEventListener('resize', handleResize);
+      observer.disconnect();
+      clearTimeout(resizeTimer);
+      window.removeEventListener('resize', handleResizeDebounced);
       window.removeEventListener('mousemove', handleMouseMove);
       window.removeEventListener('mouseleave', handleMouseLeave);
     };

@@ -21,7 +21,7 @@ export default function Hero() {
   };
 
   return (
-    <section id="hero-section" className="relative min-h-screen bg-[#050505] flex flex-col justify-between pt-28 pb-12 overflow-hidden">
+    <section id="hero-section" className="relative min-h-dvh bg-[#050505] flex flex-col justify-between pt-28 pb-12 overflow-hidden">
 
       {/* Real-time Dynamic Cybernetic Canvas Network Background */}
       <NetworkBackground />

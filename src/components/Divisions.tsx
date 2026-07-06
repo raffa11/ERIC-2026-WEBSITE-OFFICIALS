@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'motion/react';
 import { useLanguage } from './LanguageContext';
 import { COMPETITION_DIVISIONS } from '../data';
@@ -15,6 +15,11 @@ interface DivisionsProps {
 
 export default function Divisions({ onSelectDivision }: DivisionsProps) {
   const { t } = useLanguage();
+  const [isTouchDevice, setIsTouchDevice] = useState(false);
+
+  useEffect(() => {
+    setIsTouchDevice(window.matchMedia('(pointer: coarse)').matches);
+  }, []);
 
   // Track hover status per card ID to implement individual glares
   const [hoveredCardId, setHoveredCardId] = useState<string | null>(null);
@@ -69,7 +74,7 @@ export default function Divisions({ onSelectDivision }: DivisionsProps) {
         </div>
 
         {/* Resource Links */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 mb-16 max-w-4xl mx-auto select-none">
+        <div className="grid grid-cols-2 md:grid-cols-5 gap-3 md:gap-4 mb-16 max-w-4xl mx-auto select-none">
           <a
             href="https://drive.google.com/drive/folders/1co00vzy633xZzgyBG0G4dvWEtvsHenXt"
             target="_blank"
@@ -133,6 +138,22 @@ export default function Divisions({ onSelectDivision }: DivisionsProps) {
             </div>
             <LucideIcons.ExternalLink className="w-3 h-3 md:w-3.5 md:h-3.5 flex-shrink-0 text-zinc-500 group-hover:text-[#FFD700] transition-colors" />
           </a>
+
+          <a
+            href="https://drive.google.com/drive/folders/1tPH_fQXZpv-MhmZd5DP7CXFn-krnmc10?usp=sharing"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="group relative flex items-center justify-center gap-2.5 px-4 py-4 md:px-5 md:py-4 bg-zinc-950 border border-white/10 hover:border-[#FFD700]/40 rounded-2xl transition-all duration-300 hover:shadow-[0_0_20px_rgba(255, 215, 0, 0.1)] min-h-[60px]"
+          >
+            <LucideIcons.ScrollText className="w-4 h-4 flex-shrink-0 text-[#FFD700]" />
+            <div className="text-left min-w-0">
+              <div className="text-[8px] md:text-[9px] font-mono text-zinc-500 uppercase tracking-widest">{t('TERMS', 'KETENTUAN')}</div>
+              <div className="text-[11px] md:text-xs font-sans font-black text-white group-hover:text-[#FFD700] transition-colors uppercase tracking-tight truncate">
+                {t('Terms & Conditions', 'Syarat & Ketentuan')}
+              </div>
+            </div>
+            <LucideIcons.ExternalLink className="w-3 h-3 md:w-3.5 md:h-3.5 flex-shrink-0 text-zinc-500 group-hover:text-[#FFD700] transition-colors" />
+          </a>
         </div>
 
         {/* 3D Cards Grid layout */}
@@ -151,28 +172,36 @@ export default function Divisions({ onSelectDivision }: DivisionsProps) {
                 key={division.id}
                 onClick={() => onSelectDivision(division.id)}
                 onMouseMove={(e) => {
+                  if (isTouchDevice) return;
                   setHoveredCardId(division.id);
                   handleMouseMove(e, division.id);
                 }}
-                onMouseLeave={() => handleMouseLeave(division.id)}
-                className="relative cursor-pointer select-none group"
-                style={{ perspective: '800px' }}
+                onMouseLeave={() => {
+                  if (isTouchDevice) return;
+                  handleMouseLeave(division.id);
+                }}
+                className="relative cursor-pointer select-none group touch-manipulation"
+                style={{ perspective: isTouchDevice ? 'none' : '800px' }}
               >
                 {/* Embedded Glow Shadow Behind Card */}
                 <div
                   className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 blur-[25px] transition-all duration-300 pointer-events-none"
                   style={{
                     backgroundColor: division.glowColor,
-                    transform: `scale(0.95) rotateX(${tilt.x}deg) rotateY(${tilt.y}deg)`,
+                    transform: isTouchDevice ? 'scale(0.95)' : `scale(0.95) rotateX(${tilt.x}deg) rotateY(${tilt.y}deg)`,
                   }}
                 />
 
                 {/* Main Card Shell */}
                 <div
                   className="relative overflow-hidden bg-gradient-to-b from-zinc-900/90 to-black border border-white/5 group-hover:border-white/20 p-8 min-h-[400px] rounded-2xl flex flex-col justify-between transition-all duration-200 ease-out shadow-[0_15px_35px_rgba(0,0,0,0.6)]"
-                  style={{
-                    transform: `rotateX(${tilt.x}deg) rotateY(${tilt.y}deg) scale(${isHovered ? 1.03 : 1.0})`,
-                  }}
+                  style={
+                    isTouchDevice
+                      ? {}
+                      : {
+                          transform: `rotateX(${tilt.x}deg) rotateY(${tilt.y}deg) scale(${isHovered ? 1.03 : 1.0})`,
+                        }
+                  }
                 >
                   
                   {/* Dynamic glare ray sweep */}

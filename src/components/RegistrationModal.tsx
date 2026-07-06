@@ -77,6 +77,7 @@ export default function RegistrationModal({
   const [isDragging, setIsDragging] = useState(false);
   const [copiedText, setCopiedText] = useState('');
 
+
   const handleCopy = (text: string, label: string) => {
     navigator.clipboard.writeText(text);
     setCopiedText(label);
@@ -124,6 +125,7 @@ export default function RegistrationModal({
       setSelectedBank(draft.selectedBank as 'bca' | 'seabank');
       setPaymentProofName(draft.paymentProofName);
       setPaymentProofUrl(draft.paymentProofUrl);
+
     } else {
       setSelectedDivision(initialDivisionId);
       setWizardStep(1);
