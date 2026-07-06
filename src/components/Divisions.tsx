@@ -190,9 +190,15 @@ export default function Divisions({ onSelectDivision }: DivisionsProps) {
                   {/* Inner Content top part */}
                   <div>
                     <div className="flex justify-between items-start mb-6">
-                      <div className="p-3 bg-zinc-950/80 rounded-xl border border-white/10 text-white group-hover:text-[#FFD700] group-hover:border-[#FFD700]/40 transition-colors duration-300">
-                        <IconComponent className="w-6 h-6" />
-                      </div>
+                      {division.image ? (
+                        <div className="w-20 h-20 rounded-xl border border-white/10 overflow-hidden bg-zinc-950/80 group-hover:border-[#FFD700]/40 transition-colors duration-300 shrink-0 flex items-center justify-center p-1.5">
+                          <img src={division.image} alt={division.title} className="w-full h-full object-contain" />
+                        </div>
+                      ) : (
+                        <div className="p-3 bg-zinc-950/80 rounded-xl border border-white/10 text-white group-hover:text-[#FFD700] group-hover:border-[#FFD700]/40 transition-colors duration-300">
+                          <IconComponent className="w-6 h-6" />
+                        </div>
+                      )}
                       <span className="font-mono text-[9px] text-zinc-500 uppercase">
                         DIVISION 0{idx + 1}
                       </span>

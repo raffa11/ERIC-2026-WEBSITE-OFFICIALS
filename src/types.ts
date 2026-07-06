@@ -16,6 +16,7 @@ export interface Division {
   description: string;
   indonesianDescription: string;
   icon: string; // lucide icon name
+  image?: string; // path to competition photo, e.g. '/images/divisions/collaborative-robot.jpg'
   specHighlight: string;
   intensityScore: number; // For technical meter
   glowColor: string; // e.g., 'rgba(0, 255, 136, 0.4)'
