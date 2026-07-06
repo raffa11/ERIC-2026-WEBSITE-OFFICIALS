@@ -21,14 +21,14 @@ export default function CountriesSection() {
           </span>
         </div>
 
-        <div className="flex flex-nowrap items-center justify-center gap-x-6 md:gap-x-10 overflow-x-auto pb-2 scrollbar-none">
+        <div className="flex flex-nowrap items-center justify-center gap-x-2 sm:gap-x-3 md:gap-x-4 lg:gap-x-5 overflow-x-auto pb-2 scrollbar-none">
           {COUNTRIES.map((c) => (
             <div
               key={c.name}
-              className="flex items-center gap-1.5 md:gap-2 px-3 md:px-5 py-2 md:py-3 bg-zinc-900/40 border border-white/5 rounded-xl shrink-0"
+              className="flex items-center gap-1.5 md:gap-2 px-2 sm:px-2.5 md:px-3 lg:px-3 xl:px-4 py-1.5 md:py-2.5 bg-zinc-900/40 border border-white/5 rounded-xl shrink-0"
             >
-              <img src={`https://flagcdn.com/w80/${c.code}.png`} alt={c.name} className="w-6 h-4 sm:w-8 sm:h-5 md:w-10 md:h-7 object-cover rounded shadow-[0_0_6px_rgba(255,255,255,0.08)]" />
-              <span className="text-[11px] sm:text-sm md:text-base font-sans font-bold text-zinc-300 uppercase tracking-wider whitespace-nowrap">
+              <img src={`https://flagcdn.com/w80/${c.code}.png`} alt={c.name} className="w-5 h-3.5 sm:w-6 sm:h-4 md:w-7 md:h-5 lg:w-7 lg:h-5 xl:w-9 xl:h-6 object-cover rounded shadow-[0_0_6px_rgba(255,255,255,0.08)]" />
+              <span className="text-[10px] sm:text-xs md:text-sm lg:text-sm xl:text-base font-sans font-bold text-zinc-300 uppercase tracking-wider whitespace-nowrap">
                 {c.name}
               </span>
             </div>
