@@ -70,7 +70,7 @@ export default function Divisions({ onSelectDivision }: DivisionsProps) {
             {t('THE', '')} <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#FFD700] to-[#FFE44D]">{t('ARENAS', 'ARENA PERTANDINGAN')}</span>
           </h2>
           <p className="text-[#B3B3B3] font-mono text-sm uppercase max-w-xl mt-4">
-            {t('9 competition arenas with 12 categories built to test the limits of innovation, design, and practical electronics and robotics application.', '9 arena kompetisi dengan 12 kategori yang dirancang untuk menguji batas inovasi, desain, dan aplikasi elektronika serta robotika praktis.')}
+            {t('8 competition arenas with 11 categories built to test the limits of innovation, design, and practical electronics and robotics application.', '8 arena kompetisi dengan 11 kategori yang dirancang untuk menguji batas inovasi, desain, dan aplikasi elektronika serta robotika praktis.')}
           </p>
         </div>
 
@@ -137,21 +137,21 @@ export default function Divisions({ onSelectDivision }: DivisionsProps) {
               <div
                 id={`division-card-${division.id}`}
                 key={division.id}
-                onClick={() => onSelectDivision(division.id)}
+                onClick={() => { if (!division.comingSoon) onSelectDivision(division.id); }}
                 onMouseMove={(e) => {
-                  if (isTouchDevice) return;
+                  if (isTouchDevice || division.comingSoon) return;
                   setHoveredCardId(division.id);
                   handleMouseMove(e, division.id);
                 }}
                 onMouseLeave={() => {
-                  if (isTouchDevice) return;
+                  if (isTouchDevice || division.comingSoon) return;
                   handleMouseLeave(division.id);
                 }}
-                className={`relative cursor-pointer select-none ${isTouchDevice ? '' : 'group'} touch-manipulation`}
+                className={`relative select-none ${division.comingSoon ? 'cursor-default opacity-60' : 'cursor-pointer'} ${isTouchDevice ? '' : 'group'} touch-manipulation`}
                 style={{ perspective: isTouchDevice ? 'none' : '800px' }}
               >
                 {/* Embedded Glow Shadow Behind Card */}
-                {!isTouchDevice && (
+                {!isTouchDevice && !division.comingSoon && (
                   <div
                     className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 blur-[25px] transition-all duration-300 pointer-events-none"
                     style={{
@@ -165,7 +165,7 @@ export default function Divisions({ onSelectDivision }: DivisionsProps) {
                 <div
                   className={`relative overflow-hidden bg-gradient-to-b from-zinc-900/90 to-black border ${isTouchDevice ? 'border-white/10' : 'border-white/5 group-hover:border-white/20'} p-8 min-h-[400px] rounded-2xl flex flex-col justify-between shadow-[0_15px_35px_rgba(0,0,0,0.6)]`}
                   style={
-                    isTouchDevice
+                    isTouchDevice || division.comingSoon
                       ? {}
                       : {
                           transform: `rotateX(${tilt.x}deg) rotateY(${tilt.y}deg) scale(${isHovered ? 1.03 : 1.0})`,
@@ -175,7 +175,7 @@ export default function Divisions({ onSelectDivision }: DivisionsProps) {
                 >
                   
                   {/* Dynamic glare ray sweep */}
-                  {!isTouchDevice && (
+                  {!isTouchDevice && !division.comingSoon && (
                     <div
                       className="absolute inset-0 pointer-events-none transition-opacity duration-300"
                       style={{
@@ -186,8 +186,17 @@ export default function Divisions({ onSelectDivision }: DivisionsProps) {
                   )}
 
                   {/* Corner aesthetic notches */}
-                  {!isTouchDevice && (
+                  {!isTouchDevice && !division.comingSoon && (
                     <div className="absolute top-0 right-0 w-16 h-16 bg-white/2 group-hover:bg-[#FFD700]/5 transition-colors duration-300 [clip-path:polygon(100%_0,0_0,100%_100%)] pointer-events-none" />
+                  )}
+
+                  {/* Coming Soon Ribbon */}
+                  {division.comingSoon && (
+                    <div className="absolute top-6 right-6 z-20">
+                      <span className="bg-[#FFD700]/10 border border-[#FFD700]/30 text-[#FFD700] text-[9px] font-mono font-bold uppercase tracking-widest px-3 py-1 rounded-full">
+                        {t('Coming Soon', 'Segera Hadir')}
+                      </span>
+                    </div>
                   )}
 
                   {/* Inner Content top part */}
@@ -217,62 +226,70 @@ export default function Divisions({ onSelectDivision }: DivisionsProps) {
 
                     {/* Localised Description */}
                     <p className="text-zinc-400 text-xs mt-4 leading-relaxed line-clamp-4">
-                      {t(division.description, division.indonesianDescription)}
+                      {division.comingSoon
+                        ? t(division.description, division.indonesianDescription)
+                        : t(division.description, division.indonesianDescription)}
                     </p>
                   </div>
 
                   {/* Spec description bottom section */}
                   <div className="border-t border-white/5 pt-5 select-none space-y-3">
                     <div className="flex justify-between items-center text-[10px] font-mono">
-                      <span className="text-zinc-500">{t('SPECIFICATION', 'SPESIFIKASI')}</span>
-                      <span className="text-white font-semibold uppercase">{division.specHighlight}</span>
+                      <span className="text-zinc-500">{division.comingSoon ? t('STATUS', 'STATUS') : t('SPECIFICATION', 'SPESIFIKASI')}</span>
+                      <span className={`font-semibold uppercase ${division.comingSoon ? 'text-[#FFD700]' : 'text-white'}`}>{division.specHighlight}</span>
                     </div>
 
-                    {/* Hardware Difficulty intensity bar */}
-                    <div>
-                      <div className="flex justify-between items-center text-[9px] font-mono text-zinc-400 mb-1">
-                        <span>{t('TECHNICAL INDEX', 'INDEKS TEKNIS')}</span>
-                        <span>{division.intensityScore}%</span>
+                    {/* Hardware Difficulty intensity bar - hide for coming soon */}
+                    {!division.comingSoon && (
+                      <div>
+                        <div className="flex justify-between items-center text-[9px] font-mono text-zinc-400 mb-1">
+                          <span>{t('TECHNICAL INDEX', 'INDEKS TEKNIS')}</span>
+                          <span>{division.intensityScore}%</span>
+                        </div>
+                        <div className="h-1 w-full bg-zinc-900 rounded-full overflow-hidden">
+                          <div
+                            className="h-full bg-gradient-to-r from-[#0047AB] via-[#FFD700] to-[#FFE44D] transition-all duration-500"
+                            style={{ width: isHovered ? `${division.intensityScore}%` : (isTouchDevice ? `${division.intensityScore}%` : '20%') }}
+                          />
+                        </div>
                       </div>
-                      <div className="h-1 w-full bg-zinc-900 rounded-full overflow-hidden">
-                        <div
-                          className="h-full bg-gradient-to-r from-[#0047AB] via-[#FFD700] to-[#FFE44D] transition-all duration-500"
-                          style={{ width: isHovered ? `${division.intensityScore}%` : (isTouchDevice ? `${division.intensityScore}%` : '20%') }}
-                        />
-                      </div>
-                    </div>
+                    )}
 
                     {/* Contact Persons */}
-                    <div className="pt-1 border-t border-white/[0.03]">
-                      <div className="text-[8px] font-mono text-zinc-500 uppercase tracking-wider mb-1.5 font-bold">
-                        {t('CONTACT PERSON', 'CONTACT PERSON')}
+                    {division.contactPersons.length > 0 && (
+                      <div className="pt-1 border-t border-white/[0.03]">
+                        <div className="text-[8px] font-mono text-zinc-500 uppercase tracking-wider mb-1.5 font-bold">
+                          {t('CONTACT PERSON', 'CONTACT PERSON')}
+                        </div>
+                        <div className="flex flex-wrap gap-1.5">
+                          {division.contactPersons.map((cp) => (
+                            <a
+                              key={cp.label}
+                              href={`https://wa.me/${cp.waNumber}`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              onClick={(e) => e.stopPropagation()}
+                              className="inline-flex items-center gap-1 px-2 py-1 bg-[#25D366]/10 border border-[#25D366]/20 rounded-md text-[9px] font-mono text-[#25D366] hover:bg-[#25D366]/20 hover:border-[#25D366]/40 transition-all"
+                            >
+                              <LucideIcons.MessageCircle className="w-3 h-3" />
+                              <span className="font-bold">{cp.label}</span>
+                              <span className="text-white/30">/</span>
+                              <span>{cp.name}</span>
+                            </a>
+                          ))}
+                        </div>
                       </div>
-                      <div className="flex flex-wrap gap-1.5">
-                        {division.contactPersons.map((cp) => (
-                          <a
-                            key={cp.label}
-                            href={`https://wa.me/${cp.waNumber}`}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            onClick={(e) => e.stopPropagation()}
-                            className="inline-flex items-center gap-1 px-2 py-1 bg-[#25D366]/10 border border-[#25D366]/20 rounded-md text-[9px] font-mono text-[#25D366] hover:bg-[#25D366]/20 hover:border-[#25D366]/40 transition-all"
-                          >
-                            <LucideIcons.MessageCircle className="w-3 h-3" />
-                            <span className="font-bold">{cp.label}</span>
-                            <span className="text-white/30">/</span>
-                            <span>{cp.name}</span>
-                          </a>
-                        ))}
-                      </div>
-                    </div>
+                    )}
 
                     {/* F1-style sliding CTA banner */}
-                    <div className="pt-1.5 text-center">
-                      <span className={`inline-flex items-center gap-1.5 font-mono text-[8.5px] text-[#FFD700] font-bold tracking-widest uppercase bg-[#FFD700]/5 border border-[#FFD700]/20 px-3 py-1 rounded-full w-full justify-center ${isTouchDevice ? '' : 'opacity-0 group-hover:opacity-100 group-hover:translate-y-0 translate-y-1 transition-all duration-300'}`}>
-                        <span>{t('REGISTER FOR THIS ARENA', 'DAFTAR DI ARENA INI')}</span>
-                        <LucideIcons.ArrowRight className="w-3 h-3 text-[#FFD700]" />
-                      </span>
-                    </div>
+                    {!division.comingSoon && (
+                      <div className="pt-1.5 text-center">
+                        <span className={`inline-flex items-center gap-1.5 font-mono text-[8.5px] text-[#FFD700] font-bold tracking-widest uppercase bg-[#FFD700]/5 border border-[#FFD700]/20 px-3 py-1 rounded-full w-full justify-center ${isTouchDevice ? '' : 'opacity-0 group-hover:opacity-100 group-hover:translate-y-0 translate-y-1 transition-all duration-300'}`}>
+                          <span>{t('REGISTER FOR THIS ARENA', 'DAFTAR DI ARENA INI')}</span>
+                          <LucideIcons.ArrowRight className="w-3 h-3 text-[#FFD700]" />
+                        </span>
+                      </div>
+                    )}
                   </div>
 
                 </div>

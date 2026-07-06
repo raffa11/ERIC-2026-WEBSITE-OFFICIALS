@@ -26,6 +26,7 @@ export interface Division {
   hasLevels?: boolean;
   levels?: string[];
   hasLecturer?: boolean;
+  comingSoon?: boolean;
   price: string; // e.g. "Rp. 225,000"
   priceUSD: string; // e.g. "$14.00"
   whatsappGroup: string;
