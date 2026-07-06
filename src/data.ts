@@ -376,14 +376,14 @@ export const TIMELINE_EVENTS: TimelineEvent[] = [
 export const GALLERY_ITEMS: GalleryItem[] = [
   {
     id: 'g-01',
-    title: 'Robot Team Competing in the Sumobot Arena',
+    title: 'ERIC Robotics Competition Atmosphere',
     category: 'Competition',
     imageUrl: '/images/gallery/DSC01430.jpg',
     aspectClassName: ''
   },
   {
     id: 'g-02',
-    title: 'ERIC Robotics Competition Atmosphere',
+    title: 'Robot Team Competing in the Sumobot Arena',
     category: 'Arena',
     imageUrl: '/images/gallery/DSC01530.jpg',
     aspectClassName: ''
@@ -472,7 +472,7 @@ export const SUPPORTED_BY = [
     logo: '/images/supported-by/unj.png',
     initials: 'UNJ'
   },
-{
+  {
     name: 'Kampus Berdampak',
     logo: '/images/supported-by/kampus-berdampak.png',
     initials: 'KB'
