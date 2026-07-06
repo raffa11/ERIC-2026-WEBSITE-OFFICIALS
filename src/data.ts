@@ -478,10 +478,10 @@ export const SUPPORTED_BY = [
 ];
 
 export const SPONSORS = [
-  { name: 'ALPHA MECHATRONICS', initials: 'AP', logo: '/images/sponsors/ap-alpha.png' },
-  { name: 'CYTRON TECHNOLOGIES', initials: 'CT', logo: '/images/sponsors/ct-cytron.png' },
-  { name: 'PDP Comon & fuel injection Pump', initials: 'PDP', logo: '/images/sponsors/pdp.png' },
-  { name: 'iSee Electronic and robotics store', initials: 'iSee', logo: '/images/sponsors/isee.png' }
+  { name: 'iSee Electronic and Robotics Store', initials: 'iSee', logo: '/images/sponsors/isee.png', tier: 'silver' },
+  { name: 'Cytron Technologies', initials: 'CT', logo: '/images/sponsors/ct-cytron.png', tier: 'gold' },
+  { name: 'PDP Common Rail & Fuel Injection Pump', initials: 'PDP', logo: '/images/sponsors/pdp.png', tier: 'platinum' },
+  { name: 'Alpha Mechatronics', initials: 'AM', logo: '/images/sponsors/ap-alpha.png', tier: 'titanium' }
 ];
 
 // 3-Day Journey Blueprint Details

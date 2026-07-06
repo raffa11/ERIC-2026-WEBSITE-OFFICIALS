@@ -6,11 +6,48 @@
 import { useState } from 'react';
 import { useLanguage } from './LanguageContext';
 import { SPONSORS } from '../data';
+import { MessageCircle } from 'lucide-react';
+
+const TIER_CONFIG: Record<string, { label: string; labelId: string; cardClass: string; imgClass: string; glowColor: string }> = {
+  titanium: {
+    label: 'TITANIUM',
+    labelId: 'TITANIUM',
+    cardClass: 'md:col-span-2 md:row-span-2',
+    imgClass: 'max-h-40 md:max-h-52',
+    glowColor: 'rgba(255, 215, 0, 0.3)'
+  },
+  platinum: {
+    label: 'PLATINUM',
+    labelId: 'PLATINUM',
+    cardClass: 'md:col-span-2',
+    imgClass: 'max-h-36 md:max-h-44',
+    glowColor: 'rgba(197, 160, 89, 0.25)'
+  },
+  gold: {
+    label: 'GOLD',
+    labelId: 'GOLD',
+    cardClass: '',
+    imgClass: 'max-h-28 md:max-h-36',
+    glowColor: 'rgba(255, 215, 0, 0.15)'
+  },
+  silver: {
+    label: 'SILVER',
+    labelId: 'SILVER',
+    cardClass: '',
+    imgClass: 'max-h-24 md:max-h-28',
+    glowColor: 'rgba(180, 180, 180, 0.15)'
+  }
+};
 
 export default function SponsorsSection() {
   const { t } = useLanguage();
   const [hoveredSponsor, setHoveredSponsor] = useState<string | null>(null);
   const [imgErrors, setImgErrors] = useState<Record<string, boolean>>({});
+
+  const sorted = [...SPONSORS].sort((a, b) => {
+    const order = ['silver', 'gold', 'platinum', 'titanium'];
+    return order.indexOf(a.tier) - order.indexOf(b.tier);
+  });
 
   return (
     <section id="sponsors-section" className="relative py-24 bg-[#0D0D0D] border-t border-white/5 select-none overflow-hidden">
@@ -26,40 +63,76 @@ export default function SponsorsSection() {
           </h3>
         </div>
 
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 max-w-4xl mx-auto">
-          {SPONSORS.map((sponsor) => {
-            const showLogo = sponsor.logo && !imgErrors[sponsor.name];
-            return (
-              <div
-                id={`sponsor-badge-${sponsor.initials}`}
-                key={sponsor.name}
-                onMouseEnter={() => setHoveredSponsor(sponsor.name)}
-                onMouseLeave={() => setHoveredSponsor(null)}
-                className={`relative flex flex-col items-center justify-center p-6 bg-zinc-950 rounded-2xl border transition-all duration-300 min-h-[220px] ${
-                  hoveredSponsor === sponsor.name
-                    ? 'border-[#FFD700] shadow-[0_0_20px_rgba(255, 215, 0, 0.15)] bg-[#050505]'
-                    : 'border-white/5'
-                }`}
-              >
-                {showLogo ? (
-                  <img
-                    src={sponsor.logo}
-                    alt={sponsor.name}
-                    onError={() => setImgErrors(prev => ({ ...prev, [sponsor.name]: true }))}
-                    className="max-h-32 w-auto object-contain"
-                  />
-                ) : (
-                  <span className="text-xl font-sans font-black tracking-widest text-zinc-500">
-                    {sponsor.initials}
+        <div className="max-w-5xl mx-auto">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 auto-rows-auto">
+            {sorted.map((sponsor) => {
+              const cfg = TIER_CONFIG[sponsor.tier] || TIER_CONFIG.silver;
+              const showLogo = sponsor.logo && !imgErrors[sponsor.name];
+              return (
+                <div
+                  id={`sponsor-badge-${sponsor.initials}`}
+                  key={sponsor.name}
+                  onMouseEnter={() => setHoveredSponsor(sponsor.name)}
+                  onMouseLeave={() => setHoveredSponsor(null)}
+                  className={`relative flex flex-col items-center justify-center p-6 bg-zinc-950 rounded-2xl border transition-all duration-300 ${cfg.cardClass} ${
+                    hoveredSponsor === sponsor.name
+                      ? 'border-[#FFD700] shadow-[0_0_20px_rgba(255, 215, 0, 0.15)] bg-[#050505]'
+                      : 'border-white/5'
+                  }`}
+                >
+                  {/* Tier badge */}
+                  <span
+                    className="absolute top-3 left-3 text-[7px] font-mono font-bold uppercase tracking-[0.2em] border px-2 py-0.5 rounded-full"
+                    style={{
+                      color: sponsor.tier === 'silver' ? '#a0a0a0' : sponsor.tier === 'gold' ? '#FFD700' : sponsor.tier === 'platinum' ? '#C5A059' : '#FFD700',
+                      backgroundColor: sponsor.tier === 'silver' ? 'rgba(160,160,160,0.1)' : sponsor.tier === 'gold' ? 'rgba(255,215,0,0.1)' : sponsor.tier === 'platinum' ? 'rgba(197,160,89,0.1)' : 'rgba(255,215,0,0.12)',
+                      borderColor: sponsor.tier === 'silver' ? 'rgba(160,160,160,0.2)' : sponsor.tier === 'gold' ? 'rgba(255,215,0,0.2)' : sponsor.tier === 'platinum' ? 'rgba(197,160,89,0.2)' : 'rgba(255,215,0,0.25)'
+                    }}
+                  >
+                    {cfg.label}
                   </span>
-                )}
 
-                <span className="text-[9px] font-mono text-zinc-500 mt-3 uppercase tracking-tight text-center leading-tight">
-                  {sponsor.name}
-                </span>
-              </div>
-            );
-          })}
+                  {showLogo ? (
+                    <img
+                      src={sponsor.logo}
+                      alt={sponsor.name}
+                      onError={() => setImgErrors(prev => ({ ...prev, [sponsor.name]: true }))}
+                      className={`w-auto object-contain transition-all duration-300 ${cfg.imgClass}`}
+                    />
+                  ) : (
+                    <span className="text-xl font-sans font-black tracking-widest text-zinc-500">
+                      {sponsor.initials}
+                    </span>
+                  )}
+
+                  <span className="text-[9px] font-mono text-zinc-500 mt-3 uppercase tracking-tight text-center leading-tight">
+                    {sponsor.name}
+                  </span>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Sponsor CTA */}
+        <div className="mt-16 text-center">
+          <div className="inline-flex flex-col items-center gap-4 p-6 md:p-8 bg-zinc-950 border border-white/5 rounded-2xl max-w-xl mx-auto">
+            <p className="text-xs font-mono text-zinc-400 uppercase leading-relaxed">
+              {t(
+                'Want to become a sponsor? Contact us below.',
+                'Ingin bergabung menjadi sponsor? Hubungi kontak di bawah.'
+              )}
+            </p>
+            <a
+              href="https://wa.me/62895374385030"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 px-6 py-3 bg-[#FFD700]/10 hover:bg-[#FFD700]/20 border border-[#FFD700]/20 hover:border-[#FFD700]/40 text-xs font-mono text-[#FFD700] font-bold rounded-xl transition-all duration-300"
+            >
+              <MessageCircle className="w-4 h-4" />
+              0895374385030 / Alle
+            </a>
+          </div>
         </div>
       </div>
     </section>
