@@ -184,7 +184,7 @@ export const COMPETITION_DIVISIONS: Division[] = [
     maxStaff: 2,
     hasSubCategory: false,
     hasLevels: true,
-    levels: ['Elementary', 'Senior High'],
+    levels: ['Elementary (SD)', 'Senior High / Vocational (SMA / SMK)'],
     hasLecturer: true,
     price: 'Rp. 120,000',
     priceUSD: '$7.50',
