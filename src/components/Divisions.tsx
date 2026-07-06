@@ -3,8 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useState, useEffect } from 'react';
-import { motion } from 'motion/react';
+import React, { useState } from 'react';
 import { useLanguage } from './LanguageContext';
 import { COMPETITION_DIVISIONS } from '../data';
 import * as LucideIcons from 'lucide-react';
@@ -15,11 +14,9 @@ interface DivisionsProps {
 
 export default function Divisions({ onSelectDivision }: DivisionsProps) {
   const { t } = useLanguage();
-  const [isTouchDevice, setIsTouchDevice] = useState(false);
-
-  useEffect(() => {
-    setIsTouchDevice(window.matchMedia('(pointer: coarse)').matches);
-  }, []);
+  const [isTouchDevice] = useState(() =>
+    typeof window !== 'undefined' && window.matchMedia('(pointer: coarse)').matches
+  );
 
   // Track hover status per card ID to implement individual glares
   const [hoveredCardId, setHoveredCardId] = useState<string | null>(null);
@@ -184,47 +181,54 @@ export default function Divisions({ onSelectDivision }: DivisionsProps) {
                 style={{ perspective: isTouchDevice ? 'none' : '800px' }}
               >
                 {/* Embedded Glow Shadow Behind Card */}
-                <div
-                  className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 blur-[25px] transition-all duration-300 pointer-events-none"
-                  style={{
-                    backgroundColor: division.glowColor,
-                    transform: isTouchDevice ? 'scale(0.95)' : `scale(0.95) rotateX(${tilt.x}deg) rotateY(${tilt.y}deg)`,
-                  }}
-                />
+                {!isTouchDevice && (
+                  <div
+                    className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 blur-[25px] transition-all duration-300 pointer-events-none"
+                    style={{
+                      backgroundColor: division.glowColor,
+                      transform: `scale(0.95) rotateX(${tilt.x}deg) rotateY(${tilt.y}deg)`,
+                    }}
+                  />
+                )}
 
                 {/* Main Card Shell */}
                 <div
-                  className="relative overflow-hidden bg-gradient-to-b from-zinc-900/90 to-black border border-white/5 group-hover:border-white/20 p-8 min-h-[400px] rounded-2xl flex flex-col justify-between transition-all duration-200 ease-out shadow-[0_15px_35px_rgba(0,0,0,0.6)]"
+                  className={`relative overflow-hidden bg-gradient-to-b from-zinc-900/90 to-black border ${isTouchDevice ? 'border-white/10' : 'border-white/5 group-hover:border-white/20'} p-8 min-h-[400px] rounded-2xl flex flex-col justify-between shadow-[0_15px_35px_rgba(0,0,0,0.6)]`}
                   style={
                     isTouchDevice
                       ? {}
                       : {
                           transform: `rotateX(${tilt.x}deg) rotateY(${tilt.y}deg) scale(${isHovered ? 1.03 : 1.0})`,
+                          transition: 'transform 0.2s ease-out',
                         }
                   }
                 >
                   
                   {/* Dynamic glare ray sweep */}
-                  <div
-                    className="absolute inset-0 pointer-events-none transition-opacity duration-300"
-                    style={{
-                      opacity: isHovered ? 0.28 : 0,
-                      background: `radial-gradient(circle 180px at ${tilt.gx}% ${tilt.gy}%, white, transparent)`,
-                    }}
-                  />
+                  {!isTouchDevice && (
+                    <div
+                      className="absolute inset-0 pointer-events-none transition-opacity duration-300"
+                      style={{
+                        opacity: isHovered ? 0.28 : 0,
+                        background: `radial-gradient(circle 180px at ${tilt.gx}% ${tilt.gy}%, white, transparent)`,
+                      }}
+                    />
+                  )}
 
                   {/* Corner aesthetic notches */}
-                  <div className="absolute top-0 right-0 w-16 h-16 bg-white/2 group-hover:bg-[#FFD700]/5 transition-colors duration-300 [clip-path:polygon(100%_0,0_0,100%_100%)] pointer-events-none" />
+                  {!isTouchDevice && (
+                    <div className="absolute top-0 right-0 w-16 h-16 bg-white/2 group-hover:bg-[#FFD700]/5 transition-colors duration-300 [clip-path:polygon(100%_0,0_0,100%_100%)] pointer-events-none" />
+                  )}
 
                   {/* Inner Content top part */}
                   <div>
                     <div className="flex justify-between items-start mb-6">
                       {division.image ? (
-                        <div className="w-20 h-20 rounded-xl border border-white/10 overflow-hidden bg-zinc-950/80 group-hover:border-[#FFD700]/40 transition-colors duration-300 shrink-0 flex items-center justify-center p-1.5">
+                        <div className={`w-20 h-20 rounded-xl border overflow-hidden bg-zinc-950/80 shrink-0 flex items-center justify-center p-1.5 ${isTouchDevice ? 'border-white/10' : 'border-white/10 group-hover:border-[#FFD700]/40 transition-colors duration-300'}`}>
                           <img src={division.image} alt={division.title} className="w-full h-full object-contain" />
                         </div>
                       ) : (
-                        <div className="p-3 bg-zinc-950/80 rounded-xl border border-white/10 text-white group-hover:text-[#FFD700] group-hover:border-[#FFD700]/40 transition-colors duration-300">
+                        <div className={`p-3 bg-zinc-950/80 rounded-xl border text-white ${isTouchDevice ? 'border-white/10' : 'border-white/10 group-hover:text-[#FFD700] group-hover:border-[#FFD700]/40 transition-colors duration-300'}`}>
                           <IconComponent className="w-6 h-6" />
                         </div>
                       )}
@@ -234,7 +238,7 @@ export default function Divisions({ onSelectDivision }: DivisionsProps) {
                     </div>
 
                     {/* Highly responsive Kinetic Text */}
-                    <h3 className="text-2xl font-sans font-black text-white group-hover:text-[#FFD700] transition-colors uppercase leading-none tracking-tight">
+                    <h3 className={`text-2xl font-sans font-black uppercase leading-none tracking-tight ${isTouchDevice ? 'text-white' : 'text-white group-hover:text-[#FFD700] transition-colors'}`}>
                       {division.title}
                     </h3>
                     <h4 className="text-[10px] font-mono text-[#C5A059] uppercase tracking-wider block mt-1.5 font-bold">
@@ -261,11 +265,9 @@ export default function Divisions({ onSelectDivision }: DivisionsProps) {
                         <span>{division.intensityScore}%</span>
                       </div>
                       <div className="h-1 w-full bg-zinc-900 rounded-full overflow-hidden">
-                        <motion.div
-                          className="h-full bg-gradient-to-r from-[#0047AB] via-[#FFD700] to-[#FFE44D]"
-                          initial={{ width: '0%' }}
-                          animate={{ width: isHovered ? `${division.intensityScore}%` : '20%' }}
-                          transition={{ duration: 0.8, ease: 'easeOut' }}
+                        <div
+                          className="h-full bg-gradient-to-r from-[#0047AB] via-[#FFD700] to-[#FFE44D] transition-all duration-500"
+                          style={{ width: isHovered ? `${division.intensityScore}%` : (isTouchDevice ? `${division.intensityScore}%` : '20%') }}
                         />
                       </div>
                     </div>
@@ -296,7 +298,7 @@ export default function Divisions({ onSelectDivision }: DivisionsProps) {
 
                     {/* F1-style sliding CTA banner */}
                     <div className="pt-1.5 text-center">
-                      <span className="inline-flex items-center gap-1.5 font-mono text-[8.5px] text-[#FFD700] opacity-0 group-hover:opacity-100 group-hover:translate-y-0 translate-y-1 transition-all duration-300 font-bold tracking-widest uppercase bg-[#FFD700]/5 border border-[#FFD700]/20 px-3 py-1 rounded-full w-full justify-center">
+                      <span className={`inline-flex items-center gap-1.5 font-mono text-[8.5px] text-[#FFD700] font-bold tracking-widest uppercase bg-[#FFD700]/5 border border-[#FFD700]/20 px-3 py-1 rounded-full w-full justify-center ${isTouchDevice ? '' : 'opacity-0 group-hover:opacity-100 group-hover:translate-y-0 translate-y-1 transition-all duration-300'}`}>
                         <span>{t('REGISTER FOR THIS ARENA', 'DAFTAR DI ARENA INI')}</span>
                         <LucideIcons.ArrowRight className="w-3 h-3 text-[#FFD700]" />
                       </span>
