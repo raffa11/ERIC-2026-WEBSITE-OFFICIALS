@@ -1353,10 +1353,6 @@ export default function RegistrationModal({
                                       <span className="text-[8.5px] font-mono text-zinc-500 uppercase">ACCOUNT HOLDER</span>
                                       <span className="text-[10px] font-sans font-black text-zinc-300">Muhammad Raffa Wijaya</span>
                                     </div>
-                                    <div className="flex justify-between items-center">
-                                      <span className="text-[8.5px] font-mono text-zinc-500 uppercase">OFFICIAL ROLE</span>
-                                      <span className="text-[9px] font-mono text-[#C5A059] font-bold">Bendahara I ERIC 2026</span>
-                                    </div>
                                   </div>
                                 ) : (
                                   <div className="space-y-2 border border-white/5 rounded-xl p-3 bg-zinc-950/60">
@@ -1385,10 +1381,6 @@ export default function RegistrationModal({
                                     <div className="flex justify-between items-center">
                                       <span className="text-[8.5px] font-mono text-zinc-500 uppercase">ACCOUNT HOLDER</span>
                                       <span className="text-[10px] font-sans font-black text-zinc-300">Muhammad Raffa Wijaya</span>
-                                    </div>
-                                    <div className="flex justify-between items-center">
-                                      <span className="text-[8.5px] font-mono text-zinc-500 uppercase">OFFICIAL ROLE</span>
-                                      <span className="text-[9px] font-mono text-[#C5A059] font-bold">Bendahara I ERIC 2026</span>
                                     </div>
                                   </div>
                                 )}
@@ -1442,10 +1434,6 @@ export default function RegistrationModal({
                                   <div className="flex justify-between items-center">
                                     <span className="text-[8.5px] font-mono text-zinc-500 uppercase">ACCOUNT HOLDER</span>
                                     <span className="text-[10px] font-sans font-black text-zinc-300">Muhammad Raffa Wijaya</span>
-                                  </div>
-                                  <div className="flex justify-between items-center">
-                                    <span className="text-[8.5px] font-mono text-zinc-500 uppercase">OFFICIAL ROLE</span>
-                                    <span className="text-[9px] font-mono text-[#C5A059] font-bold">Bendahara I ERIC 2026</span>
                                   </div>
                                 </div>
                               </motion.div>
