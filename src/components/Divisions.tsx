@@ -193,8 +193,6 @@ export default function Divisions({ onSelectDivision }: DivisionsProps) {
                       <div className="p-3 bg-zinc-950/80 rounded-xl border border-white/10 text-white group-hover:text-[#FFD700] group-hover:border-[#FFD700]/40 transition-colors duration-300">
                         <IconComponent className="w-6 h-6" />
                       </div>
-                      
-                      {/* Category serial tag */}
                       <span className="font-mono text-[9px] text-zinc-500 uppercase">
                         DIVISION 0{idx + 1}
                       </span>
