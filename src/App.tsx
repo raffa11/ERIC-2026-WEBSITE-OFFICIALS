@@ -12,6 +12,7 @@ import Hero from './components/Hero';
 import CountriesSection from './components/CountriesSection';
 import AboutEric from './components/AboutEric';
 import Divisions from './components/Divisions';
+import BenefitsSection from './components/BenefitsSection';
 import EventJourney from './components/EventJourney';
 import TimelineSection from './components/TimelineSection';
 import GallerySection from './components/GallerySection';
@@ -195,6 +196,9 @@ function AppContent() {
             </ScrollReveal>
             <ScrollReveal>
               <AboutEric />
+            </ScrollReveal>
+            <ScrollReveal>
+              <BenefitsSection />
             </ScrollReveal>
             <ScrollReveal>
               <Divisions onSelectDivision={handleSelectDivision} />

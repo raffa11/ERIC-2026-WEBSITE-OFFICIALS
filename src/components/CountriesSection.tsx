@@ -27,7 +27,7 @@ export default function CountriesSection() {
               key={c.name}
               className="flex items-center gap-2 px-5 py-3 bg-zinc-900/40 border border-white/5 rounded-xl"
             >
-              <span className="text-2xl md:text-3xl leading-none">{c.emoji}</span>
+              <span className="text-3xl sm:text-4xl md:text-5xl leading-none">{c.emoji}</span>
               <span className="text-sm md:text-base font-sans font-bold text-zinc-300 uppercase tracking-wider">
                 {c.name}
               </span>

@@ -375,10 +375,10 @@ export default function RegistrationModal({
         // Validate Anggota Tim 1 (Required)
         const m1 = members[0];
         if (!m1 || !m1.name.trim() || !m1.whatsapp.trim() || !m1.idCardUrl || !m1.twibbonUrl) {
-          showAlert({ message: t(
-            'Please fill out Anggota Tim 1 details and upload required documents (ID Card & Twibbon).',
-            'Mohon lengkapi seluruh data Anggota Tim 1 dan unggah dokumen wajib (Kartu Identitas & Twibbon).'
-          ), type: 'error' });
+                                  showAlert({ message: t(
+                                    'Please fill out Member 1 details and upload required documents (ID Card & Twibbon).',
+                                    'Mohon lengkapi seluruh data Anggota Tim 1 dan unggah dokumen wajib (Kartu Identitas & Twibbon).'
+                                  ), type: 'error' });
           return;
         }
 
@@ -638,7 +638,7 @@ export default function RegistrationModal({
                   <div className="flex items-center justify-between border-b border-white/5 pb-4 select-none">
                     <div className="space-y-1">
                       <span className="text-[9px] font-mono text-[#FFD700] uppercase tracking-[0.25em] font-black block">
-                        {t('CHAMPIONSHIP ROSTER DEPLOYER', 'REGISTRASI PERLOMBAAN RESMI')}
+                        {t('CHAMPIONSHIP REGISTRATION DEPLOYER', 'REGISTRASI PERLOMBAAN RESMI')}
                       </span>
                       <h3 className="text-xl md:text-2xl font-sans font-black text-white uppercase tracking-tight">
                         {t('ARENA REGISTRATION', 'DAFTAR KATEGORI ARENA')}
@@ -715,7 +715,7 @@ export default function RegistrationModal({
                           >
                             {COMPETITION_DIVISIONS.map((div) => (
                               <option key={div.id} value={div.id} className="bg-zinc-950 text-white">
-                                {div.title} - {div.indonesianTitle}
+                                {div.title}
                               </option>
                             ))}
                           </select>
@@ -867,19 +867,19 @@ export default function RegistrationModal({
                           </div>
 
                           <SafeFileUpload
-                            label={t('Foto Kartu Identitas', 'Foto Kartu Identitas')}
-                            fileName={leaderIdCardName}
-                            fileUrl={leaderIdCardUrl}
-                            onSelect={(file) => processFileUpload(file, setLeaderIdCardName, setLeaderIdCardUrl)}
-                            onClear={() => {
-                              setLeaderIdCardName('');
-                              setLeaderIdCardUrl('');
-                            }}
-                            id="leader-id-card-input"
+                              label={t('ID Card Photo', 'Foto Kartu Identitas')}
+                              fileName={leaderIdCardName}
+                              fileUrl={leaderIdCardUrl}
+                              onSelect={(file) => processFileUpload(file, setLeaderIdCardName, setLeaderIdCardUrl)}
+                              onClear={() => {
+                                setLeaderIdCardName('');
+                                setLeaderIdCardUrl('');
+                              }}
+                              id="leader-id-card-input"
                           />
 
                           <SafeFileUpload
-                            label={t('Foto Twibbon', 'Foto Twibbon')}
+                            label={t('Twibbon Photo', 'Foto Twibbon')}
                             fileName={leaderTwibbonName}
                             fileUrl={leaderTwibbonUrl}
                             onSelect={(file) => processFileUpload(file, setLeaderTwibbonName, setLeaderTwibbonUrl)}
@@ -934,7 +934,7 @@ export default function RegistrationModal({
                           <div className="flex justify-between items-center select-none border-b border-white/5 pb-2">
                             <h4 className="font-sans font-black text-xs text-white uppercase tracking-wider flex items-center gap-1.5">
                               <span className="w-1.5 h-1.5 rounded-full bg-[#FFD700]" />
-                              {t('ANGGOTA TIM 1', 'ANGGOTA TIM 1')}
+                              {t('MEMBER 1', 'ANGGOTA TIM 1')}
                             </h4>
                             <span className="text-[8.5px] font-mono text-[#FFD700] uppercase font-bold tracking-widest border border-[#FFD700]/20 bg-[#FFD700]/5 px-2 py-0.5 rounded">
                               {t('REQUIRED', 'WAJIB')}
@@ -980,7 +980,7 @@ export default function RegistrationModal({
                             </div>
 
                             <SafeFileUpload
-                              label={t('Foto Kartu Identitas', 'Foto Kartu Identitas')}
+                              label={t('ID Card Photo', 'Foto Kartu Identitas')}
                               fileName={members[0]?.idCardName || ''}
                               fileUrl={members[0]?.idCardUrl || ''}
                               onSelect={(file) => processFileUpload(file, (name) => updateMemberField('member-1', 'idCardName', name), (url) => updateMemberField('member-1', 'idCardUrl', url))}
@@ -992,7 +992,7 @@ export default function RegistrationModal({
                             />
 
                             <SafeFileUpload
-                              label={t('Foto Twibbon', 'Foto Twibbon anggota')}
+                              label={t('Twibbon Photo', 'Foto Twibbon')}
                               fileName={members[0]?.twibbonName || ''}
                               fileUrl={members[0]?.twibbonUrl || ''}
                               onSelect={(file) => processFileUpload(file, (name) => updateMemberField('member-1', 'twibbonName', name), (url) => updateMemberField('member-1', 'twibbonUrl', url))}
@@ -1010,7 +1010,7 @@ export default function RegistrationModal({
                           <div className="flex justify-between items-center select-none border-b border-white/5 pb-2">
                             <h4 className="font-sans font-black text-xs text-white uppercase tracking-wider flex items-center gap-1.5">
                               <span className="w-1.5 h-1.5 rounded-full bg-zinc-500" />
-                              {t('ANGGOTA TIM 2', 'ANGGOTA TIM 2')}
+                              {t('MEMBER 2', 'ANGGOTA TIM 2')}
                             </h4>
                             <span className="text-[8.5px] font-mono text-zinc-500 uppercase tracking-widest border border-white/10 bg-white/5 px-2 py-0.5 rounded">
                               {t('OPTIONAL', 'OPSIONAL')}
@@ -1054,7 +1054,7 @@ export default function RegistrationModal({
                             </div>
 
                             <SafeFileUpload
-                              label={t('Foto Kartu Identitas', 'Foto Kartu Identitas')}
+                              label={t('ID Card Photo', 'Foto Kartu Identitas')}
                               fileName={members[1]?.idCardName || ''}
                               fileUrl={members[1]?.idCardUrl || ''}
                               onSelect={(file) => processFileUpload(file, (name) => updateMemberField('member-2', 'idCardName', name), (url) => updateMemberField('member-2', 'idCardUrl', url))}
@@ -1066,7 +1066,7 @@ export default function RegistrationModal({
                             />
 
                             <SafeFileUpload
-                              label={t('Foto Twibbon', 'Foto Twibbon anggota')}
+                              label={t('Twibbon Photo', 'Foto Twibbon')}
                               fileName={members[1]?.twibbonName || ''}
                               fileUrl={members[1]?.twibbonUrl || ''}
                               onSelect={(file) => processFileUpload(file, (name) => updateMemberField('member-2', 'twibbonName', name), (url) => updateMemberField('member-2', 'twibbonUrl', url))}
@@ -1085,7 +1085,7 @@ export default function RegistrationModal({
                             <div className="flex justify-between items-center select-none border-b border-[#C5A059]/20 pb-2">
                               <h4 className="font-sans font-black text-xs text-[#C5A059] uppercase tracking-wider flex items-center gap-1.5">
                                 <span className="w-1.5 h-1.5 rounded-full bg-[#C5A059]" />
-                                {t('LECTURER / DOSEN PENDAMPING', 'LECTURER ATAU DOSEN PENDAMPING')}
+                                {t('LECTURER / ADVISOR', 'DOSEN / GURU PEMBIMBING')}
                               </h4>
                               <span className="text-[8.5px] font-mono text-[#C5A059] uppercase tracking-widest border border-[#C5A059]/20 bg-[#C5A059]/5 px-2 py-0.5 rounded">
                                 {t('REQUIRED', 'WAJIB')}
@@ -1143,7 +1143,7 @@ export default function RegistrationModal({
                               </div>
 
                               <SafeFileUpload
-                                label={t('Foto Kartu Identitas', 'Foto Kartu Identitas')}
+                                label={t('ID Card Photo', 'Foto Kartu Identitas')}
                                 fileName={lecturerIdCardName}
                                 fileUrl={lecturerIdCardUrl}
                                 onSelect={(file) => processFileUpload(file, setLecturerIdCardName, setLecturerIdCardUrl)}
@@ -1155,7 +1155,7 @@ export default function RegistrationModal({
                               />
 
                               <SafeFileUpload
-                                label={t('Foto Twibbon', 'Foto Twibbon anggota')}
+                                label={t('Twibbon Photo', 'Foto Twibbon')}
                                 fileName={lecturerTwibbonName}
                                 fileUrl={lecturerTwibbonUrl}
                                 onSelect={(file) => processFileUpload(file, setLecturerTwibbonName, setLecturerTwibbonUrl)}
@@ -1196,7 +1196,7 @@ export default function RegistrationModal({
                               if (m2 && m2.name.trim() !== '') {
                                 if (!m2.whatsapp.trim() || !m2.idCardUrl || !m2.twibbonUrl) {
                                   showAlert({ message: t(
-                                    'Please fill out all Anggota Tim 2 details or clear their name if not registered.',
+                                    'Please fill out all Member 2 details or clear their name if not registered.',
                                     'Mohon lengkapi seluruh data Anggota Tim 2 atau kosongkan nama jika tidak terdaftar.'
                                   ), type: 'error' });
                                   return;
