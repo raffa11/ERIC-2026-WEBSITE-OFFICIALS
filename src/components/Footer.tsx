@@ -6,7 +6,7 @@
 import { useState } from 'react';
 import { useLanguage } from './LanguageContext';
 import EricLogo from './EricLogo';
-import { Mail, Phone, MapPin, Send, MessageSquare, Heart } from 'lucide-react';
+import { Mail, MapPin, Heart, Globe, MessageCircle } from 'lucide-react';
 import { SUPPORTED_BY } from '../data';
 
 export default function Footer() {
@@ -25,17 +25,16 @@ export default function Footer() {
   return (
     <footer id="footer-root" className="relative bg-[#050505] border-t border-white/5 pt-20 pb-8 overflow-hidden select-none">
       
-      {/* Light highlights */}
       <div className="absolute top-[20%] left-1/2 -translate-x-1/2 w-[500px] h-[300px] rounded-full bg-[#0047AB]/5 blur-[120px] pointer-events-none" />
 
       <div className="max-w-7xl mx-auto px-6 relative z-10">
         
-        {/* Massive Cinematic Banner Wordmark */}
+        {/* Banner */}
         <div className="border-b border-white/5 pb-16 mb-16 overflow-hidden select-none">
           <h2 className="text-[12vw] sm:text-[10vw] font-sans font-black tracking-tighter text-transparent bg-clip-text bg-gradient-to-b from-white to-zinc-600 leading-none uppercase text-center pointer-events-none mb-4">
             ERIC 2026
           </h2>
-          <div className="text-center font-mono text-[#FFD700] tracking-[0.3em] uppercase text-xs sm:text-sm font-bold block">
+          <div className="text-center font-mono text-[#FFD700] tracking-[0.3em] uppercase text-xs sm:text-sm font-bold">
             WHERE ENGINEERS BECOME CHAMPIONS
           </div>
           <div className="text-center font-mono text-zinc-500 tracking-wider text-[10px] mt-2 block uppercase">
@@ -52,113 +51,117 @@ export default function Footer() {
             
             <p className="text-zinc-500 font-mono text-xs uppercase leading-relaxed max-w-sm">
               {t(
-                "Electronics and Robotics Innovation Competition — Indonesia's premier electronic convergence, mekatronika convergence and autonomous robotics competition engineering event.",
-                "Electronics and Robotics Innovation Competition — Gelaran kompetisi mekatronika terbesar, konvergensi elektronik mekatronika, dan robotika otonom paling bergengsi di Indonesia."
+                "Electronics and Robotics Innovation Competition — an international championship organized by Universitas Negeri Jakarta (UNJ), bringing together innovators and engineers from across the globe to compete, collaborate, and shape the future of technology.",
+                "Electronics and Robotics Innovation Competition — kejuaraan internasional yang diselenggarakan oleh Universitas Negeri Jakarta (UNJ), mempertemukan inovator dan insinyur dari seluruh dunia untuk berkompetisi, berkolaborasi, dan membentuk masa depan teknologi."
               )}
             </p>
 
             <div className="space-y-3.5 text-xs font-mono text-zinc-400">
               <div className="flex items-center gap-3">
-                <MapPin className="w-4 h-4 text-[#FFD700]" />
+                <MapPin className="w-4 h-4 text-[#FFD700] shrink-0" />
                 <span>Kampus A Universitas Negeri Jakarta, Jakarta Timur</span>
               </div>
               <div className="flex items-center gap-3">
-                <Mail className="w-4 h-4 text-[#FFD700]" />
-                <a href="mailto:telemetry@eric2026.or.id" className="hover:text-white transition-colors">
-                  telemetry@eric2026.or.id
+                <Mail className="w-4 h-4 text-[#FFD700] shrink-0" />
+                <a href="mailto:ericunjofficial2026@gmail.com" className="hover:text-white transition-colors break-all">
+                  ericunjofficial2026@gmail.com
                 </a>
               </div>
               <div className="flex items-center gap-3">
-                <Phone className="w-4 h-4 text-[#FFD700]" />
-                <span>+62 (21) 5005-2026</span>
+                <Globe className="w-4 h-4 text-[#FFD700] shrink-0" />
+                <a href="https://ericunj.org" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">
+                  ericunj.org
+                </a>
               </div>
             </div>
           </div>
 
-          {/* Quick Pages Mapping (3 cols) */}
+          {/* Navigation (3 cols) */}
           <div className="md:col-span-3 space-y-4">
             <span className="text-[10px] font-mono text-white/40 tracking-[0.2em] uppercase block">
-              CHAMPIONSHIP NAVIGATION
+              {t('NAVIGATION', 'NAVIGASI')}
             </span>
             <ul className="space-y-2 text-sm font-sans font-extrabold text-zinc-300 uppercase">
               <li>
                 <button onClick={() => handleScrollTo('#about-section')} className="hover:text-[#FFD700] transition-colors">
-                  {t('ABOUT MISSION', 'TENTANG MISI')}
+                  {t('ABOUT', 'TENTANG')}
                 </button>
               </li>
               <li>
                 <button onClick={() => handleScrollTo('#divisions-section')} className="hover:text-[#FFD700] transition-colors">
-                  {t('OPERATIONAL DIVISIONS', 'DIVISI UTAMA')}
-                </button>
-              </li>
-              <li>
-                <button onClick={() => handleScrollTo('#registration-section')} className="hover:text-[#FFD700] transition-colors">
-                  {t('CHAMPIONSHIP PORTAL', 'PORTAL CHAMPIONSHIP')}
+                  {t('DIVISIONS', 'DIVISI')}
                 </button>
               </li>
               <li>
                 <button onClick={() => handleScrollTo('#timeline-section')} className="hover:text-[#FFD700] transition-colors">
-                  {t('DIAGNOSTIC TIMELINE', 'LINI MASA INTEGRASI')}
+                  {t('TIMELINE', 'LINI MASA')}
                 </button>
               </li>
               <li>
                 <button onClick={() => handleScrollTo('#gallery-section')} className="hover:text-[#FFD700] transition-colors">
-                  {t('COMMUNITY GALLERY', 'GALERI FOTO')}
+                  {t('GALLERY', 'GALERI')}
+                </button>
+              </li>
+              <li>
+                <button onClick={() => handleScrollTo('#contact-section')} className="hover:text-[#FFD700] transition-colors">
+                  {t('CONTACT', 'KONTAK')}
                 </button>
               </li>
             </ul>
           </div>
 
-          {/* Follow Us / Social Handles (2 cols) */}
+          {/* Follow Us (2 cols) */}
           <div className="md:col-span-2 space-y-4">
             <span className="text-[10px] font-mono text-white/40 tracking-[0.2em] uppercase block">
-              FOLLOW TELEMETRY
+              {t('FOLLOW US', 'IKUTI KAMI')}
             </span>
             <ul className="space-y-2 text-sm font-sans font-extrabold text-zinc-300 uppercase">
               <li>
-                <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" className="hover:text-[#FFD700] transition-colors">
+                <a href="https://instagram.com/ericunj.official" target="_blank" rel="noopener noreferrer" className="hover:text-[#FFD700] transition-colors">
                   INSTAGRAM
                 </a>
               </li>
               <li>
-                <a href="https://youtube.com" target="_blank" rel="noopener noreferrer" className="hover:text-[#FFD700] transition-colors">
-                  YOUTUBE
+                <a href="https://ericunj.org" target="_blank" rel="noopener noreferrer" className="hover:text-[#FFD700] transition-colors">
+                  WEBSITE
                 </a>
               </li>
               <li>
-                <a href="https://twitter.com" target="_blank" rel="noopener noreferrer" className="hover:text-[#FFD700] transition-colors">
-                  X / TWITTER
+                <a href="https://linktr.ee/eric2026" target="_blank" rel="noopener noreferrer" className="hover:text-[#FFD700] transition-colors">
+                  LINKTREE
                 </a>
               </li>
               <li>
-                <a href="https://github.com" target="_blank" rel="noopener noreferrer" className="hover:text-[#FFD700] transition-colors">
-                  GITHUB LABS
+                <a href="https://wa.me/6285176706421" target="_blank" rel="noopener noreferrer" className="hover:text-[#FFD700] transition-colors">
+                  WHATSAPP
                 </a>
               </li>
             </ul>
           </div>
 
-          {/* Business & Press Enquiries (3 cols) */}
+          {/* Quick Contact (3 cols) */}
           <div className="md:col-span-3 space-y-4">
             <span className="text-[10px] font-mono text-white/40 tracking-[0.2em] uppercase block">
-              COLLABORATION CHANNELS
+              {t('QUICK CONTACT', 'KONTAK CEPAT')}
             </span>
             <p className="text-zinc-500 font-mono text-[11px] uppercase leading-relaxed">
-              For corporate mekatronika funding, enterprise exhibits, or public relations telemetry signals.
+              {t('Reach out to our team for registration assistance, partnership inquiries, or any questions about ERIC 2026.', 'Hubungi tim kami untuk bantuan pendaftaran, kerja sama, atau pertanyaan seputar ERIC 2026.')}
             </p>
             <a
-              id="footer-press-link"
-              href="mailto:partners@eric2026.or.id"
+              id="footer-contact-btn"
+              href="https://wa.me/6285176706421"
+              target="_blank"
+              rel="noopener noreferrer"
               className="flex items-center gap-2 justify-center w-full bg-zinc-900 hover:bg-zinc-800 border border-white/10 text-white font-mono text-xs uppercase py-3.5 px-4 rounded-xl transition-all duration-300 hover:border-[#FFD700]/40"
             >
-              <MessageSquare className="w-4 h-4 text-[#FFD700]" />
-              <span>PRESS ENQUIRIES ↗</span>
+              <MessageCircle className="w-4 h-4 text-[#FFD700]" />
+              <span>{t('CONTACT ADMIN', 'HUBUNGI ADMIN')} ↗</span>
             </a>
           </div>
 
         </div>
 
-        {/* Supported By Institution Logos */}
+        {/* Supported By */}
         <div className="pb-12 border-b border-white/5 mb-8">
           <div className="flex flex-col items-center gap-6">
             <span className="text-[9px] font-mono text-zinc-600 tracking-[0.3em] uppercase">
@@ -213,20 +216,20 @@ export default function Footer() {
           </a>
         </div>
 
-        {/* Dynamic bottom section panel */}
+        {/* Bottom */}
         <div className="pt-8 flex flex-col md:flex-row justify-between items-center gap-6">
           
           <div className="text-[10px] font-mono text-zinc-500 uppercase tracking-wider text-center md:text-left">
-            <span>© 2026 Electronics Robotics Innovation Competition. </span>
+            <span>© 2026 Electronics and Robotics Innovation Competition. </span>
             <span className="block md:inline mt-1 md:mt-0 text-white/30">
-              Electronics and Robotics Innovation Competition.
+              Organized by Universitas Negeri Jakarta (UNJ).
             </span>
           </div>
 
           <div className="text-[10px] font-mono text-zinc-500 flex items-center gap-1.5 hover:text-white transition-colors duration-300">
-            <span>CREATED WITH</span>
+            <span>{t('CREATED WITH', 'DIBUAT DENGAN')}</span>
             <Heart className="w-3.5 h-3.5 text-[#FFD700] animate-pulse fill-[#FFD700]" />
-            <span>FOR INDONESIAN ROBOTICISTS</span>
+            <span>{t('FOR THE FUTURE OF ROBOTICS', 'UNTUK MASA DEPAN ROBOTIKA')}</span>
           </div>
 
         </div>
