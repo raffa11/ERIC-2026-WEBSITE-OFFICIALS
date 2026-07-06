@@ -508,9 +508,6 @@ export default function RegistrationModal({
       {isOpen && (
         <div className="fixed inset-0 z-50 bg-black/95 backdrop-blur-md overflow-y-auto">
           <div className="min-h-full sm:min-h-screen flex items-center justify-center px-4 py-6 sm:py-10 md:py-12">
-          {/* Backdrop closer */}
-          {!successPopup && <div className="absolute inset-0 cursor-default" onClick={onClose} />}
-
           <motion.div
             id="registration-modal-card"
             initial={{ opacity: 0, scale: 0.95, y: 20 }}
