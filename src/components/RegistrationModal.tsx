@@ -110,7 +110,10 @@ export default function RegistrationModal({
       setLeaderTwibbonUrl(draft.leaderTwibbonUrl);
       setLeaderAddress(draft.leaderAddress);
       setLeaderCongenitalDisease(draft.leaderCongenitalDisease);
-      setMembers(draft.members);
+      // Ensure draft members match current division's maxStaff (e.g. PLC = maxStaff 1)
+      const divForDraft = COMPETITION_DIVISIONS.find(d => d.id === draft.selectedDivision);
+      const trimmedMembers = draft.members && draft.members.length > 0 ? [draft.members[0]] : draft.members;
+      setMembers(divForDraft && divForDraft.maxStaff && divForDraft.maxStaff >= 2 ? draft.members : trimmedMembers);
       setSubCategory(draft.subCategory);
       setLevel(draft.level);
       setLecturerName(draft.lecturerName);
