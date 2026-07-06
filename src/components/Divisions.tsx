@@ -18,6 +18,12 @@ export default function Divisions({ onSelectDivision }: DivisionsProps) {
     typeof window !== 'undefined' && window.matchMedia('(pointer: coarse)').matches
   );
 
+  // Shared class helpers for resource links (mobile-safe)
+  const linkBoxClass = `relative flex items-center justify-center gap-2.5 px-4 py-4 md:px-5 md:py-4 bg-zinc-950 border border-white/10 rounded-2xl min-h-[60px] ${isTouchDevice ? '' : 'group hover:border-[#FFD700]/40 transition-all duration-300 hover:shadow-[0_0_20px_rgba(255, 215, 0, 0.1)]'}`;
+  const linkLabelClass = `text-[8px] md:text-[9px] font-mono text-zinc-500 uppercase tracking-widest`;
+  const linkTextClass = `text-[11px] md:text-xs font-sans font-black uppercase tracking-tight truncate ${isTouchDevice ? 'text-white' : 'text-white group-hover:text-[#FFD700] transition-colors'}`;
+  const linkIconClass = `w-3 h-3 md:w-3.5 md:h-3.5 flex-shrink-0 ${isTouchDevice ? 'text-zinc-500' : 'text-zinc-500 group-hover:text-[#FFD700] transition-colors'}`;
+
   // Track hover status per card ID to implement individual glares
   const [hoveredCardId, setHoveredCardId] = useState<string | null>(null);
   const [tiltMap, setTiltMap] = useState<Record<string, { x: number; y: number; gx: number; gy: number }>>({});
@@ -49,10 +55,14 @@ export default function Divisions({ onSelectDivision }: DivisionsProps) {
   };
 
   return (
-    <section id="divisions-section" className="relative py-28 bg-[#050505] border-t border-white/5 overflow-hidden">
-      {/* Visual cybernetic backdrops */}
-      <div className="absolute right-[5%] top-[-5%] w-[450px] h-[450px] bg-[#FFD700]/5 rounded-full blur-[110px] pointer-events-none" />
-      <div className="absolute left-[5%] bottom-[10%] w-[380px] h-[380px] bg-[#0047AB]/5 rounded-full blur-[130px] pointer-events-none" />
+    <section id="divisions-section" className="relative py-28 bg-[#050505] border-t border-white/5">
+      {/* Visual cybernetic backdrops - hidden on touch for performance */}
+      {!isTouchDevice && (
+        <>
+          <div className="absolute right-[5%] top-[-5%] w-[450px] h-[450px] bg-[#FFD700]/5 rounded-full blur-[110px] pointer-events-none" />
+          <div className="absolute left-[5%] bottom-[10%] w-[380px] h-[380px] bg-[#0047AB]/5 rounded-full blur-[130px] pointer-events-none" />
+        </>
+      )}
 
       <div className="max-w-7xl mx-auto px-6 relative z-10">
         
@@ -72,84 +82,51 @@ export default function Divisions({ onSelectDivision }: DivisionsProps) {
 
         {/* Resource Links */}
         <div className="grid grid-cols-2 md:grid-cols-5 gap-3 md:gap-4 mb-16 max-w-6xl mx-auto select-none">
-          <a
-            href="https://drive.google.com/drive/folders/1co00vzy633xZzgyBG0G4dvWEtvsHenXt"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="group relative flex items-center justify-center gap-2.5 px-4 py-4 md:px-5 md:py-4 bg-zinc-950 border border-white/10 hover:border-[#FFD700]/40 rounded-2xl transition-all duration-300 hover:shadow-[0_0_20px_rgba(255, 215, 0, 0.1)] min-h-[60px]"
-          >
+          <a href="https://drive.google.com/drive/folders/1co00vzy633xZzgyBG0G4dvWEtvsHenXt" target="_blank" rel="noopener noreferrer" className={linkBoxClass}>
             <LucideIcons.FileText className="w-4 h-4 flex-shrink-0 text-[#FFD700]" />
             <div className="text-left min-w-0">
-              <div className="text-[8px] md:text-[9px] font-mono text-zinc-500 uppercase tracking-widest">{t('INFO', 'INFORMASI')}</div>
-              <div className="text-[11px] md:text-xs font-sans font-black text-white group-hover:text-[#FFD700] transition-colors uppercase tracking-tight truncate">
-                {t('All Information', 'Semua Informasi')}
-              </div>
+              <div className={linkLabelClass}>{t('INFO', 'INFORMASI')}</div>
+              <div className={linkTextClass}>{t('All Information', 'Semua Informasi')}</div>
             </div>
-            <LucideIcons.ExternalLink className="w-3 h-3 md:w-3.5 md:h-3.5 flex-shrink-0 text-zinc-500 group-hover:text-[#FFD700] transition-colors" />
+            <LucideIcons.ExternalLink className={linkIconClass} />
           </a>
 
-          <a
-            href="https://drive.google.com/drive/folders/10w9yn_Tvfa7Kw7fEdQgRgHy6ARn04N_r?usp=drive_link"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="group relative flex items-center justify-center gap-2.5 px-4 py-4 md:px-5 md:py-4 bg-zinc-950 border border-white/10 hover:border-[#FFD700]/40 rounded-2xl transition-all duration-300 hover:shadow-[0_0_20px_rgba(255, 215, 0, 0.1)] min-h-[60px]"
-          >
+          <a href="https://drive.google.com/drive/folders/10w9yn_Tvfa7Kw7fEdQgRgHy6ARn04N_r?usp=drive_link" target="_blank" rel="noopener noreferrer" className={linkBoxClass}>
             <LucideIcons.BookOpen className="w-4 h-4 flex-shrink-0 text-[#FFD700]" />
             <div className="text-left min-w-0">
-              <div className="text-[8px] md:text-[9px] font-mono text-zinc-500 uppercase tracking-widest">{t('GUIDE', 'PANDUAN')}</div>
-              <div className="text-[11px] md:text-xs font-sans font-black text-white group-hover:text-[#FFD700] transition-colors uppercase tracking-tight truncate">
-                {t('Guidebook', 'Buku Panduan')}
-              </div>
+              <div className={linkLabelClass}>{t('GUIDE', 'PANDUAN')}</div>
+              <div className={linkTextClass}>{t('Guidebook', 'Buku Panduan')}</div>
             </div>
-            <LucideIcons.ExternalLink className="w-3 h-3 md:w-3.5 md:h-3.5 flex-shrink-0 text-zinc-500 group-hover:text-[#FFD700] transition-colors" />
+            <LucideIcons.ExternalLink className={linkIconClass} />
           </a>
 
-          <a
-            href="https://drive.google.com/drive/folders/1RPDtOuZvIp4wUPghS5LrQXQCm9JYpciU"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="group relative flex items-center justify-center gap-2.5 px-4 py-4 md:px-5 md:py-4 bg-zinc-950 border border-white/10 hover:border-[#FFD700]/40 rounded-2xl transition-all duration-300 hover:shadow-[0_0_20px_rgba(255, 215, 0, 0.1)] min-h-[60px]"
-          >
+          <a href="https://drive.google.com/drive/folders/1RPDtOuZvIp4wUPghS5LrQXQCm9JYpciU" target="_blank" rel="noopener noreferrer" className={linkBoxClass}>
             <LucideIcons.Calendar className="w-4 h-4 flex-shrink-0 text-[#FFD700]" />
             <div className="text-left min-w-0">
-              <div className="text-[8px] md:text-[9px] font-mono text-zinc-500 uppercase tracking-widest">{t('SCHEDULE', 'JADWAL')}</div>
-              <div className="text-[11px] md:text-xs font-sans font-black text-white group-hover:text-[#FFD700] transition-colors uppercase tracking-tight truncate">
-                {t('Event Schedule', 'Jadwal Acara')}
-              </div>
+              <div className={linkLabelClass}>{t('SCHEDULE', 'JADWAL')}</div>
+              <div className={linkTextClass}>{t('Event Schedule', 'Jadwal Acara')}</div>
             </div>
-            <LucideIcons.ExternalLink className="w-3 h-3 md:w-3.5 md:h-3.5 flex-shrink-0 text-zinc-500 group-hover:text-[#FFD700] transition-colors" />
+            <LucideIcons.ExternalLink className={linkIconClass} />
           </a>
 
-          <a
-            href="https://drive.google.com/drive/folders/1aM7UBB4gHVja5UdD079kXtcBJ3001mTt"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="group relative flex items-center justify-center gap-2.5 px-4 py-4 md:px-5 md:py-4 bg-zinc-950 border border-white/10 hover:border-[#FFD700]/40 rounded-2xl transition-all duration-300 hover:shadow-[0_0_20px_rgba(255, 215, 0, 0.1)] min-h-[60px]"
-          >
+          <a href="https://drive.google.com/drive/folders/1aM7UBB4gHVja5UdD079kXtcBJ3001mTt" target="_blank" rel="noopener noreferrer" className={linkBoxClass}>
             <LucideIcons.Mail className="w-4 h-4 flex-shrink-0 text-[#FFD700]" />
             <div className="text-left min-w-0">
-              <div className="text-[8px] md:text-[9px] font-mono text-zinc-500 uppercase tracking-widest">{t('LETTERS', 'SURAT')}</div>
-              <div className="text-[11px] md:text-xs font-sans font-black text-white group-hover:text-[#FFD700] transition-colors uppercase tracking-tight truncate">
-                {t('Official Letters', 'Surat Resmi')}
-              </div>
+              <div className={linkLabelClass}>{t('LETTERS', 'SURAT')}</div>
+              <div className={linkTextClass}>{t('Official Letters', 'Surat Resmi')}</div>
             </div>
-            <LucideIcons.ExternalLink className="w-3 h-3 md:w-3.5 md:h-3.5 flex-shrink-0 text-zinc-500 group-hover:text-[#FFD700] transition-colors" />
+            <LucideIcons.ExternalLink className={linkIconClass} />
           </a>
 
-          <a
-            href="https://drive.google.com/drive/folders/1tPH_fQXZpv-MhmZd5DP7CXFn-krnmc10?usp=sharing"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="group relative flex items-center justify-center gap-2.5 px-4 py-4 md:px-5 md:py-4 bg-zinc-950 border border-white/10 hover:border-[#FFD700]/40 rounded-2xl transition-all duration-300 hover:shadow-[0_0_20px_rgba(255, 215, 0, 0.1)] min-h-[60px]"
-          >
+          <a href="https://drive.google.com/drive/folders/1tPH_fQXZpv-MhmZd5DP7CXFn-krnmc10?usp=sharing" target="_blank" rel="noopener noreferrer" className={linkBoxClass}>
             <LucideIcons.ScrollText className="w-4 h-4 flex-shrink-0 text-[#FFD700]" />
             <div className="text-left">
-              <div className="text-[8px] md:text-[9px] font-mono text-zinc-500 uppercase tracking-widest whitespace-nowrap">{t('TERMS', 'KETENTUAN')}</div>
-              <div className="text-[11px] md:text-xs font-sans font-black text-white group-hover:text-[#FFD700] transition-colors uppercase tracking-tight">
+              <div className={`${linkLabelClass} whitespace-nowrap`}>{t('TERMS', 'KETENTUAN')}</div>
+              <div className={`text-[11px] md:text-xs font-sans font-black uppercase tracking-tight ${isTouchDevice ? 'text-white' : 'text-white group-hover:text-[#FFD700] transition-colors'}`}>
                 {t('T&C Cytron', 'S&K Cytron')}
               </div>
             </div>
-            <LucideIcons.ExternalLink className="w-3 h-3 md:w-3.5 md:h-3.5 flex-shrink-0 text-zinc-500 group-hover:text-[#FFD700] transition-colors" />
+            <LucideIcons.ExternalLink className={linkIconClass} />
           </a>
         </div>
 
@@ -177,7 +154,7 @@ export default function Divisions({ onSelectDivision }: DivisionsProps) {
                   if (isTouchDevice) return;
                   handleMouseLeave(division.id);
                 }}
-                className="relative cursor-pointer select-none group touch-manipulation"
+                className={`relative cursor-pointer select-none ${isTouchDevice ? '' : 'group'} touch-manipulation`}
                 style={{ perspective: isTouchDevice ? 'none' : '800px' }}
               >
                 {/* Embedded Glow Shadow Behind Card */}
@@ -225,7 +202,7 @@ export default function Divisions({ onSelectDivision }: DivisionsProps) {
                     <div className="flex justify-between items-start mb-6">
                       {division.image ? (
                         <div className={`w-20 h-20 rounded-xl border overflow-hidden bg-zinc-950/80 shrink-0 flex items-center justify-center p-1.5 ${isTouchDevice ? 'border-white/10' : 'border-white/10 group-hover:border-[#FFD700]/40 transition-colors duration-300'}`}>
-                          <img src={division.image} alt={division.title} className="w-full h-full object-contain" />
+                          <img src={division.image} alt={division.title} loading="lazy" className="w-full h-full object-contain" />
                         </div>
                       ) : (
                         <div className={`p-3 bg-zinc-950/80 rounded-xl border text-white ${isTouchDevice ? 'border-white/10' : 'border-white/10 group-hover:text-[#FFD700] group-hover:border-[#FFD700]/40 transition-colors duration-300'}`}>
