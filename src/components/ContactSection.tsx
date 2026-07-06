@@ -16,7 +16,8 @@ export default function ContactSection() {
     faculty: 'Faculty of Engineering',
     facultyID: 'Fakultas Teknik',
     university: 'Universitas Negeri Jakarta (UNJ)',
-    address: 'BEM - Program Studi Pendidikan Teknik Elektronika, Fakultas Teknik - Universitas Negeri Jakarta, Kampus A (Kampus Utama), Jl. Rawamangun Muka, Jakarta Timur 13220, Indonesia'
+    address: 'BEM - Program Studi Pendidikan Teknik Elektronika, Fakultas Teknik - Universitas Negeri Jakarta, Kampus A (Kampus Utama), Jl. Rawamangun Muka, Jakarta Timur 13220, Indonesia',
+    addressEN: 'Student Executive Board (BEM) - Electronics Engineering Education Program, Faculty of Engineering - Jakarta State University (UNJ), Main Campus (Kampus A), Jl. Rawamangun Muka, East Jakarta 13220, Indonesia'
   };
 
   const contactChannels = [
@@ -141,7 +142,7 @@ export default function ContactSection() {
                       CAMPUS HEADQUARTERS ADDRESS
                     </h4>
                     <p className="text-zinc-300 text-xs leading-relaxed uppercase font-mono mt-1">
-                      {organizerDetails.address}
+                      {t(organizerDetails.addressEN, organizerDetails.address)}
                     </p>
                   </div>
                 </div>
