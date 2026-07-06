@@ -1,12 +1,12 @@
 ﻿import { useLanguage } from './LanguageContext';
 
 const COUNTRIES = [
-  { emoji: '🇮🇩', name: 'Indonesia' },
-  { emoji: '🇲🇾', name: 'Malaysia' },
-  { emoji: '🇵🇭', name: 'Philippines' },
-  { emoji: '🇻🇳', name: 'Vietnam' },
-  { emoji: '🇲🇺', name: 'Mauritius' },
-  { emoji: '🇹🇼', name: 'Taiwan' },
+  { code: 'id', name: 'Indonesia' },
+  { code: 'my', name: 'Malaysia' },
+  { code: 'ph', name: 'Philippines' },
+  { code: 'vn', name: 'Vietnam' },
+  { code: 'mu', name: 'Mauritius' },
+  { code: 'tw', name: 'Taiwan' },
 ];
 
 export default function CountriesSection() {
@@ -27,7 +27,7 @@ export default function CountriesSection() {
               key={c.name}
               className="flex items-center gap-2 px-5 py-3 bg-zinc-900/40 border border-white/5 rounded-xl"
             >
-              <span className="text-3xl sm:text-4xl md:text-5xl leading-none">{c.emoji}</span>
+              <img src={`https://flagcdn.com/w80/${c.code}.png`} alt={c.name} className="w-8 h-6 sm:w-10 sm:h-7 md:w-12 md:h-8 object-cover rounded shadow-[0_0_6px_rgba(255,255,255,0.08)]" />
               <span className="text-sm md:text-base font-sans font-bold text-zinc-300 uppercase tracking-wider">
                 {c.name}
               </span>
