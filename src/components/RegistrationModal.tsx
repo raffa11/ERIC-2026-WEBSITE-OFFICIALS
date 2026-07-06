@@ -33,7 +33,7 @@ export default function RegistrationModal({
   onRegistrationSuccess
 }: RegistrationModalProps) {
   const { t } = useLanguage();
-  const { showAlert } = useAlert();
+  const { showAlert, showConfirm } = useAlert();
 
   // Wizard Multi-stage Form State
   const [wizardStep, setWizardStep] = useState(1);
@@ -523,18 +523,30 @@ export default function RegistrationModal({
             {!successPopup && (
               <button
                 onClick={() => {
-                  saveDraft(selectedDivision, {
-                    wizardStep,
-                    selectedDivision, teamName, leaderName, leaderEmail, leaderWhatsapp, leaderInstitution,
-                    leaderIdCardName, leaderIdCardUrl, leaderTwibbonName, leaderTwibbonUrl,
-                    leaderAddress, leaderCongenitalDisease,
-                    members, subCategory, level,
-                    lecturerName, lecturerEmail, lecturerWhatsapp,
-                    lecturerIdCardName, lecturerIdCardUrl, lecturerTwibbonName, lecturerTwibbonUrl,
-                    lecturerCongenitalDisease,
-                    paymentMethod, selectedBank, paymentProofName, paymentProofUrl,
+                  showConfirm({
+                    message: t('Save changes or discard?', 'Simpan perubahan atau buang perubahan?'),
+                    type: 'warning',
+                    confirmLabel: t('SAVE', 'SIMPAN'),
+                    cancelLabel: t('DISCARD', 'BUANG'),
+                    onConfirm: () => {
+                      saveDraft(selectedDivision, {
+                        wizardStep,
+                        selectedDivision, teamName, leaderName, leaderEmail, leaderWhatsapp, leaderInstitution,
+                        leaderIdCardName, leaderIdCardUrl, leaderTwibbonName, leaderTwibbonUrl,
+                        leaderAddress, leaderCongenitalDisease,
+                        members, subCategory, level,
+                        lecturerName, lecturerEmail, lecturerWhatsapp,
+                        lecturerIdCardName, lecturerIdCardUrl, lecturerTwibbonName, lecturerTwibbonUrl,
+                        lecturerCongenitalDisease,
+                        paymentMethod, selectedBank, paymentProofName, paymentProofUrl,
+                      });
+                      onClose();
+                    },
+                    onCancel: () => {
+                      clearDraft(selectedDivision);
+                      onClose();
+                    },
                   });
-                  onClose();
                 }}
                 className="absolute top-4 right-4 p-2 bg-zinc-900 border border-white/5 hover:border-white/10 text-zinc-400 hover:text-white rounded-xl transition-all cursor-pointer z-20"
               >
