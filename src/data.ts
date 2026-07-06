@@ -9,7 +9,6 @@ export const COMPETITION_DIVISIONS: Division[] = [
   {
     id: 'sumobot-500g',
     title: 'Sumobot 500g',
-    indonesianTitle: 'Robot Sumo 500g',
     description: 'A lightweight sumo robot competition featuring two categories: Remote Control (RC) and Autonomous. Participants are challenged to design strong, resilient, and strategic robots to dominate the arena and push opponents out of the ring. The RC category tests operator control skills and strategy, while the Autonomous category tests the robots ability to detect its environment, make decisions, and compete independently.',
     indonesianDescription: 'Kompetisi robot sumo ringan yang menghadirkan dua kategori, yaitu Remote Control (RC) dan Autonomous. Peserta ditantang untuk merancang robot yang kuat, tangguh, dan strategis guna menguasai arena serta mendorong lawan keluar dari ring. Kategori RC menguji keterampilan pengendalian dan strategi operator, sedangkan kategori Autonomous menguji kemampuan robot dalam mendeteksi lingkungan, mengambil keputusan, dan bertanding secara mandiri.',
     icon: 'Shield',
@@ -33,7 +32,6 @@ export const COMPETITION_DIVISIONS: Division[] = [
   {
     id: 'sumobot-3kg',
     title: 'Sumobot 3kg',
-    indonesianTitle: 'Robot Sumo 3kg',
     description: 'A heavyweight sumo robot competition that challenges participants to design strong, sturdy robots with high traction and precise control. Teams compete using Remote Control (RC), relying on driving skills, strategy, and mechanical performance to push opponents out of the arena.',
     indonesianDescription: 'Kompetisi robot sumo kelas berat yang menantang peserta untuk merancang robot yang kuat, kokoh, dan memiliki traksi tinggi dengan kendali yang presisi. Tim bertanding menggunakan Remote Control (RC), mengandalkan keterampilan mengemudi, strategi, dan performa mekanik untuk mendorong lawan keluar dari arena.',
     icon: 'Terminal',
@@ -57,7 +55,6 @@ export const COMPETITION_DIVISIONS: Division[] = [
   {
     id: 'mini-soccer',
     title: 'Mini Soccer',
-    indonesianTitle: 'Robot Sepak Bola Mini',
     description: 'A dynamic soccer robot competition where teams control robots using Remote Control (RC) to demonstrate teamwork, agility, and game strategy. Success is determined by ball control ability, fast movement, team coordination, and effective attacking and defensive strategies.',
     indonesianDescription: 'Kompetisi robot sepak bola yang dinamis, di mana tim mengendalikan robot menggunakan Remote Control (RC) untuk menunjukkan kerja sama, kelincahan, dan strategi permainan. Keberhasilan ditentukan oleh kemampuan mengendalikan bola, pergerakan yang cepat, koordinasi tim, serta strategi menyerang dan bertahan yang efektif.',
     icon: 'Activity',
@@ -80,7 +77,6 @@ export const COMPETITION_DIVISIONS: Division[] = [
   {
     id: 'line-follower',
     title: 'Line Follower',
-    indonesianTitle: 'Robot Pengikut Garis',
     description: 'The Line Follower division challenges participants to design autonomous robots capable of following tracks with high speed and accuracy. Participants are required to optimize sensor performance, control algorithms, and robot stability to complete the track in the fastest time with precise navigation.',
     indonesianDescription: 'Divisi Line Follower menantang peserta untuk merancang robot otonom yang mampu mengikuti lintasan dengan kecepatan dan akurasi tinggi. Peserta dituntut mengoptimalkan kinerja sensor, algoritma kendali, dan stabilitas robot agar dapat menyelesaikan lintasan dalam waktu tercepat dengan navigasi yang presisi.',
     icon: 'Navigation',
@@ -104,7 +100,6 @@ export const COMPETITION_DIVISIONS: Division[] = [
   {
     id: 'plc-industrial',
     title: 'PLC Industrials',
-    indonesianTitle: 'PLC Otomasi Industri',
     description: 'The PLC Industrials division challenges participants to design, program, and implement industrial automation systems using Programmable Logic Controllers (PLC). Participants demonstrate their ability to develop reliable control systems, integrate various industrial components, and solve automation challenges through efficient and innovative engineering solutions.',
     indonesianDescription: 'Divisi PLC Industrials menantang peserta untuk merancang, memprogram, dan mengimplementasikan sistem otomasi industri menggunakan Programmable Logic Controller (PLC). Peserta menunjukkan kemampuan dalam mengembangkan sistem kontrol yang andal, mengintegrasikan berbagai komponen industri, serta menyelesaikan tantangan otomasi melalui solusi rekayasa yang efisien dan inovatif.',
     icon: 'Layers',
@@ -128,7 +123,6 @@ export const COMPETITION_DIVISIONS: Division[] = [
   {
     id: 'collaborative-robot',
     title: 'Collaborative Robot',
-    indonesianTitle: 'Robot Kolaboratif (Cobot)',
     description: 'This competition division will be opening soon. Stay tuned for updates!',
     indonesianDescription: 'Mata lomba ini akan segera dibuka. Nantikan informasi selanjutnya!',
     icon: 'Cpu',
@@ -149,7 +143,6 @@ export const COMPETITION_DIVISIONS: Division[] = [
   {
     id: 'research-innovation',
     title: 'Research Innovation',
-    indonesianTitle: 'Tantangan Riset Inovasi',
     description: 'The Research Innovation division is a competition that encourages participants to produce scientific papers and innovative research in science, technology, electronics, robotics, and other related fields. Participants are challenged to present creative, applicable research-based solutions that contribute to the advancement of science and technology.',
     indonesianDescription: 'Divisi Research Innovation merupakan kompetisi yang mendorong peserta untuk menghasilkan karya tulis ilmiah dan penelitian inovatif dalam bidang sains, teknologi, elektronika, robotika, maupun bidang terkait lainnya. Peserta ditantang menyajikan solusi berbasis riset yang kreatif, aplikatif, dan memberikan kontribusi terhadap perkembangan ilmu pengetahuan dan teknologi.',
     icon: 'BookOpen',
@@ -173,7 +166,6 @@ export const COMPETITION_DIVISIONS: Division[] = [
   {
     id: 'creative-innovation',
     title: 'Creative Innovation',
-    indonesianTitle: 'Karya Inovasi Kreatif',
     description: 'The Creative Innovation division is a competition focused on developing innovative products, prototypes, or technologies that provide solutions to various problems in society and industry. Participants are encouraged to combine creativity, engineering, and innovation into functional, useful, and valuable works.',
     indonesianDescription: 'Divisi Creative Innovation merupakan kompetisi yang berfokus pada pengembangan produk, prototipe, atau teknologi inovatif yang memberikan solusi terhadap berbagai permasalahan di masyarakat maupun industri. Peserta didorong untuk menggabungkan kreativitas, rekayasa, dan inovasi menjadi karya yang fungsional, bermanfaat, dan bernilai.',
     icon: 'Lightbulb',
@@ -197,7 +189,6 @@ export const COMPETITION_DIVISIONS: Division[] = [
   {
     id: 'drone-innovation',
     title: 'Drone Innovation',
-    indonesianTitle: 'Inovasi Wahana Drone',
     description: 'The Drone Innovation division challenges participants to design, develop, and operate drone-based systems to solve various challenges effectively and efficiently. This competition emphasizes the ability to integrate flight technology, control systems, and innovation to produce reliable solutions.',
     indonesianDescription: 'Divisi Drone Innovation menantang peserta untuk merancang, mengembangkan, dan mengoperasikan sistem berbasis drone guna menyelesaikan berbagai tantangan secara efektif dan efisien. Kompetisi ini mengedepankan kemampuan dalam mengintegrasikan teknologi penerbangan, sistem kendali, dan inovasi untuk menghasilkan solusi yang andal.',
     icon: 'Compass',

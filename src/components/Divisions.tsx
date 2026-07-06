@@ -220,10 +220,6 @@ export default function Divisions({ onSelectDivision }: DivisionsProps) {
                     <h3 className={`text-2xl font-sans font-black uppercase leading-none tracking-tight ${isTouchDevice ? 'text-white' : 'text-white group-hover:text-[#FFD700] transition-colors'}`}>
                       {division.title}
                     </h3>
-                    <h4 className="text-[10px] font-mono text-[#C5A059] uppercase tracking-wider block mt-1.5 font-bold">
-                      {division.indonesianTitle}
-                    </h4>
-
                     {/* Localised Description */}
                     <p className="text-zinc-400 text-xs mt-4 leading-relaxed line-clamp-4">
                       {division.comingSoon

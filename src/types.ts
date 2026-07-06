@@ -12,7 +12,6 @@ export interface ContactPerson {
 export interface Division {
   id: string;
   title: string;
-  indonesianTitle: string;
   description: string;
   indonesianDescription: string;
   icon: string; // lucide icon name

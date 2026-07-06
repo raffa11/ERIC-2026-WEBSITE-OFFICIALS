@@ -695,13 +695,10 @@ export default function RegistrationModal({
                               <h4 className="text-lg font-sans font-black text-white uppercase tracking-tight">
                                 {divisionObj.title}
                               </h4>
-                              <p className="text-xs font-mono text-[#C5A059] uppercase">
-                                {divisionObj.indonesianTitle}
-                              </p>
                             </div>
                           </div>
 
-                          <p className="text-xs text-zinc-400 font-mono leading-relaxed uppercase">
+                          <p className="text-xs text-zinc-400 font-mono leading-relaxed uppercase mt-2">
                             {t(divisionObj.description, divisionObj.indonesianDescription)}
                           </p>
 
