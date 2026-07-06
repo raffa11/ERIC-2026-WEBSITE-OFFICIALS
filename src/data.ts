@@ -222,7 +222,7 @@ export const ROBOT_MACHINES: RobotMachine[] = [
     maxSpeed: '2.1 m/s',
     processingPower: 'Raspberry Pi 4 + Coral Edge TPU',
     specifications: {
-      'Origin Institution': 'Universitas Negeri Jakarta (UNJ)',
+      'Origin Institution': 'Jakarta State University (UNJ)',
       'Development Team': 'Batavia Robotics Lab',
       'Chassis System': 'CNC Milled Aluminum Alloy duralumin',
       'Sensors & Camera': 'Omnidirectional Camera with OpenCV ball tracking'
@@ -456,7 +456,7 @@ export const SUPPORTED_BY = [
     initials: 'KEMENDIKBUD'
   },
   {
-    name: 'Universitas Negeri Jakarta',
+    name: 'Jakarta State University (UNJ)',
     logo: '/images/supported-by/unj.png',
     initials: 'UNJ'
   },

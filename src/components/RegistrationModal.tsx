@@ -842,7 +842,7 @@ export default function RegistrationModal({
                             <input
                               type="text"
                               required
-                              placeholder="e.g., Universitas Negeri Jakarta"
+                              placeholder="e.g., Jakarta State University (UNJ)"
                               value={leaderInstitution}
                               onChange={(e) => setLeaderInstitution(e.target.value)}
                               className="w-full bg-zinc-900 border border-white/5 focus:border-[#FFD700] rounded-xl px-4 py-2.5 text-xs text-white focus:outline-none"

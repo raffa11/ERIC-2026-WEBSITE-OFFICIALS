@@ -38,7 +38,7 @@ export default function Footer() {
             WHERE ENGINEERS BECOME CHAMPIONS
           </div>
           <div className="text-center font-mono text-zinc-500 tracking-wider text-[10px] mt-2 block uppercase">
-            Electronics and Robotics Innovation Competition // Universitas Negeri Jakarta (UNJ)
+            Electronics and Robotics Innovation Competition // Jakarta State University (UNJ)
           </div>
         </div>
 
@@ -51,8 +51,8 @@ export default function Footer() {
             
             <p className="text-zinc-500 font-mono text-xs uppercase leading-relaxed max-w-sm">
               {t(
-                "Electronics and Robotics Innovation Competition — an international championship organized by Universitas Negeri Jakarta (UNJ), bringing together innovators and engineers from across the globe to compete, collaborate, and shape the future of technology.",
-                "Electronics and Robotics Innovation Competition — kejuaraan internasional yang diselenggarakan oleh Universitas Negeri Jakarta (UNJ), mempertemukan inovator dan insinyur dari seluruh dunia untuk berkompetisi, berkolaborasi, dan membentuk masa depan teknologi."
+                "Electronics and Robotics Innovation Competition — an international championship organized by Jakarta State University (UNJ), bringing together innovators and engineers from across the globe to compete, collaborate, and shape the future of technology.",
+                "Electronics and Robotics Innovation Competition — kejuaraan internasional yang diselenggarakan oleh Jakarta State University (UNJ), mempertemukan inovator dan insinyur dari seluruh dunia untuk berkompetisi, berkolaborasi, dan membentuk masa depan teknologi."
               )}
             </p>
 
@@ -222,7 +222,7 @@ export default function Footer() {
           <div className="text-[10px] font-mono text-zinc-500 uppercase tracking-wider text-center md:text-left">
             <span>© 2026 Electronics and Robotics Innovation Competition. </span>
             <span className="block md:inline mt-1 md:mt-0 text-white/30">
-              Organized by Universitas Negeri Jakarta (UNJ).
+              Organized by Jakarta State University (UNJ).
             </span>
           </div>
 

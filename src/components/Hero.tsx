@@ -133,8 +133,8 @@ export default function Hero() {
               className="text-[#B3B3B3] text-sm md:text-lg max-w-xl font-mono uppercase mt-6 leading-relaxed"
             >
               {t(
-                "Experience the premier electronics and robotics innovation championship organized by Universitas Negeri Jakarta. Built for the next generation of genius student engineers.",
-                "Saksikan ajang kejuaraan inovasi elektronika dan robotika bergengsi yang diselenggarakan oleh Universitas Negeri Jakarta. Dibangun untuk melahirkan generasi penerus insinyur teknologi."
+                "Experience the premier electronics and robotics innovation championship organized by Jakarta State University (UNJ). Built for the next generation of genius student engineers.",
+                "Saksikan ajang kejuaraan inovasi elektronika dan robotika bergengsi yang diselenggarakan oleh Jakarta State University (UNJ). Dibangun untuk melahirkan generasi penerus insinyur teknologi."
               )}
             </motion.p>
 

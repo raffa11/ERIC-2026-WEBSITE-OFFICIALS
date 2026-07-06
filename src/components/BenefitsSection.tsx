@@ -14,10 +14,10 @@ const BENEFITS = [
   {
     id: 'golden-ticket',
     icon: Ticket,
-    titleEn: 'Chance to Get a Golden Ticket to Universitas Negeri Jakarta',
-    titleId: 'Kesempatan Mendapatkan Golden Ticket Universitas Negeri Jakarta',
-    descEn: 'Participants have the opportunity to obtain a Golden Ticket to continue their studies at Universitas Negeri Jakarta (UNJ), specifically in the Electronics Engineering Education Program, in accordance with university policies and selection mechanisms.',
-    descId: 'Peserta berkesempatan memperoleh Golden Ticket untuk melanjutkan studi di Universitas Negeri Jakarta (UNJ), khususnya pada Program Studi Pendidikan Teknik Elektronika, sesuai dengan kebijakan dan mekanisme seleksi yang ditetapkan oleh universitas.'
+    titleEn: 'Chance to Get a Golden Ticket to Jakarta State University (UNJ)',
+    titleId: 'Kesempatan Mendapatkan Golden Ticket Jakarta State University (UNJ)',
+    descEn: 'Participants have the opportunity to obtain a Golden Ticket to continue their studies at Jakarta State University (UNJ), specifically in the Electronics Engineering Education Program, in accordance with university policies and selection mechanisms.',
+    descId: 'Peserta berkesempatan memperoleh Golden Ticket untuk melanjutkan studi di Jakarta State University (UNJ), khususnya pada Program Studi Pendidikan Teknik Elektronika, sesuai dengan kebijakan dan mekanisme seleksi yang ditetapkan oleh universitas.'
   },
   {
     id: 'network',
