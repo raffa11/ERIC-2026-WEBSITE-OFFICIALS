@@ -331,7 +331,7 @@ export default function RegistrationModal({
             <div className="flex items-center justify-between gap-1.5">
               <div className="flex items-center gap-1.5 min-w-0">
                 <Check className="w-3.5 h-3.5 text-amber-400 shrink-0" />
-                <span className="text-[10px] font-mono text-white truncate max-w-[120px] md:max-w-[150px]">
+                <span className="text-[10px] font-mono text-white truncate max-w-[100px] sm:max-w-[140px] md:max-w-[180px]">
                   {fileName || 'File uploaded'}
                 </span>
               </div>
