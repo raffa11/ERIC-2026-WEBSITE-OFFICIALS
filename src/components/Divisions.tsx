@@ -74,73 +74,6 @@ export default function Divisions({ onSelectDivision }: DivisionsProps) {
           </p>
         </div>
 
-        {/* Resource Links */}
-        <div className={`grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 mb-16 ${isTouchDevice ? 'max-w-3xl' : 'max-w-4xl'} mx-auto select-none`}>
-          <a
-            href="https://drive.google.com/drive/folders/1co00vzy633xZzgyBG0G4dvWEtvsHenXt"
-            target="_blank"
-            rel="noopener noreferrer"
-            className={`relative flex items-center justify-center gap-2.5 px-4 py-4 md:px-5 md:py-4 bg-zinc-950 border border-white/10 rounded-2xl min-h-[60px] ${isTouchDevice ? '' : 'group hover:border-[#FFD700]/40 transition-all duration-300 hover:shadow-[0_0_20px_rgba(255, 215, 0, 0.1)]'}`}
-          >
-            <LucideIcons.FileText className="w-4 h-4 flex-shrink-0 text-[#FFD700]" />
-            <div className="text-left min-w-0">
-              <div className="text-[8px] md:text-[9px] font-mono text-zinc-500 uppercase tracking-widest">{t('INFO', 'INFORMASI')}</div>
-              <div className={`text-[11px] md:text-xs font-sans font-black uppercase tracking-tight truncate ${isTouchDevice ? 'text-white' : 'text-white group-hover:text-[#FFD700] transition-colors'}`}>
-                {t('All Information', 'Semua Informasi')}
-              </div>
-            </div>
-            <LucideIcons.ExternalLink className={`w-3 h-3 md:w-3.5 md:h-3.5 flex-shrink-0 ${isTouchDevice ? 'text-zinc-500' : 'text-zinc-500 group-hover:text-[#FFD700] transition-colors'}`} />
-          </a>
-
-          <a
-            href="https://drive.google.com/drive/folders/10w9yn_Tvfa7Kw7fEdQgRgHy6ARn04N_r?usp=drive_link"
-            target="_blank"
-            rel="noopener noreferrer"
-            className={`relative flex items-center justify-center gap-2.5 px-4 py-4 md:px-5 md:py-4 bg-zinc-950 border border-white/10 rounded-2xl min-h-[60px] ${isTouchDevice ? '' : 'group hover:border-[#FFD700]/40 transition-all duration-300 hover:shadow-[0_0_20px_rgba(255, 215, 0, 0.1)]'}`}
-          >
-            <LucideIcons.BookOpen className="w-4 h-4 flex-shrink-0 text-[#FFD700]" />
-            <div className="text-left min-w-0">
-              <div className="text-[8px] md:text-[9px] font-mono text-zinc-500 uppercase tracking-widest">{t('GUIDE', 'PANDUAN')}</div>
-              <div className={`text-[11px] md:text-xs font-sans font-black uppercase tracking-tight truncate ${isTouchDevice ? 'text-white' : 'text-white group-hover:text-[#FFD700] transition-colors'}`}>
-                {t('Guidebook', 'Buku Panduan')}
-              </div>
-            </div>
-            <LucideIcons.ExternalLink className={`w-3 h-3 md:w-3.5 md:h-3.5 flex-shrink-0 ${isTouchDevice ? 'text-zinc-500' : 'text-zinc-500 group-hover:text-[#FFD700] transition-colors'}`} />
-          </a>
-
-          <a
-            href="https://drive.google.com/drive/folders/1RPDtOuZvIp4wUPghS5LrQXQCm9JYpciU"
-            target="_blank"
-            rel="noopener noreferrer"
-            className={`relative flex items-center justify-center gap-2.5 px-4 py-4 md:px-5 md:py-4 bg-zinc-950 border border-white/10 rounded-2xl min-h-[60px] ${isTouchDevice ? '' : 'group hover:border-[#FFD700]/40 transition-all duration-300 hover:shadow-[0_0_20px_rgba(255, 215, 0, 0.1)]'}`}
-          >
-            <LucideIcons.Calendar className="w-4 h-4 flex-shrink-0 text-[#FFD700]" />
-            <div className="text-left min-w-0">
-              <div className="text-[8px] md:text-[9px] font-mono text-zinc-500 uppercase tracking-widest">{t('SCHEDULE', 'JADWAL')}</div>
-              <div className={`text-[11px] md:text-xs font-sans font-black uppercase tracking-tight truncate ${isTouchDevice ? 'text-white' : 'text-white group-hover:text-[#FFD700] transition-colors'}`}>
-                {t('Event Schedule', 'Jadwal Acara')}
-              </div>
-            </div>
-            <LucideIcons.ExternalLink className={`w-3 h-3 md:w-3.5 md:h-3.5 flex-shrink-0 ${isTouchDevice ? 'text-zinc-500' : 'text-zinc-500 group-hover:text-[#FFD700] transition-colors'}`} />
-          </a>
-
-          <a
-            href="https://drive.google.com/drive/folders/1aM7UBB4gHVja5UdD079kXtcBJ3001mTt"
-            target="_blank"
-            rel="noopener noreferrer"
-            className={`relative flex items-center justify-center gap-2.5 px-4 py-4 md:px-5 md:py-4 bg-zinc-950 border border-white/10 rounded-2xl min-h-[60px] ${isTouchDevice ? '' : 'group hover:border-[#FFD700]/40 transition-all duration-300 hover:shadow-[0_0_20px_rgba(255, 215, 0, 0.1)]'}`}
-          >
-            <LucideIcons.Mail className="w-4 h-4 flex-shrink-0 text-[#FFD700]" />
-            <div className="text-left min-w-0">
-              <div className="text-[8px] md:text-[9px] font-mono text-zinc-500 uppercase tracking-widest">{t('LETTERS', 'SURAT')}</div>
-              <div className={`text-[11px] md:text-xs font-sans font-black uppercase tracking-tight truncate ${isTouchDevice ? 'text-white' : 'text-white group-hover:text-[#FFD700] transition-colors'}`}>
-                {t('Official Letters', 'Surat Resmi')}
-              </div>
-            </div>
-            <LucideIcons.ExternalLink className={`w-3 h-3 md:w-3.5 md:h-3.5 flex-shrink-0 ${isTouchDevice ? 'text-zinc-500' : 'text-zinc-500 group-hover:text-[#FFD700] transition-colors'}`} />
-          </a>
-        </div>
-
         {/* 3D Cards Grid layout */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {COMPETITION_DIVISIONS.map((division, idx) => {
@@ -297,6 +230,75 @@ export default function Divisions({ onSelectDivision }: DivisionsProps) {
               </div>
             );
           })}
+        </div>
+
+        {/* Resource Links */}
+        <div className="border-t border-white/5 pt-12 mt-12">
+          <div className={`grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 max-w-4xl mx-auto select-none`}>
+            <a
+              href="https://drive.google.com/drive/folders/1co00vzy633xZzgyBG0G4dvWEtvsHenXt"
+              target="_blank"
+              rel="noopener noreferrer"
+              className={`relative flex items-center justify-center gap-2.5 px-4 py-4 md:px-5 md:py-4 bg-zinc-950 border border-white/10 rounded-2xl min-h-[60px] ${isTouchDevice ? '' : 'group hover:border-[#FFD700]/40 transition-all duration-300 hover:shadow-[0_0_20px_rgba(255, 215, 0, 0.1)]'}`}
+            >
+              <LucideIcons.FileText className="w-4 h-4 flex-shrink-0 text-[#FFD700]" />
+              <div className="text-left min-w-0">
+                <div className="text-[8px] md:text-[9px] font-mono text-zinc-500 uppercase tracking-widest">{t('INFO', 'INFORMASI')}</div>
+                <div className={`text-[11px] md:text-xs font-sans font-black uppercase tracking-tight truncate ${isTouchDevice ? 'text-white' : 'text-white group-hover:text-[#FFD700] transition-colors'}`}>
+                  {t('All Information', 'Semua Informasi')}
+                </div>
+              </div>
+              <LucideIcons.ExternalLink className={`w-3 h-3 md:w-3.5 md:h-3.5 flex-shrink-0 ${isTouchDevice ? 'text-zinc-500' : 'text-zinc-500 group-hover:text-[#FFD700] transition-colors'}`} />
+            </a>
+
+            <a
+              href="https://drive.google.com/drive/folders/10w9yn_Tvfa7Kw7fEdQgRgHy6ARn04N_r?usp=drive_link"
+              target="_blank"
+              rel="noopener noreferrer"
+              className={`relative flex items-center justify-center gap-2.5 px-4 py-4 md:px-5 md:py-4 bg-zinc-950 border border-white/10 rounded-2xl min-h-[60px] ${isTouchDevice ? '' : 'group hover:border-[#FFD700]/40 transition-all duration-300 hover:shadow-[0_0_20px_rgba(255, 215, 0, 0.1)]'}`}
+            >
+              <LucideIcons.BookOpen className="w-4 h-4 flex-shrink-0 text-[#FFD700]" />
+              <div className="text-left min-w-0">
+                <div className="text-[8px] md:text-[9px] font-mono text-zinc-500 uppercase tracking-widest">{t('GUIDE', 'PANDUAN')}</div>
+                <div className={`text-[11px] md:text-xs font-sans font-black uppercase tracking-tight truncate ${isTouchDevice ? 'text-white' : 'text-white group-hover:text-[#FFD700] transition-colors'}`}>
+                  {t('Guidebook', 'Buku Panduan')}
+                </div>
+              </div>
+              <LucideIcons.ExternalLink className={`w-3 h-3 md:w-3.5 md:h-3.5 flex-shrink-0 ${isTouchDevice ? 'text-zinc-500' : 'text-zinc-500 group-hover:text-[#FFD700] transition-colors'}`} />
+            </a>
+
+            <a
+              href="https://drive.google.com/drive/folders/1RPDtOuZvIp4wUPghS5LrQXQCm9JYpciU"
+              target="_blank"
+              rel="noopener noreferrer"
+              className={`relative flex items-center justify-center gap-2.5 px-4 py-4 md:px-5 md:py-4 bg-zinc-950 border border-white/10 rounded-2xl min-h-[60px] ${isTouchDevice ? '' : 'group hover:border-[#FFD700]/40 transition-all duration-300 hover:shadow-[0_0_20px_rgba(255, 215, 0, 0.1)]'}`}
+            >
+              <LucideIcons.Calendar className="w-4 h-4 flex-shrink-0 text-[#FFD700]" />
+              <div className="text-left min-w-0">
+                <div className="text-[8px] md:text-[9px] font-mono text-zinc-500 uppercase tracking-widest">{t('SCHEDULE', 'JADWAL')}</div>
+                <div className={`text-[11px] md:text-xs font-sans font-black uppercase tracking-tight truncate ${isTouchDevice ? 'text-white' : 'text-white group-hover:text-[#FFD700] transition-colors'}`}>
+                  {t('Event Schedule', 'Jadwal Acara')}
+                </div>
+              </div>
+              <LucideIcons.ExternalLink className={`w-3 h-3 md:w-3.5 md:h-3.5 flex-shrink-0 ${isTouchDevice ? 'text-zinc-500' : 'text-zinc-500 group-hover:text-[#FFD700] transition-colors'}`} />
+            </a>
+
+            <a
+              href="https://drive.google.com/drive/folders/1aM7UBB4gHVja5UdD079kXtcBJ3001mTt"
+              target="_blank"
+              rel="noopener noreferrer"
+              className={`relative flex items-center justify-center gap-2.5 px-4 py-4 md:px-5 md:py-4 bg-zinc-950 border border-white/10 rounded-2xl min-h-[60px] ${isTouchDevice ? '' : 'group hover:border-[#FFD700]/40 transition-all duration-300 hover:shadow-[0_0_20px_rgba(255, 215, 0, 0.1)]'}`}
+            >
+              <LucideIcons.Mail className="w-4 h-4 flex-shrink-0 text-[#FFD700]" />
+              <div className="text-left min-w-0">
+                <div className="text-[8px] md:text-[9px] font-mono text-zinc-500 uppercase tracking-widest">{t('LETTERS', 'SURAT')}</div>
+                <div className={`text-[11px] md:text-xs font-sans font-black uppercase tracking-tight truncate ${isTouchDevice ? 'text-white' : 'text-white group-hover:text-[#FFD700] transition-colors'}`}>
+                  {t('Official Letters', 'Surat Resmi')}
+                </div>
+              </div>
+              <LucideIcons.ExternalLink className={`w-3 h-3 md:w-3.5 md:h-3.5 flex-shrink-0 ${isTouchDevice ? 'text-zinc-500' : 'text-zinc-500 group-hover:text-[#FFD700] transition-colors'}`} />
+            </a>
+          </div>
         </div>
 
       </div>
