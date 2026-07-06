@@ -105,23 +105,55 @@ export const syncToGoogleSheet = async (reg: Registration): Promise<boolean> => 
 };
 
 /**
- * Fetch user registrations from Google Sheets via Apps Script doGet.
- * Falls back to localStorage if the fetch fails.
+ * Fetch user registrations from Google Sheets via Apps Script doGet using JSONP.
+ * This bypasses CORS issues often encountered with standard fetch requests to GAS Web Apps.
  */
 export const fetchUserRegistrations = async (email: string): Promise<Registration[] | null> => {
   const url = getGoogleScriptUrl();
   if (!url) return null;
 
-  try {
-    const res = await fetch(`${url}?action=getRegistrations&email=${encodeURIComponent(email)}`, {
-      method: 'GET',
-    });
-    if (!res.ok) return null;
-    const data = await res.json();
-    if (Array.isArray(data)) return data as Registration[];
-    return null;
-  } catch (err) {
-    console.warn('Failed to fetch registrations from Google Sheet:', err);
-    return null;
-  }
+  return new Promise((resolve) => {
+    // Generate a unique callback function name
+    const callbackName = 'jsonp_callback_' + Math.round(100000 * Math.random());
+    
+    // Create the script element
+    const script = document.createElement('script');
+    script.src = `${url}?action=getRegistrations&email=${encodeURIComponent(email)}&callback=${callbackName}`;
+    
+    // Timeout handler to prevent hanging (10 seconds)
+    const timeoutId = setTimeout(() => {
+      cleanup();
+      console.warn('JSONP request timed out for Google Sheets.');
+      resolve(null);
+    }, 10000);
+
+    // Cleanup function to remove script and global callback
+    const cleanup = () => {
+      clearTimeout(timeoutId);
+      if (script.parentNode) {
+        script.parentNode.removeChild(script);
+      }
+      delete (window as any)[callbackName];
+    };
+
+    // The callback function that Apps Script will execute
+    (window as any)[callbackName] = (data: any) => {
+      cleanup();
+      if (Array.isArray(data)) {
+        resolve(data as Registration[]);
+      } else {
+        resolve(null);
+      }
+    };
+
+    // Handle script load errors (e.g., network failure)
+    script.onerror = () => {
+      cleanup();
+      console.warn('Failed to load JSONP script from Google Sheets.');
+      resolve(null);
+    };
+
+    // Inject the script into the document to trigger the request
+    document.body.appendChild(script);
+  });
 };
