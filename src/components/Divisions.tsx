@@ -74,7 +74,7 @@ export default function Divisions({ onSelectDivision }: DivisionsProps) {
         </div>
 
         {/* Resource Links */}
-        <div className="grid grid-cols-2 md:grid-cols-5 gap-3 md:gap-4 mb-16 max-w-4xl mx-auto select-none">
+        <div className="grid grid-cols-2 md:grid-cols-5 gap-3 md:gap-4 mb-16 max-w-6xl mx-auto select-none">
           <a
             href="https://drive.google.com/drive/folders/1co00vzy633xZzgyBG0G4dvWEtvsHenXt"
             target="_blank"
@@ -146,10 +146,10 @@ export default function Divisions({ onSelectDivision }: DivisionsProps) {
             className="group relative flex items-center justify-center gap-2.5 px-4 py-4 md:px-5 md:py-4 bg-zinc-950 border border-white/10 hover:border-[#FFD700]/40 rounded-2xl transition-all duration-300 hover:shadow-[0_0_20px_rgba(255, 215, 0, 0.1)] min-h-[60px]"
           >
             <LucideIcons.ScrollText className="w-4 h-4 flex-shrink-0 text-[#FFD700]" />
-            <div className="text-left min-w-0">
-              <div className="text-[8px] md:text-[9px] font-mono text-zinc-500 uppercase tracking-widest">{t('TERMS', 'KETENTUAN')}</div>
-              <div className="text-[11px] md:text-xs font-sans font-black text-white group-hover:text-[#FFD700] transition-colors uppercase tracking-tight truncate">
-                {t('Terms & Conditions', 'Syarat & Ketentuan')}
+            <div className="text-left">
+              <div className="text-[8px] md:text-[9px] font-mono text-zinc-500 uppercase tracking-widest whitespace-nowrap">{t('TERMS', 'KETENTUAN')}</div>
+              <div className="text-[11px] md:text-xs font-sans font-black text-white group-hover:text-[#FFD700] transition-colors uppercase tracking-tight">
+                {t('T&C Cytron', 'S&K Cytron')}
               </div>
             </div>
             <LucideIcons.ExternalLink className="w-3 h-3 md:w-3.5 md:h-3.5 flex-shrink-0 text-zinc-500 group-hover:text-[#FFD700] transition-colors" />
