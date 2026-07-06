@@ -8,34 +8,22 @@ import { useLanguage } from './LanguageContext';
 import { SPONSORS } from '../data';
 import { MessageCircle } from 'lucide-react';
 
-const TIER_CONFIG: Record<string, { label: string; labelId: string; cardClass: string; imgClass: string; glowColor: string }> = {
+const TIER_CONFIG: Record<string, { label: string; imgClass: string }> = {
   titanium: {
     label: 'TITANIUM',
-    labelId: 'TITANIUM',
-    cardClass: 'md:col-span-2 md:row-span-2',
-    imgClass: 'max-h-40 md:max-h-52',
-    glowColor: 'rgba(255, 215, 0, 0.3)'
+    imgClass: 'max-h-32 md:max-h-44'
   },
   platinum: {
     label: 'PLATINUM',
-    labelId: 'PLATINUM',
-    cardClass: 'md:col-span-2',
-    imgClass: 'max-h-36 md:max-h-44',
-    glowColor: 'rgba(197, 160, 89, 0.25)'
+    imgClass: 'max-h-28 md:max-h-40'
   },
   gold: {
     label: 'GOLD',
-    labelId: 'GOLD',
-    cardClass: '',
-    imgClass: 'max-h-28 md:max-h-36',
-    glowColor: 'rgba(255, 215, 0, 0.15)'
+    imgClass: 'max-h-24 md:max-h-32'
   },
   silver: {
     label: 'SILVER',
-    labelId: 'SILVER',
-    cardClass: '',
-    imgClass: 'max-h-24 md:max-h-28',
-    glowColor: 'rgba(180, 180, 180, 0.15)'
+    imgClass: 'max-h-20 md:max-h-28'
   }
 };
 
@@ -63,8 +51,8 @@ export default function SponsorsSection() {
           </h3>
         </div>
 
-        <div className="max-w-5xl mx-auto">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 auto-rows-auto">
+        <div className="max-w-4xl mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {sorted.map((sponsor) => {
               const cfg = TIER_CONFIG[sponsor.tier] || TIER_CONFIG.silver;
               const showLogo = sponsor.logo && !imgErrors[sponsor.name];
@@ -74,7 +62,7 @@ export default function SponsorsSection() {
                   key={sponsor.name}
                   onMouseEnter={() => setHoveredSponsor(sponsor.name)}
                   onMouseLeave={() => setHoveredSponsor(null)}
-                  className={`relative flex flex-col items-center justify-center p-6 bg-zinc-950 rounded-2xl border transition-all duration-300 ${cfg.cardClass} ${
+                  className={`relative flex flex-col items-center justify-center p-8 bg-zinc-950 rounded-2xl border transition-all duration-300 min-h-[220px] md:min-h-[260px] ${
                     hoveredSponsor === sponsor.name
                       ? 'border-[#FFD700] shadow-[0_0_20px_rgba(255, 215, 0, 0.15)] bg-[#050505]'
                       : 'border-white/5'
