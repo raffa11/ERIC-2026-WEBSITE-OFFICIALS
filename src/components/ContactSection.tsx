@@ -24,8 +24,8 @@ export default function ContactSection() {
       id: 'website',
       icon: Globe,
       label: 'WEBSITE ERIC',
-      value: 'ft.unj.ac.id/elektronika/eric',
-      href: 'https://ft.unj.ac.id/elektronika/eric',
+      value: 'ericunj.org',
+      href: 'https://ericunj.org',
       accentColor: '#FFD700',
       hoverGlow: 'rgba(255, 215, 0, 0.15)'
     },
@@ -51,8 +51,8 @@ export default function ContactSection() {
       id: 'email-resmi',
       icon: Mail,
       label: 'EMAIL RESMI',
-      value: 'ericunj@gmail.com',
-      href: 'mailto:ericunj@gmail.com',
+      value: 'ericunjofficial2026@gmail.com',
+      href: 'mailto:ericunjofficial2026@gmail.com',
       accentColor: '#C5A059',
       hoverGlow: 'rgba(197, 160, 89, 0.15)'
     },
