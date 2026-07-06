@@ -21,14 +21,14 @@ export default function CountriesSection() {
           </span>
         </div>
 
-        <div className="flex flex-wrap items-center justify-center gap-x-10 gap-y-6">
+        <div className="flex flex-nowrap items-center justify-center gap-x-6 md:gap-x-10 overflow-x-auto pb-2 scrollbar-none">
           {COUNTRIES.map((c) => (
             <div
               key={c.name}
-              className="flex items-center gap-2 px-5 py-3 bg-zinc-900/40 border border-white/5 rounded-xl"
+              className="flex items-center gap-1.5 md:gap-2 px-3 md:px-5 py-2 md:py-3 bg-zinc-900/40 border border-white/5 rounded-xl shrink-0"
             >
-              <img src={`https://flagcdn.com/w80/${c.code}.png`} alt={c.name} className="w-8 h-6 sm:w-10 sm:h-7 md:w-12 md:h-8 object-cover rounded shadow-[0_0_6px_rgba(255,255,255,0.08)]" />
-              <span className="text-sm md:text-base font-sans font-bold text-zinc-300 uppercase tracking-wider">
+              <img src={`https://flagcdn.com/w80/${c.code}.png`} alt={c.name} className="w-6 h-4 sm:w-8 sm:h-5 md:w-10 md:h-7 object-cover rounded shadow-[0_0_6px_rgba(255,255,255,0.08)]" />
+              <span className="text-[11px] sm:text-sm md:text-base font-sans font-bold text-zinc-300 uppercase tracking-wider whitespace-nowrap">
                 {c.name}
               </span>
             </div>
