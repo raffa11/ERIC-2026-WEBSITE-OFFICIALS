@@ -150,7 +150,7 @@ export default function EricLogo({ className = 'w-10 h-10', showText = true, src
             subtitle && <span className="text-[7.5px] font-mono text-zinc-400 tracking-[0.15em] uppercase leading-none mt-1">{subtitle}</span>
           ) : (
             <span className="text-[7.5px] font-mono text-zinc-400 tracking-[0.15em] uppercase leading-none mt-1">
-              ROBOTICS LIGA
+              ROBOTICS LEAGUE
             </span>
           )}
         </div>

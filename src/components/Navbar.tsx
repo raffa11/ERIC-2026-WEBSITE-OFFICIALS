@@ -87,7 +87,7 @@ export default function Navbar({
           
           {/* Logo linkage */}
           <a href="#" className="focus:outline-none">
-            <EricLogo className="w-24 h-24" src="/images/eric-logo.png" showText={true} title="INTERNATIONAL ERIC" subtitle="ROBOTICS LIGA" />
+            <EricLogo className="w-24 h-24" src="/images/eric-logo.png" showText={true} title="INTERNATIONAL ERIC" subtitle="ROBOTICS LEAGUE" />
           </a>
 
           {/* Desktop Nav Actions */}

@@ -151,7 +151,7 @@ export default function Hero() {
                 className="group relative px-8 py-4 w-full sm:w-auto bg-gradient-to-r from-[#002D62] via-[#0047AB] to-[#FFD700] text-white rounded-full font-sans text-xs font-black tracking-widest uppercase transition-all duration-300 hover:shadow-[0_0_25px_rgba(255, 215, 0, 0.35)] select-none text-center"
               >
                 <span className="relative z-10 flex items-center justify-center gap-2">
-                  {t('REGISTER FOR TRIAL', 'DAFTAR SEKARANG')}
+                  {t('REGISTER HERE', 'DAFTAR SEKARANG')}
                   <Send className="w-3.5 h-3.5 text-white transition-transform group-hover:translate-x-1" />
                 </span>
                 <span className="absolute inset-0 rounded-full bg-white opacity-0 group-hover:opacity-10 transition-opacity" />
@@ -162,7 +162,7 @@ export default function Hero() {
                 onClick={() => handleScrollTo('#about-section')}
                 className="group w-full sm:w-auto px-8 py-4 border border-white/10 hover:border-white/30 rounded-full font-mono text-xs text-white uppercase tracking-widest transition-all duration-300 select-none text-center bg-transparent"
               >
-                {t('EXPLORE MISSION', 'JELAJAHI MISI')}
+                {t('START YOUR JOURNEY', 'MULAI PERJALANAN')}
               </button>
             </motion.div>
 
@@ -171,17 +171,9 @@ export default function Hero() {
         </div>
       </div>
 
-      {/* BOTTOM CONTROL DECK: Animated telemetry bar */}
+      {/* BOTTOM CONTROL DECK: Scroll button */}
       <div className="max-w-7xl mx-auto px-6 w-full mt-8 relative z-10 select-none border-t border-white/5 pt-8">
-        <div className="flex flex-col md:flex-row justify-between items-center gap-6">
-          <div className="flex items-center gap-8 text-[10px] font-mono text-zinc-500">
-            <span className="flex items-center gap-1">
-              <Compass className="w-3.5 h-3.5 text-[#FFD700] animate-spin-slow" /> {t('COORD: 106.8229° E // 6.1944° S', 'KOORD: 106.8229° T // 6.1944° S')}
-            </span>
-            <span className="hidden md:inline text-white/20">|</span>
-            <span className="hidden md:inline">{t('VERSION: F1-ME-2026-v2', 'VERSI: F1-ME-2026-v2')}</span>
-          </div>
-
+        <div className="flex justify-center items-center">
           <button
             id="hero-scroll-btn"
             onClick={() => handleScrollTo('#about-section')}
