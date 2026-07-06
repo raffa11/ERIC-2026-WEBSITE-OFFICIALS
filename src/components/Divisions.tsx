@@ -70,7 +70,7 @@ export default function Divisions({ onSelectDivision }: DivisionsProps) {
             {t('THE', '')} <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#FFD700] to-[#FFE44D]">{t('ARENAS', 'ARENA PERTANDINGAN')}</span>
           </h2>
           <p className="text-[#B3B3B3] font-mono text-sm uppercase max-w-xl mt-4">
-            {t('8 competition arenas with 11 categories built to test the limits of innovation, design, and practical electronics and robotics application.', '8 arena kompetisi dengan 11 kategori yang dirancang untuk menguji batas inovasi, desain, dan aplikasi elektronika serta robotika praktis.')}
+            {t('9 competition arenas with 12 categories built to test the limits of innovation, design, and practical electronics and robotics application.', '9 arena kompetisi dengan 12 kategori yang dirancang untuk menguji batas inovasi, desain, dan aplikasi elektronika serta robotika praktis.')}
           </p>
         </div>
 
