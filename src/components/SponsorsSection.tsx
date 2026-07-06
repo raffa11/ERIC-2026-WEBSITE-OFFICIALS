@@ -11,19 +11,19 @@ import { MessageCircle } from 'lucide-react';
 const TIER_CONFIG: Record<string, { label: string; imgClass: string }> = {
   titanium: {
     label: 'TITANIUM',
-    imgClass: 'max-h-32 md:max-h-44'
+    imgClass: 'max-h-40 md:max-h-60'
   },
   platinum: {
     label: 'PLATINUM',
-    imgClass: 'max-h-28 md:max-h-40'
+    imgClass: 'max-h-32 md:max-h-48'
   },
   gold: {
     label: 'GOLD',
-    imgClass: 'max-h-24 md:max-h-32'
+    imgClass: 'max-h-24 md:max-h-36'
   },
   silver: {
     label: 'SILVER',
-    imgClass: 'max-h-20 md:max-h-28'
+    imgClass: 'max-h-16 md:max-h-24'
   }
 };
 
