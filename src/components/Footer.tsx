@@ -59,7 +59,7 @@ export default function Footer() {
             <div className="space-y-3.5 text-xs font-mono text-zinc-400">
               <div className="flex items-center gap-3">
                 <MapPin className="w-4 h-4 text-[#FFD700] shrink-0" />
-                <span>Kampus A Universitas Negeri Jakarta, Jakarta Timur</span>
+                <span>{t('Campus A, Jakarta State University, East Jakarta', 'Kampus A Universitas Negeri Jakarta, Jakarta Timur')}</span>
               </div>
               <div className="flex items-center gap-3">
                 <Mail className="w-4 h-4 text-[#FFD700] shrink-0" />
