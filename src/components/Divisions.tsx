@@ -74,6 +74,55 @@ export default function Divisions({ onSelectDivision }: DivisionsProps) {
           </p>
         </div>
 
+        {/* Resource Links — plain text on mobile, styled cards on desktop */}
+        <div className="mb-14">
+          <p className="text-[#B3B3B3] font-mono text-xs uppercase tracking-wider mb-5 select-none">
+            {t('Everything you need to compete →', 'Semua yang perlu kamu tahu →')}
+          </p>
+          {/* MOBILE: plain text links */}
+          {isTouchDevice && (
+            <div className="grid grid-cols-2 gap-3 max-w-md">
+              {[
+                { href: "https://drive.google.com/drive/folders/1co00vzy633xZzgyBG0G4dvWEtvsHenXt", icon: "FileText", label: "All Information", labelId: "Semua Informasi" },
+                { href: "https://drive.google.com/drive/folders/10w9yn_Tvfa7Kw7fEdQgRgHy6ARn04N_r?usp=drive_link", icon: "BookOpen", label: "Guidebook", labelId: "Buku Panduan" },
+                { href: "https://drive.google.com/drive/folders/1RPDtOuZvIp4wUPghS5LrQXQCm9JYpciU", icon: "Calendar", label: "Event Schedule", labelId: "Jadwal Acara" },
+                { href: "https://drive.google.com/drive/folders/1aM7UBB4gHVja5UdD079kXtcBJ3001mTt", icon: "Mail", label: "Official Letters", labelId: "Surat Resmi" },
+              ].map((link) => {
+                const IconComp = LucideIcons[link.icon as keyof typeof LucideIcons] as React.ComponentType<{ className?: string }> | undefined;
+                return (
+                  <a key={link.href} href={link.href} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-white/80">
+                    {IconComp && <IconComp className="w-4 h-4 flex-shrink-0 text-[#FFD700]" />}
+                    <span className="text-xs font-sans font-black uppercase">{t(link.label, link.labelId)}</span>
+                  </a>
+                );
+              })}
+            </div>
+          )}
+          {/* DESKTOP: styled cards */}
+          {!isTouchDevice && (
+            <div className="grid grid-cols-4 gap-4 max-w-4xl select-none">
+              {[
+                { href: "https://drive.google.com/drive/folders/1co00vzy633xZzgyBG0G4dvWEtvsHenXt", icon: "FileText", label: "All Information", labelId: "Semua Informasi", badge: "INFO" },
+                { href: "https://drive.google.com/drive/folders/10w9yn_Tvfa7Kw7fEdQgRgHy6ARn04N_r?usp=drive_link", icon: "BookOpen", label: "Guidebook", labelId: "Buku Panduan", badge: "GUIDE" },
+                { href: "https://drive.google.com/drive/folders/1RPDtOuZvIp4wUPghS5LrQXQCm9JYpciU", icon: "Calendar", label: "Event Schedule", labelId: "Jadwal Acara", badge: "SCHEDULE" },
+                { href: "https://drive.google.com/drive/folders/1aM7UBB4gHVja5UdD079kXtcBJ3001mTt", icon: "Mail", label: "Official Letters", labelId: "Surat Resmi", badge: "LETTERS" },
+              ].map((link) => {
+                const IconComp = LucideIcons[link.icon as keyof typeof LucideIcons] as React.ComponentType<{ className?: string }> | undefined;
+                return (
+                  <a key={link.href} href={link.href} target="_blank" rel="noopener noreferrer" className="group relative flex items-center justify-center gap-2.5 px-5 py-4 bg-zinc-950 border border-white/10 rounded-2xl min-h-[60px] hover:border-[#FFD700]/40 transition-all duration-300 hover:shadow-[0_0_20px_rgba(255, 215, 0, 0.1)]">
+                    {IconComp && <IconComp className="w-4 h-4 flex-shrink-0 text-[#FFD700]" />}
+                    <div className="text-left min-w-0">
+                      <div className="text-[9px] font-mono text-zinc-500 uppercase tracking-widest">{t(link.badge, link.badge)}</div>
+                      <div className="text-xs font-sans font-black uppercase tracking-tight truncate text-white group-hover:text-[#FFD700] transition-colors">{t(link.label, link.labelId)}</div>
+                    </div>
+                    <LucideIcons.ExternalLink className="w-3.5 h-3.5 flex-shrink-0 text-zinc-500 group-hover:text-[#FFD700] transition-colors" />
+                  </a>
+                );
+              })}
+            </div>
+          )}
+        </div>
+
         {/* 3D Cards Grid layout */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {COMPETITION_DIVISIONS.map((division, idx) => {
@@ -230,98 +279,6 @@ export default function Divisions({ onSelectDivision }: DivisionsProps) {
               </div>
             );
           })}
-        </div>
-
-        {/* Resource Links — plain text links on mobile, styled cards on desktop */}
-        <div className="border-t border-white/5 pt-12 mt-12">
-          {/* MOBILE: plain text links, no cards/backgrounds/borders */}
-          {isTouchDevice && (
-            <div className="grid grid-cols-2 gap-3 max-w-md mx-auto">
-              {[
-                { href: "https://drive.google.com/drive/folders/1co00vzy633xZzgyBG0G4dvWEtvsHenXt", icon: "FileText", label: "All Information", labelId: "Semua Informasi", badge: "INFO" },
-                { href: "https://drive.google.com/drive/folders/10w9yn_Tvfa7Kw7fEdQgRgHy6ARn04N_r?usp=drive_link", icon: "BookOpen", label: "Guidebook", labelId: "Buku Panduan", badge: "GUIDE" },
-                { href: "https://drive.google.com/drive/folders/1RPDtOuZvIp4wUPghS5LrQXQCm9JYpciU", icon: "Calendar", label: "Event Schedule", labelId: "Jadwal Acara", badge: "SCHEDULE" },
-                { href: "https://drive.google.com/drive/folders/1aM7UBB4gHVja5UdD079kXtcBJ3001mTt", icon: "Mail", label: "Official Letters", labelId: "Surat Resmi", badge: "LETTERS" },
-              ].map((link) => {
-                const IconComp = LucideIcons[link.icon as keyof typeof LucideIcons] as React.ComponentType<{ className?: string }> | undefined;
-                return (
-                  <a key={link.href} href={link.href} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-white/80 hover:text-[#FFD700] transition-colors">
-                    {IconComp && <IconComp className="w-4 h-4 flex-shrink-0 text-[#FFD700]" />}
-                    <span className="text-xs font-sans font-black uppercase truncate">{t(link.label, link.labelId)}</span>
-                  </a>
-                );
-              })}
-            </div>
-          )}
-
-          {/* DESKTOP: styled cards with hover */}
-          {!isTouchDevice && (
-            <div className="grid grid-cols-4 gap-4 max-w-4xl mx-auto select-none">
-              <a
-                href="https://drive.google.com/drive/folders/1co00vzy633xZzgyBG0G4dvWEtvsHenXt"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="group relative flex items-center justify-center gap-2.5 px-5 py-4 bg-zinc-950 border border-white/10 rounded-2xl min-h-[60px] hover:border-[#FFD700]/40 transition-all duration-300 hover:shadow-[0_0_20px_rgba(255, 215, 0, 0.1)]"
-              >
-                <LucideIcons.FileText className="w-4 h-4 flex-shrink-0 text-[#FFD700]" />
-                <div className="text-left min-w-0">
-                  <div className="text-[9px] font-mono text-zinc-500 uppercase tracking-widest">{t('INFO', 'INFORMASI')}</div>
-                  <div className="text-xs font-sans font-black uppercase tracking-tight truncate text-white group-hover:text-[#FFD700] transition-colors">
-                    {t('All Information', 'Semua Informasi')}
-                  </div>
-                </div>
-                <LucideIcons.ExternalLink className="w-3.5 h-3.5 flex-shrink-0 text-zinc-500 group-hover:text-[#FFD700] transition-colors" />
-              </a>
-
-              <a
-                href="https://drive.google.com/drive/folders/10w9yn_Tvfa7Kw7fEdQgRgHy6ARn04N_r?usp=drive_link"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="group relative flex items-center justify-center gap-2.5 px-5 py-4 bg-zinc-950 border border-white/10 rounded-2xl min-h-[60px] hover:border-[#FFD700]/40 transition-all duration-300 hover:shadow-[0_0_20px_rgba(255, 215, 0, 0.1)]"
-              >
-                <LucideIcons.BookOpen className="w-4 h-4 flex-shrink-0 text-[#FFD700]" />
-                <div className="text-left min-w-0">
-                  <div className="text-[9px] font-mono text-zinc-500 uppercase tracking-widest">{t('GUIDE', 'PANDUAN')}</div>
-                  <div className="text-xs font-sans font-black uppercase tracking-tight truncate text-white group-hover:text-[#FFD700] transition-colors">
-                    {t('Guidebook', 'Buku Panduan')}
-                  </div>
-                </div>
-                <LucideIcons.ExternalLink className="w-3.5 h-3.5 flex-shrink-0 text-zinc-500 group-hover:text-[#FFD700] transition-colors" />
-              </a>
-
-              <a
-                href="https://drive.google.com/drive/folders/1RPDtOuZvIp4wUPghS5LrQXQCm9JYpciU"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="group relative flex items-center justify-center gap-2.5 px-5 py-4 bg-zinc-950 border border-white/10 rounded-2xl min-h-[60px] hover:border-[#FFD700]/40 transition-all duration-300 hover:shadow-[0_0_20px_rgba(255, 215, 0, 0.1)]"
-              >
-                <LucideIcons.Calendar className="w-4 h-4 flex-shrink-0 text-[#FFD700]" />
-                <div className="text-left min-w-0">
-                  <div className="text-[9px] font-mono text-zinc-500 uppercase tracking-widest">{t('SCHEDULE', 'JADWAL')}</div>
-                  <div className="text-xs font-sans font-black uppercase tracking-tight truncate text-white group-hover:text-[#FFD700] transition-colors">
-                    {t('Event Schedule', 'Jadwal Acara')}
-                  </div>
-                </div>
-                <LucideIcons.ExternalLink className="w-3.5 h-3.5 flex-shrink-0 text-zinc-500 group-hover:text-[#FFD700] transition-colors" />
-              </a>
-
-              <a
-                href="https://drive.google.com/drive/folders/1aM7UBB4gHVja5UdD079kXtcBJ3001mTt"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="group relative flex items-center justify-center gap-2.5 px-5 py-4 bg-zinc-950 border border-white/10 rounded-2xl min-h-[60px] hover:border-[#FFD700]/40 transition-all duration-300 hover:shadow-[0_0_20px_rgba(255, 215, 0, 0.1)]"
-              >
-                <LucideIcons.Mail className="w-4 h-4 flex-shrink-0 text-[#FFD700]" />
-                <div className="text-left min-w-0">
-                  <div className="text-[9px] font-mono text-zinc-500 uppercase tracking-widest">{t('LETTERS', 'SURAT')}</div>
-                  <div className="text-xs font-sans font-black uppercase tracking-tight truncate text-white group-hover:text-[#FFD700] transition-colors">
-                    {t('Official Letters', 'Surat Resmi')}
-                  </div>
-                </div>
-                <LucideIcons.ExternalLink className="w-3.5 h-3.5 flex-shrink-0 text-zinc-500 group-hover:text-[#FFD700] transition-colors" />
-              </a>
-            </div>
-          )}
         </div>
 
       </div>
