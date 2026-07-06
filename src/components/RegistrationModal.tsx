@@ -155,7 +155,8 @@ export default function RegistrationModal({
       setPaymentProofName('');
       setPaymentProofUrl('');
 
-      setMembers([
+      const divObjForMembers = COMPETITION_DIVISIONS.find(d => d.id === selectedDivision);
+      const baseMembers = [
         {
           id: 'member-1',
           name: '',
@@ -165,8 +166,10 @@ export default function RegistrationModal({
           twibbonName: '',
           twibbonUrl: '',
           congenitalDisease: ''
-        },
-        {
+        }
+      ];
+      if (divObjForMembers && divObjForMembers.maxStaff && divObjForMembers.maxStaff >= 2) {
+        baseMembers.push({
           id: 'member-2',
           name: '',
           whatsapp: '',
@@ -175,8 +178,9 @@ export default function RegistrationModal({
           twibbonName: '',
           twibbonUrl: '',
           congenitalDisease: ''
-        }
-      ]);
+        });
+      }
+      setMembers(baseMembers);
     }
   }, [isOpen, initialDivisionId, currentUser]);
 
@@ -385,14 +389,16 @@ export default function RegistrationModal({
         }
 
         // Validate Anggota Tim 2 (Optional, but if name is present, must be complete)
-        const m2 = members[1];
-        if (m2 && m2.name.trim() !== '') {
-          if (!m2.whatsapp.trim() || !m2.idCardUrl || !m2.twibbonUrl) {
-            showAlert({ message: t(
-              'Please fill out all Member 2 details or clear their name if not registered.',
-              'Mohon lengkapi seluruh data Anggota Tim 2 atau kosongkan nama jika tidak terdaftar.'
-            ), type: 'error' });
-            return;
+        if (divisionObj.maxStaff && divisionObj.maxStaff >= 2) {
+          const m2 = members[1];
+          if (m2 && m2.name.trim() !== '') {
+            if (!m2.whatsapp.trim() || !m2.idCardUrl || !m2.twibbonUrl) {
+              showAlert({ message: t(
+                'Please fill out all Member 2 details or clear their name if not registered.',
+                'Mohon lengkapi seluruh data Anggota Tim 2 atau kosongkan nama jika tidak terdaftar.'
+              ), type: 'error' });
+              return;
+            }
           }
         }
 
@@ -1007,7 +1013,8 @@ export default function RegistrationModal({
                           </div>
                         </div>
 
-                        {/* Member 2 Section */}
+                        {/* Member 2 Section — only for divisions with maxStaff >= 2 */}
+                        {divisionObj.maxStaff && divisionObj.maxStaff >= 2 && (
                         <div className="p-4 bg-zinc-900/30 border border-white/5 rounded-2xl space-y-4">
                           <div className="flex justify-between items-center select-none border-b border-white/5 pb-2">
                             <h4 className="font-sans font-black text-xs text-white uppercase tracking-wider flex items-center gap-1.5">
@@ -1080,6 +1087,7 @@ export default function RegistrationModal({
                             />
                           </div>
                         </div>
+                        )}
 
                         {/* Lecturer / Advisor Section */}
                         {divisionObj.hasLecturer && (
