@@ -387,7 +387,7 @@ export default function RegistrationModal({
         if (m2 && m2.name.trim() !== '') {
           if (!m2.whatsapp.trim() || !m2.idCardUrl || !m2.twibbonUrl) {
             showAlert({ message: t(
-              'Please fill out all Anggota Tim 2 details or clear their name if not registered.',
+              'Please fill out all Member 2 details or clear their name if not registered.',
               'Mohon lengkapi seluruh data Anggota Tim 2 atau kosongkan nama jika tidak terdaftar.'
             ), type: 'error' });
             return;
@@ -743,7 +743,7 @@ export default function RegistrationModal({
                         {divisionObj.hasLevels && divisionObj.levels && (
                           <div className="space-y-2">
                             <label className="text-[10px] font-mono text-zinc-400 uppercase tracking-widest block">
-                              {t('Select Level / Category Tingkat', 'Pilih Tingkat / Kategori')}
+                              {t('Select Level / Category', 'Pilih Tingkat / Kategori')}
                             </label>
                             <select
                               value={level}
@@ -1185,7 +1185,7 @@ export default function RegistrationModal({
                               const m1 = members[0];
                               if (!m1 || !m1.name.trim() || !m1.whatsapp.trim() || !m1.idCardUrl || !m1.twibbonUrl) {
                                 showAlert({ message: t(
-                                  'Please fill out Anggota Tim 1 details and upload required documents (ID Card & Twibbon).',
+                                  'Please fill out Member 1 details and upload required documents (ID Card & Twibbon).',
                                   'Mohon lengkapi seluruh data Anggota Tim 1 dan unggah dokumen wajib (Kartu Identitas & Twibbon).'
                                 ), type: 'error' });
                                 return;
