@@ -7,13 +7,7 @@ import { Registration } from '../types';
 
 export const getGoogleScriptUrl = (): string => {
   let storedUrl = localStorage.getItem('eric_google_script_url');
-  const oldUrl = 'https://script.google.com/macros/s/AKfycbzNqpRx3HP9ILYKh7FdZiXfCnKgKHCVjM9hAd_-vdRu7SGmAVsIkJrgWQI7m2BI_ykZ/exec';
-  const newUrl = 'https://script.google.com/macros/s/AKfycbwPLSVYDFnAU4XJ1VZgDxPUcA0bdD3hHAXSW2EB-_qNyfrJHq2qbnrW5bKguvpTh22_/exec';
-
-  if (storedUrl === oldUrl || (storedUrl && storedUrl.includes('AKfycbzNqpRx3HP9ILYKh7FdZiXfCnKgKHCVjM9hAd_-vdRu7SGmAVsIkJrgWQI7m2BI_ykZ'))) {
-    localStorage.setItem('eric_google_script_url', newUrl);
-    storedUrl = newUrl;
-  }
+  const newUrl = 'https://script.google.com/macros/s/AKfycbyEIv3kyOdP6iuRFQ7W8Wq2p7vykhTf3dMs5jat3_XM75q5zB0b535Sd4MEKI1C8v_A/exec';
 
   if (storedUrl) return storedUrl;
   const metaEnv = (import.meta as any).env || {};

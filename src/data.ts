@@ -477,6 +477,36 @@ export const SUPPORTED_BY = [
   }
 ];
 
+export const COUNTRY_CODES = [
+  { code: '+62', country: 'Indonesia', flag: '🇮🇩' },
+  { code: '+60', country: 'Malaysia', flag: '🇲🇾' },
+  { code: '+65', country: 'Singapore', flag: '🇸🇬' },
+  { code: '+63', country: 'Philippines', flag: '🇵🇭' },
+  { code: '+66', country: 'Thailand', flag: '🇹🇭' },
+  { code: '+84', country: 'Vietnam', flag: '🇻🇳' },
+  { code: '+95', country: 'Myanmar', flag: '🇲🇲' },
+  { code: '+855', country: 'Cambodia', flag: '🇰🇭' },
+  { code: '+856', country: 'Laos', flag: '🇱🇦' },
+  { code: '+673', country: 'Brunei', flag: '🇧🇳' },
+  { code: '+670', country: 'Timor-Leste', flag: '🇹🇱' },
+  { code: '+91', country: 'India', flag: '🇮🇳' },
+  { code: '+92', country: 'Pakistan', flag: '🇵🇰' },
+  { code: '+880', country: 'Bangladesh', flag: '🇧🇩' },
+  { code: '+94', country: 'Sri Lanka', flag: '🇱🇰' },
+  { code: '+977', country: 'Nepal', flag: '🇳🇵' },
+  { code: '+86', country: 'China', flag: '🇨🇳' },
+  { code: '+81', country: 'Japan', flag: '🇯🇵' },
+  { code: '+82', country: 'South Korea', flag: '🇰🇷' },
+  { code: '+886', country: 'Taiwan', flag: '🇹🇼' },
+  { code: '+852', country: 'Hong Kong', flag: '🇭🇰' },
+  { code: '+853', country: 'Macau', flag: '🇲🇴' },
+  { code: '+976', country: 'Mongolia', flag: '🇲🇳' },
+  { code: '+1', country: 'US/Canada', flag: '🇺🇸' },
+  { code: '+44', country: 'United Kingdom', flag: '🇬🇧' },
+  { code: '+61', country: 'Australia', flag: '🇦🇺' },
+  { code: '+64', country: 'New Zealand', flag: '🇳🇿' },
+];
+
 export const SPONSORS = [
   { name: 'iSee Electronic and Robotics Store', initials: 'iSee', logo: '/images/sponsors/isee.png', tier: 'silver' },
   { name: 'Cytron Technologies', initials: 'CT', logo: '/images/sponsors/ct-cytron.png', tier: 'gold' },

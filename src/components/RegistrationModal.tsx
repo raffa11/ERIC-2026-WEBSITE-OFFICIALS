@@ -7,7 +7,7 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { useLanguage } from './LanguageContext';
 import { useAlert } from './AlertModal';
-import { COMPETITION_DIVISIONS, MAIN_WHATSAPP_GROUP } from '../data';
+import { COMPETITION_DIVISIONS, MAIN_WHATSAPP_GROUP, COUNTRY_CODES } from '../data';
 import { Member, Registration } from '../types';
 import { 
   Trophy, User, Code, Terminal, Sparkles, Send, CheckCircle2, 
@@ -16,6 +16,49 @@ import {
 } from 'lucide-react';
 import { syncToGoogleSheet } from '../lib/googleSheet';
 import { saveDraft, loadDraft, clearDraft } from '../lib/draftStorage';
+
+function WhatsAppField({
+  value,
+  onChange,
+  placeholder,
+  required
+}: {
+  value: string;
+  onChange: (val: string) => void;
+  placeholder: string;
+  required?: boolean;
+}) {
+  const matched = COUNTRY_CODES.find(c => value.startsWith(c.code));
+  const prefix = matched?.code || '+62';
+  const number = matched ? value.slice(matched.code.length) : value.replace(/^\+/, '');
+
+  return (
+    <div className="flex gap-1.5 items-start">
+      <select
+        value={prefix}
+        onChange={(e) => onChange(e.target.value + number)}
+        className="w-[100px] shrink-0 bg-zinc-900 border border-white/5 focus:border-[#FFD700] rounded-xl px-1.5 py-2.5 text-xs text-white focus:outline-none appearance-none bg-[url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22%23666%22%3E%3Cpath%20d%3D%22M7%2010l5%205%205-5z%22%3E%3C%2Fpath%3E%3C%2Fsvg%3E')] bg-no-repeat bg-[right_6px_center] bg-[length:14px]"
+      >
+        {COUNTRY_CODES.map((c) => (
+          <option key={c.code} value={c.code} className="bg-zinc-950 text-white">
+            {c.flag} {c.code}
+          </option>
+        ))}
+      </select>
+      <input
+        type="tel"
+        required={required}
+        placeholder={placeholder}
+        value={number}
+        onChange={(e) => {
+          const cleaned = e.target.value.replace(/\D/g, '');
+          onChange(prefix + cleaned);
+        }}
+        className="flex-1 min-w-0 w-full bg-zinc-900 border border-white/5 focus:border-[#FFD700] rounded-xl px-3 py-2.5 text-xs text-white focus:outline-none"
+      />
+    </div>
+  );
+}
 
 interface RegistrationModalProps {
   isOpen: boolean;
@@ -824,13 +867,11 @@ export default function RegistrationModal({
 
                           <div className="space-y-1">
                             <label className="text-[9px] font-mono text-zinc-400 uppercase tracking-widest block">{t('Leader WhatsApp / Phone', 'Nomor Telepon Ketua')}</label>
-                            <input
-                              type="tel"
-                              required
-                              placeholder="e.g., +628123456789"
+                            <WhatsAppField
                               value={leaderWhatsapp}
-                              onChange={(e) => setLeaderWhatsapp(e.target.value)}
-                              className="w-full bg-zinc-900 border border-white/5 focus:border-[#FFD700] rounded-xl px-4 py-2.5 text-xs text-white focus:outline-none"
+                              onChange={setLeaderWhatsapp}
+                              placeholder="e.g., 8123456789"
+                              required
                             />
                           </div>
 
@@ -973,13 +1014,11 @@ export default function RegistrationModal({
 
                             <div className="space-y-1">
                               <label className="text-[9px] font-mono text-zinc-400 uppercase tracking-widest block">{t('WhatsApp Number', 'Nomor WhatsApp')}</label>
-                              <input
-                                type="tel"
-                                required
-                                placeholder="e.g., +628..."
+                              <WhatsAppField
                                 value={members[0]?.whatsapp || ''}
-                                onChange={(e) => updateMemberField('member-1', 'whatsapp', e.target.value)}
-                                className="w-full bg-zinc-900 border border-white/5 focus:border-[#FFD700] rounded-xl px-3 py-2.5 text-xs text-white focus:outline-none"
+                                onChange={(val) => updateMemberField('member-1', 'whatsapp', val)}
+                                placeholder="e.g., 8123456789"
+                                required
                               />
                             </div>
 
@@ -1049,12 +1088,10 @@ export default function RegistrationModal({
 
                             <div className="space-y-1">
                               <label className="text-[9px] font-mono text-zinc-400 uppercase tracking-widest block">{t('WhatsApp Number', 'Nomor WhatsApp')}</label>
-                              <input
-                                type="tel"
-                                placeholder="e.g., +628..."
+                              <WhatsAppField
                                 value={members[1]?.whatsapp || ''}
-                                onChange={(e) => updateMemberField('member-2', 'whatsapp', e.target.value)}
-                                className="w-full bg-zinc-900 border border-white/5 focus:border-[#FFD700] rounded-xl px-3 py-2.5 text-xs text-white focus:outline-none"
+                                onChange={(val) => updateMemberField('member-2', 'whatsapp', val)}
+                                placeholder="e.g., 8123456789"
                               />
                             </div>
 
@@ -1126,13 +1163,11 @@ export default function RegistrationModal({
 
                               <div className="space-y-1">
                                 <label className="text-[9px] font-mono text-zinc-400 uppercase tracking-widest block">{t('WhatsApp Number', 'Nomor WhatsApp / HP')}</label>
-                                <input
-                                  type="tel"
-                                  required
-                                  placeholder="e.g., +628..."
+                                <WhatsAppField
                                   value={lecturerWhatsapp}
-                                  onChange={(e) => setLecturerWhatsapp(e.target.value)}
-                                  className="w-full bg-zinc-900 border border-white/5 focus:border-[#C5A059] rounded-xl px-3 py-2.5 text-xs text-white focus:outline-none"
+                                  onChange={setLecturerWhatsapp}
+                                  placeholder="e.g., 8123456789"
+                                  required
                                 />
                               </div>
 

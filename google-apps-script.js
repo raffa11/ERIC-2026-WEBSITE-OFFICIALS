@@ -115,6 +115,13 @@ function doPost(e) {
 
     sheet.appendRow(row);
 
+    // Force WhatsApp columns as plain text to prevent "Formula parse error"
+    const lastRow = sheet.getLastRow();
+    // 1-indexed columns: 9=LeaderWA, 16=Member1WA, 21=Member2WA, 27=LecturerWA
+    [9, 16, 21, 27].forEach(col => {
+      sheet.getRange(lastRow, col).setNumberFormat('@STRING@');
+    });
+
     return ContentService.createTextOutput(JSON.stringify({ status: "success", id: data.id }))
       .setMimeType(ContentService.MimeType.JSON);
 
