@@ -173,7 +173,7 @@ function doGet(e) {
 
           function val(idx) {
             const v = row[idx];
-            return v !== undefined && v !== null ? String(v) : '';
+            return v !== undefined && v !== null ? String(v).trim() : '';
           }
 
           function mVal(idx) {

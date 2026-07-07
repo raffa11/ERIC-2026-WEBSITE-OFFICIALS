@@ -34,7 +34,7 @@ export default function Navbar({
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
-  const isAdmin = currentUser && ADMIN_EMAILS.map(e => e.toLowerCase()).includes(currentUser.email.toLowerCase());
+  const isAdmin = currentUser && ADMIN_EMAILS.map(e => e.toLowerCase().trim()).includes(currentUser.email.toLowerCase().trim());
 
   // Monitor scroll height (throttled with rAF for mobile perf)
   useEffect(() => {

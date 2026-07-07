@@ -33,7 +33,7 @@ export default function MyRegistrationsModal({
   if (!isOpen || !currentUser) return null;
 
   const myRegistrations = registrations.filter(
-    (reg) => reg.leader.email.toLowerCase() === currentUser.email.toLowerCase()
+    (reg) => (reg.leader.email || '').toLowerCase().trim() === currentUser.email.toLowerCase().trim()
   );
 
   return (

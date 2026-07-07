@@ -89,7 +89,7 @@ function AppContent() {
       // 3. Load registrations (from localStorage + Supabase)
       try {
         const data = await dbFetchRegistrations(userEmail);
-        const filtered = data.filter((r: any) => r && r.id && !r.id.toString().startsWith('seed-'));
+        const filtered = data.filter((r: any) => r && r.id && r.leader && r.leader.email && !r.id.toString().startsWith('seed-'));
         setRegistrations(filtered);
       } catch (err) {
         console.error('Failed to load registrations:', err);
@@ -102,7 +102,7 @@ function AppContent() {
   const refreshRegistrations = useCallback(async (email?: string) => {
     try {
       const data = await dbFetchRegistrations(email);
-      const filtered = data.filter((r: any) => r && r.id && !r.id.toString().startsWith('seed-'));
+      const filtered = data.filter((r: any) => r && r.id && r.leader && r.leader.email && !r.id.toString().startsWith('seed-'));
       setRegistrations(filtered);
     } catch (err) {
       console.error('Failed to refresh registrations:', err);

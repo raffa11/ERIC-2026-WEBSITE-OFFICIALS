@@ -491,7 +491,7 @@ export default function RegistrationModal({
     setIsProcessingPayment(true);
     setSyncError('');
 
-    const shortCode = selectedDivision.substring(0, 4).toUpperCase();
+    const shortCode = selectedDivision.substring(0, 4).toUpperCase().replace(/-$/, '');
     const generatedPin = `ERIC-REG-${shortCode}-${Math.random().toString(36).substring(2, 6).toUpperCase()}`;
     
     const displayMethodName = paymentMethod === 'transfer_bank'
@@ -516,7 +516,7 @@ export default function RegistrationModal({
       teamName: teamName,
       leader: {
         name: leaderName,
-        email: leaderEmail,
+        email: leaderEmail.trim(),
         whatsapp: leaderWhatsapp,
         institution: leaderInstitution,
         address: leaderAddress,
