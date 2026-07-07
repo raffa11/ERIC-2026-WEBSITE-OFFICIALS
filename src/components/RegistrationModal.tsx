@@ -201,7 +201,7 @@ export default function RegistrationModal({
       setPaymentProofName('');
       setPaymentProofUrl('');
 
-      const divObjForMembers = COMPETITION_DIVISIONS.find(d => d.id === selectedDivision);
+      const divObjForMembers = COMPETITION_DIVISIONS.find(d => d.id === initialDivisionId);
       const baseMembers = [
         {
           id: 'member-1',
@@ -245,6 +245,25 @@ export default function RegistrationModal({
       } else {
         setLevel('');
       }
+
+      // Rebuild members array to match new division's maxStaff
+      setMembers(prev => {
+        const needed = (divObj.maxStaff && divObj.maxStaff >= 2) ? 2 : 1;
+        const result = [...prev];
+        while (result.length < needed) {
+          const idx = result.length + 1;
+          result.push({
+            id: `member-${idx}`,
+            name: '', whatsapp: '', idCardName: '', idCardUrl: '',
+            twibbonName: '', twibbonUrl: '', congenitalDisease: ''
+          });
+        }
+        while (result.length > needed) {
+          result.pop();
+        }
+        // Ensure sequential IDs
+        return result.map((m, i) => ({ ...m, id: `member-${i + 1}` }));
+      });
     }
   }, [selectedDivision]);
 

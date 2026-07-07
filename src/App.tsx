@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { LanguageProvider } from './components/LanguageContext';
 import { AlertProvider, useAlert } from './components/AlertModal';
 import Navbar from './components/Navbar';
@@ -98,11 +98,23 @@ function AppContent() {
     init();
   }, []);
 
+  // Re-fetch registrations when user logs in
+  const refreshRegistrations = useCallback(async (email?: string) => {
+    try {
+      const data = await dbFetchRegistrations(email);
+      const filtered = data.filter((r: any) => r && r.id && !r.id.toString().startsWith('seed-'));
+      setRegistrations(filtered);
+    } catch (err) {
+      console.error('Failed to refresh registrations:', err);
+    }
+  }, []);
+
   // Login handler
-  const handleLoginSuccess = (user: { name: string; email: string; method: string }) => {
+  const handleLoginSuccess = async (user: { name: string; email: string; method: string }) => {
     setCurrentUser(user);
     localStorage.setItem('eric_active_user', JSON.stringify(user));
     setIsLoginModalOpen(false);
+    await refreshRegistrations(user.email);
   };
 
   // Logout handler
