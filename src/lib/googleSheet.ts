@@ -7,7 +7,7 @@ import { Registration } from '../types';
 
 export const getGoogleScriptUrl = (): string => {
   let storedUrl = localStorage.getItem('eric_google_script_url');
-  const newUrl = 'https://script.google.com/macros/s/AKfycbyEIv3kyOdP6iuRFQ7W8Wq2p7vykhTf3dMs5jat3_XM75q5zB0b535Sd4MEKI1C8v_A/exec';
+  const newUrl = 'https://script.google.com/macros/s/AKfycbxSzGwfTmppPem0ozFyh4fqC7p2FKBih-OL46lDnRoZTz9tQv8x3AymGPIwPGRtPms/exec';
 
   if (storedUrl) return storedUrl;
   const metaEnv = (import.meta as any).env || {};
