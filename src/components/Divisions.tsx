@@ -163,7 +163,7 @@ export default function Divisions({ onSelectDivision }: DivisionsProps) {
 
                 {/* Main Card Shell */}
                 <div
-                  className={`relative overflow-hidden bg-gradient-to-b from-zinc-900/90 to-black border ${isTouchDevice ? 'border-white/10' : 'border-white/5 group-hover:border-white/20'} p-5 sm:p-8 min-h-[360px] md:min-h-[400px] rounded-2xl flex flex-col justify-between shadow-[0_15px_35px_rgba(0,0,0,0.6)]`}
+                  className={`relative overflow-hidden bg-gradient-to-b from-zinc-900/90 to-black border ${isTouchDevice ? 'border-white/10' : 'border-white/5 group-hover:border-white/20'} p-4 sm:p-8 min-h-0 md:min-h-[400px] rounded-2xl flex flex-col shadow-[0_15px_35px_rgba(0,0,0,0.6)]`}
                   style={
                     isTouchDevice || division.comingSoon
                       ? {}
@@ -201,9 +201,9 @@ export default function Divisions({ onSelectDivision }: DivisionsProps) {
 
                   {/* Inner Content top part */}
                   <div>
-                    <div className="flex justify-between items-start mb-6">
+                    <div className="flex justify-between items-start mb-4 sm:mb-6">
                       {division.image ? (
-                        <div className={`w-14 h-14 sm:w-20 sm:h-20 rounded-xl border overflow-hidden bg-zinc-950/80 shrink-0 flex items-center justify-center p-1 sm:p-1.5 ${isTouchDevice ? 'border-white/10' : 'border-white/10 group-hover:border-[#FFD700]/40 transition-colors duration-300'}`}>
+                        <div className={`w-12 h-12 sm:w-20 sm:h-20 rounded-xl border overflow-hidden bg-zinc-950/80 shrink-0 flex items-center justify-center p-1 sm:p-1.5 ${isTouchDevice ? 'border-white/10' : 'border-white/10 group-hover:border-[#FFD700]/40 transition-colors duration-300'}`}>
                           <img src={division.image} alt={division.title} loading="lazy" className="w-full h-full object-contain" />
                         </div>
                       ) : (
@@ -217,7 +217,7 @@ export default function Divisions({ onSelectDivision }: DivisionsProps) {
                     </div>
 
                     {/* Highly responsive Kinetic Text */}
-                    <h3 className={`text-2xl font-sans font-black uppercase leading-none tracking-tight ${isTouchDevice ? 'text-white' : 'text-white group-hover:text-[#FFD700] transition-colors'}`}>
+                    <h3 className={`text-lg sm:text-2xl font-sans font-black uppercase leading-none tracking-tight ${isTouchDevice ? 'text-white' : 'text-white group-hover:text-[#FFD700] transition-colors'}`}>
                       {division.title}
                     </h3>
                     {/* Localised Description */}
@@ -229,7 +229,7 @@ export default function Divisions({ onSelectDivision }: DivisionsProps) {
                   </div>
 
                   {/* Spec description bottom section */}
-                  <div className="border-t border-white/5 pt-5 select-none space-y-3">
+                  <div className="border-t border-white/5 pt-5 select-none space-y-3 mt-auto">
                     <div className="flex justify-between items-center text-[10px] font-mono">
                       <span className="text-zinc-500">{division.comingSoon ? t('STATUS', 'STATUS') : t('SPECIFICATION', 'SPESIFIKASI')}</span>
                       <span className={`font-semibold uppercase ${division.comingSoon ? 'text-[#FFD700]' : 'text-white'}`}>{division.specHighlight}</span>
@@ -244,8 +244,8 @@ export default function Divisions({ onSelectDivision }: DivisionsProps) {
                         </div>
                         <div className="h-1 w-full bg-zinc-900 rounded-full overflow-hidden">
                           <div
-                            className="h-full bg-gradient-to-r from-[#0047AB] via-[#FFD700] to-[#FFE44D] transition-all duration-500"
-                            style={{ width: isHovered ? `${division.intensityScore}%` : (isTouchDevice ? `${division.intensityScore}%` : '20%') }}
+                            className={`h-full bg-gradient-to-r from-[#0047AB] via-[#FFD700] to-[#FFE44D] ${isTouchDevice ? '' : 'transition-all duration-500'}`}
+                            style={{ width: division.intensityScore + '%' }}
                           />
                         </div>
                       </div>
@@ -257,7 +257,7 @@ export default function Divisions({ onSelectDivision }: DivisionsProps) {
                         <div className="text-[8px] font-mono text-zinc-500 uppercase tracking-wider mb-1.5 font-bold">
                           {t('CONTACT PERSON', 'CONTACT PERSON')}
                         </div>
-                        <div className="flex flex-wrap gap-1.5">
+                        <div className="flex flex-col xs:flex-row gap-1.5">
                           {division.contactPersons.map((cp) => (
                             <a
                               key={cp.label}
@@ -265,12 +265,12 @@ export default function Divisions({ onSelectDivision }: DivisionsProps) {
                               target="_blank"
                               rel="noopener noreferrer"
                               onClick={(e) => e.stopPropagation()}
-                              className="inline-flex items-center gap-1 px-2 py-1 bg-[#25D366]/10 border border-[#25D366]/20 rounded-md text-[8.5px] font-mono text-[#25D366] hover:bg-[#25D366]/20 hover:border-[#25D366]/40 transition-all truncate max-w-full"
+                              className="inline-flex items-center gap-1 px-2 py-1 bg-[#25D366]/10 border border-[#25D366]/20 rounded-md text-[8.5px] font-mono text-[#25D366] hover:bg-[#25D366]/20 active:bg-[#25D366]/30 transition-colors truncate"
                             >
                               <LucideIcons.MessageCircle className="w-3 h-3 shrink-0" />
                               <span className="font-bold shrink-0">{cp.label}</span>
                               <span className="text-white/30 shrink-0">/</span>
-                              <span className="truncate min-w-0">{cp.name}</span>
+                              <span className="truncate">{cp.name}</span>
                             </a>
                           ))}
                         </div>
@@ -280,7 +280,7 @@ export default function Divisions({ onSelectDivision }: DivisionsProps) {
                     {/* F1-style sliding CTA banner */}
                     {!division.comingSoon && (
                       <div className="pt-1.5 text-center">
-                        <span className={`inline-flex items-center gap-1.5 font-mono text-[8.5px] text-[#FFD700] font-bold tracking-widest uppercase bg-[#FFD700]/5 border border-[#FFD700]/20 px-3 py-1 rounded-full w-full justify-center ${isTouchDevice ? '' : 'opacity-0 group-hover:opacity-100 group-hover:translate-y-0 translate-y-1 transition-all duration-300'}`}>
+                        <span className={`inline-flex items-center gap-1.5 font-mono text-[8.5px] text-[#FFD700] font-bold tracking-widest uppercase bg-[#FFD700]/5 border border-[#FFD700]/20 px-3 py-1 rounded-full w-full justify-center ${isTouchDevice ? 'opacity-100' : 'opacity-0 group-hover:opacity-100 group-hover:translate-y-0 translate-y-1 transition-all duration-300'}`}>
                           <span>{t('REGISTER FOR THIS ARENA', 'DAFTAR DI ARENA INI')}</span>
                           <LucideIcons.ArrowRight className="w-3 h-3 text-[#FFD700]" />
                         </span>
