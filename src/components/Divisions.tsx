@@ -18,35 +18,6 @@ export default function Divisions({ onSelectDivision }: DivisionsProps) {
     typeof window !== 'undefined' && window.matchMedia('(pointer: coarse)').matches
   );
 
-  const [hoveredCardId, setHoveredCardId] = useState<string | null>(null);
-  const [tiltMap, setTiltMap] = useState<Record<string, { x: number; y: number; gx: number; gy: number }>>({});
-
-  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>, id: string) => {
-    const card = e.currentTarget;
-    const rect = card.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
-
-    const rotX = -((y / rect.height) - 0.5) * 16;
-    const rotY = ((x / rect.width) - 0.5) * 16;
-
-    const glossX = (x / rect.width) * 100;
-    const glossY = (y / rect.height) * 100;
-
-    setTiltMap((prev) => ({
-      ...prev,
-      [id]: { x: rotX, y: rotY, gx: glossX, gy: glossY },
-    }));
-  };
-
-  const handleMouseLeave = (id: string) => {
-    setHoveredCardId(null);
-    setTiltMap((prev) => ({
-      ...prev,
-      [id]: { x: 0, y: 0, gx: 50, gy: 50 },
-    }));
-  };
-
   return (
     <section id="divisions-section" className="relative py-16 md:py-28 bg-[#050505] border-t border-white/5">
       {!isTouchDevice && (
@@ -117,68 +88,43 @@ export default function Divisions({ onSelectDivision }: DivisionsProps) {
           )}
         </div>
 
-        {/* 3D Cards Grid */}
+        {/* Cards Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {COMPETITION_DIVISIONS.map((division, idx) => {
             const resolvedIconName = (division.icon as keyof typeof LucideIcons) || 'Cpu';
             const IconComponent = (LucideIcons[resolvedIconName] as React.ComponentType<{ className?: string }>) || LucideIcons.Cpu;
-
-            const isHovered = hoveredCardId === division.id;
-            const tilt = tiltMap[division.id] || { x: 0, y: 0, gx: 50, gy: 50 };
 
             return (
               <div
                 id={`division-card-${division.id}`}
                 key={division.id}
                 onClick={() => { if (!division.comingSoon) onSelectDivision(division.id); }}
-                onMouseMove={(e) => {
-                  if (isTouchDevice || division.comingSoon) return;
-                  setHoveredCardId(division.id);
-                  handleMouseMove(e, division.id);
-                }}
-                onMouseLeave={() => {
-                  if (isTouchDevice || division.comingSoon) return;
-                  handleMouseLeave(division.id);
-                }}
-                className={`relative select-none ${division.comingSoon ? 'cursor-default opacity-60' : 'cursor-pointer'} ${isTouchDevice ? '' : 'group'} touch-manipulation`}
+                className={`relative select-none ${division.comingSoon ? 'cursor-default opacity-60' : 'cursor-pointer'} ${isTouchDevice ? '' : 'group'}`}
               >
-                {/* Glow Shadow — desktop only */}
+                {/* Hover glow shadow — desktop only */}
                 {!isTouchDevice && !division.comingSoon && (
                   <div
-                    className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 blur-[25px] transition-all duration-300 pointer-events-none"
-                    style={{
-                      backgroundColor: division.glowColor,
-                      transform: `scale(0.95) rotateX(${tilt.x}deg) rotateY(${tilt.y}deg)`,
-                    }}
+                    className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 blur-[30px] transition-all duration-500 pointer-events-none"
+                    style={{ backgroundColor: division.glowColor }}
+                  />
+                )}
+
+                {/* Top accent bar — desktop hover only */}
+                {!isTouchDevice && !division.comingSoon && (
+                  <div
+                    className="absolute top-0 left-[10%] right-[10%] h-[2px] rounded-full opacity-0 group-hover:opacity-100 transition-all duration-500 z-10 pointer-events-none"
+                    style={{ backgroundColor: '#FFD700', boxShadow: '0 0 12px rgba(255, 215, 0, 0.6)' }}
                   />
                 )}
 
                 {/* Main Card */}
                 <div
-                  className={`relative overflow-hidden bg-zinc-900 border ${isTouchDevice ? 'border-white/10' : 'border-white/5 group-hover:border-white/20'} p-5 sm:p-8 min-h-[360px] md:min-h-[400px] rounded-2xl flex flex-col justify-between shadow-[0_15px_35px_rgba(0,0,0,0.6)]`}
-                  style={
-                    isTouchDevice || division.comingSoon
-                      ? { WebkitBackfaceVisibility: 'hidden', backfaceVisibility: 'hidden' }
-                      : {
-                          transform: `rotateX(${tilt.x}deg) rotateY(${tilt.y}deg) scale(${isHovered ? 1.03 : 1.0})`,
-                          transition: 'transform 0.2s ease-out',
-                          WebkitBackfaceVisibility: 'hidden',
-                          backfaceVisibility: 'hidden',
-                        }
-                  }
+                  className={`relative overflow-hidden bg-zinc-900 border ${isTouchDevice ? 'border-white/10' : 'border-white/5 group-hover:border-[#FFD700]/40 group-hover:shadow-[0_20px_50px_rgba(0,0,0,0.8)] group-hover:-translate-y-2 group-hover:scale-[1.02]'} p-5 sm:p-8 min-h-[360px] md:min-h-[400px] rounded-2xl flex flex-col justify-between shadow-[0_15px_35px_rgba(0,0,0,0.6)] transition-all duration-300 ease-out`}
+                  style={{
+                    WebkitBackfaceVisibility: 'hidden',
+                    backfaceVisibility: 'hidden',
+                  }}
                 >
-
-                  {/* Glare — desktop only */}
-                  {!isTouchDevice && !division.comingSoon && (
-                    <div
-                      className="absolute inset-0 pointer-events-none transition-opacity duration-300"
-                      style={{
-                        opacity: isHovered ? 0.28 : 0,
-                        background: `radial-gradient(circle 180px at ${tilt.gx}% ${tilt.gy}%, white, transparent)`,
-                      }}
-                    />
-                  )}
-
                   {/* Corner notch — desktop only */}
                   {!isTouchDevice && !division.comingSoon && (
                     <div className="absolute top-0 right-0 w-16 h-16 bg-white/2 group-hover:bg-[#FFD700]/5 transition-colors duration-300 [clip-path:polygon(100%_0,0_0,100%_100%)] pointer-events-none" />
@@ -197,11 +143,11 @@ export default function Divisions({ onSelectDivision }: DivisionsProps) {
                   <div>
                     <div className="flex justify-between items-start mb-6">
                       {division.image ? (
-                        <div className={`w-14 h-14 sm:w-20 sm:h-20 rounded-xl border overflow-hidden bg-zinc-950/80 shrink-0 flex items-center justify-center p-1 sm:p-1.5 ${isTouchDevice ? 'border-white/10' : 'border-white/10 group-hover:border-[#FFD700]/40 transition-colors duration-300'}`}>
+                        <div className={`w-14 h-14 sm:w-20 sm:h-20 rounded-xl border overflow-hidden bg-zinc-950/80 shrink-0 flex items-center justify-center p-1 sm:p-1.5 ${isTouchDevice ? 'border-white/10' : 'border-white/10 group-hover:border-[#FFD700]/40 group-hover:shadow-[0_0_20px_rgba(255,215,0,0.15)] transition-all duration-300'}`}>
                           <img src={division.image} alt={division.title} loading="lazy" className="w-full h-full object-contain" />
                         </div>
                       ) : (
-                        <div className={`p-2 sm:p-3 bg-zinc-950/80 rounded-xl border text-white ${isTouchDevice ? 'border-white/10' : 'border-white/10 group-hover:text-[#FFD700] group-hover:border-[#FFD700]/40 transition-colors duration-300'}`}>
+                        <div className={`p-2 sm:p-3 bg-zinc-950/80 rounded-xl border text-white ${isTouchDevice ? 'border-white/10' : 'border-white/10 group-hover:text-[#FFD700] group-hover:border-[#FFD700]/40 transition-all duration-300'}`}>
                           <IconComponent className="w-5 h-5 sm:w-6 sm:h-6" />
                         </div>
                       )}
@@ -210,7 +156,7 @@ export default function Divisions({ onSelectDivision }: DivisionsProps) {
                       </span>
                     </div>
 
-                    <h3 className={`text-2xl font-sans font-black uppercase leading-none tracking-tight ${isTouchDevice ? 'text-white' : 'text-white group-hover:text-[#FFD700] transition-colors'}`}>
+                    <h3 className={`text-2xl font-sans font-black uppercase leading-none tracking-tight ${isTouchDevice ? 'text-white' : 'text-white group-hover:text-[#FFD700] transition-colors duration-300'}`}>
                       {division.title}
                     </h3>
                     <p className="text-zinc-400 text-xs mt-4 leading-relaxed line-clamp-4">
@@ -233,7 +179,7 @@ export default function Divisions({ onSelectDivision }: DivisionsProps) {
                         </div>
                         <div className="h-1 w-full bg-zinc-900 rounded-full overflow-hidden">
                           <div
-                            className={`h-full bg-gradient-to-r from-[#0047AB] via-[#FFD700] to-[#FFE44D] ${isTouchDevice ? '' : 'transition-all duration-500'}`}
+                            className="h-full bg-gradient-to-r from-[#0047AB] via-[#FFD700] to-[#FFE44D]"
                             style={{ width: division.intensityScore + '%' }}
                           />
                         </div>
