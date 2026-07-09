@@ -118,6 +118,43 @@ export interface Registration {
   paymentProofUrl?: string;
 }
 
+export interface RICStageSubmission {
+  stage: number; // 1, 2, or 3
+  status: 'locked' | 'pending' | 'approved' | 'rejected' | 'resubmit';
+  submittedAt?: string;
+  reviewedAt?: string;
+  reviewedBy?: string;
+  notes?: string;
+
+  // Stage 1: Abstract
+  abstractFileName?: string;
+  abstractFileUrl?: string;
+
+  // Stage 2: Proposal + Video
+  proposalFileName?: string;
+  proposalFileUrl?: string;
+  videoLink?: string;
+
+  // Stage 3: Poster + PPT
+  posterFileName?: string;
+  posterFileUrl?: string;
+  pptFileName?: string;
+  pptFileUrl?: string;
+}
+
+export interface RICSubmission {
+  id: string;
+  registrationId: string; // links to Registration.id
+  teamName: string;
+  leaderEmail: string;
+  divisionId: string;
+  stages: RICStageSubmission[]; // index 0 = stage 1, 1 = stage 2, 2 = stage 3
+  currentStage: number; // 0-based: 0 = stage 1, 1 = stage 2, 2 = stage 3
+  completed: boolean;
+}
+
+export const RIC_DIVISION_IDS = ['research-innovation'];
+
 // Centralized List of Administrator Emails
 // You can add more admin emails to this array below to grant them full access
 export const ADMIN_EMAILS = [

@@ -8,7 +8,8 @@ import { motion, AnimatePresence } from 'motion/react';
 import { useLanguage } from './LanguageContext';
 import { useAlert } from './AlertModal';
 import { COMPETITION_DIVISIONS } from '../data';
-import { Member, Registration } from '../types';
+import { Member, Registration, RICSubmission } from '../types';
+import RICAdminPanel from './RICAdminPanel';
 import * as XLSX from 'xlsx';
 import { 
   Trophy, User, Code, Terminal, Sparkles, Plus, Trash2, 
@@ -23,18 +24,23 @@ interface AdminDashboardProps {
   registrations: Registration[];
   onUpdateRegistrations: (newRegs: Registration[]) => void;
   onBackToHome: () => void;
+  ricSubmissions: RICSubmission[];
+  onUpdateRICSubmissions: (subs: RICSubmission[]) => void;
 }
 
 export default function AdminDashboard({
   currentUser,
   registrations,
   onUpdateRegistrations,
-  onBackToHome
+  onBackToHome,
+  ricSubmissions,
+  onUpdateRICSubmissions
 }: AdminDashboardProps) {
   const { t } = useLanguage();
   const { showAlert, showConfirm } = useAlert();
 
   // Search and filter states
+  const [activeTab, setActiveTab] = useState<'registrations' | 'ric'>('registrations');
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedDivFilter, setSelectedDivFilter] = useState('ALL');
   const [editingReg, setEditingReg] = useState<Registration | null>(null);
@@ -258,6 +264,23 @@ export default function AdminDashboard({
         </p>
       </div>
 
+      {/* Tab Navigation */}
+      <div className="flex gap-2 bg-zinc-950 border border-white/5 rounded-2xl p-1 w-fit">
+        <button
+          onClick={() => setActiveTab('registrations')}
+          className={`px-5 py-2 text-xs font-mono font-black uppercase rounded-xl transition-all cursor-pointer ${activeTab === 'registrations' ? 'bg-[#FFD700] text-black shadow-[0_0_15px_rgba(255,215,0,0.2)]' : 'text-zinc-400 hover:text-white'}`}
+        >
+          REGISTRATIONS
+        </button>
+        <button
+          onClick={() => setActiveTab('ric')}
+          className={`px-5 py-2 text-xs font-mono font-black uppercase rounded-xl transition-all cursor-pointer ${activeTab === 'ric' ? 'bg-emerald-500 text-black shadow-[0_0_15px_rgba(16,185,129,0.2)]' : 'text-zinc-400 hover:text-white'}`}
+        >
+          RIC REVIEW
+        </button>
+      </div>
+
+      {activeTab === 'registrations' && (<>
       {/* Database Statistics Cards grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         <div className="p-6 bg-zinc-950 border border-white/5 rounded-2xl relative overflow-hidden">
@@ -919,6 +942,15 @@ function doPost(e) {
           </motion.div>
         )}
       </AnimatePresence>
+      </>      
+      )}
+
+      {activeTab === 'ric' && (
+        <RICAdminPanel
+          submissions={ricSubmissions}
+          onUpdateSubmissions={onUpdateRICSubmissions}
+        />
+      )}
 
     </div>
   );
