@@ -271,57 +271,45 @@ function doGet(e) {
 /**
  * ONE-TIME MIGRATION: Backfill Payment Proof URLs for existing rows.
  * Sebelum fix, payProofUrl diupload ke Drive tapi tidak ditulis ke sheet.
- * Fungsi ini mencari file di folder "ERIC_Registrations_Uploads" dan mengisi
+ * Fungsi ini mencari file PAY_PROOF_{teamName} di folder Drive dan mengisi
  * URL-nya ke kolom Payment Proof yang kosong.
  * 
  * CARA PAKAI:
  * 1. Buka Apps Script editor (Extensions → Apps Script)
- * 2. Paste script terbaru, deploy ulang
+ * 2. Paste script terbaru, deploy
  * 3. Di editor, pilih fungsi "migratePaymentProofs" lalu klik Run
- * 4. Izinkan akses jika diminta
  */
 function migratePaymentProofs() {
   const ss = SpreadsheetApp.openById(SPREADSHEET_ID);
   const folders = DriveApp.getFoldersByName("ERIC_Registrations_Uploads");
-  if (!folders.hasNext()) return;
+  if (!folders.hasNext()) { Logger.log("Folder ERIC_Registrations_Uploads not found!"); return; }
   const uploadsFolder = folders.next();
-  const allFiles = uploadsFolder.getFiles();
-  
-  Logger.log("Scanning files in ERIC_Registrations_Uploads...");
-  const fileMap = {};
-  while (allFiles.hasNext()) {
-    const file = allFiles.next();
-    const name = file.getName();
-    Logger.log("Found file: " + name);
-    if (name.startsWith("PAY_PROOF_")) {
-      // Format: PAY_PROOF_{teamName}_{originalFilename}.ext
-      let teamPart = name.replace("PAY_PROOF_", "");
-      const extIdx = teamPart.lastIndexOf(".");
-      if (extIdx > 0) teamPart = teamPart.slice(0, extIdx);
-      const lastUs = teamPart.lastIndexOf("_");
-      if (lastUs > 0) teamPart = teamPart.slice(0, lastUs);
-      teamPart = teamPart.trim().toUpperCase();
-      Logger.log("  -> Extracted team: [" + teamPart + "]");
-      fileMap[teamPart] = file.getUrl();
-    } else {
-      Logger.log("  -> Skipped (not PAY_PROOF_)");
+
+  const sheetsToScan = [];
+  const allSheets = ss.getSheets();
+  for (let s = 0; s < allSheets.length; s++) {
+    const sh = allSheets[s];
+    const name = sh.getName();
+    const isDiv = Object.values(DIVISION_MAP).includes(name);
+    if (isDiv || name === "ALL ERIC DATA") {
+      sheetsToScan.push(sh);
     }
   }
-  Logger.log("File map keys: " + JSON.stringify(Object.keys(fileMap)));
 
-  Logger.log("Scanning sheets...");
-  const sheets = ss.getSheets();
-  for (let s = 0; s < sheets.length; s++) {
-    const sheet = sheets[s];
+  let totalUpdated = 0;
+  for (let si = 0; si < sheetsToScan.length; si++) {
+    const sheet = sheetsToScan[si];
     const sheetName = sheet.getName();
-    const isDivision = Object.values(DIVISION_MAP).includes(sheetName);
-    if (!isDivision) { Logger.log("Sheet \"" + sheetName + "\": skipped (not a division)"); continue; }
-    if (sheet.getLastRow() <= 1) { Logger.log("Sheet \"" + sheetName + "\": skipped (no data rows)"); continue; }
+    if (sheet.getLastRow() <= 1) continue;
 
     const headers = sheet.getRange(1, 1, 1, sheet.getLastColumn()).getValues()[0];
     const proofCol = headers.indexOf("Payment Proof") + 1;
-    const teamCol = headers.indexOf("Team Name") + 1;
-    if (!proofCol || !teamCol) { Logger.log("Sheet \"" + sheetName + "\": missing required columns"); continue; }
+    const teamColIndex = headers.indexOf("Team Name");
+    const teamCol = teamColIndex + 1;
+    if (!proofCol || !teamCol) {
+      Logger.log("Sheet \"" + sheetName + "\": missing required columns, skipping");
+      continue;
+    }
 
     const data = sheet.getDataRange().getValues();
     let updated = 0;
@@ -330,17 +318,29 @@ function migratePaymentProofs() {
       if (existingProof && existingProof !== '-' && existingProof.startsWith('http')) continue;
       const teamName = String(data[i][teamCol - 1] || '').trim().toUpperCase();
       if (!teamName || teamName === '-') continue;
-      Logger.log("Sheet \"" + sheetName + "\" row " + (i+1) + ": team=[" + teamName + "]");
-      const matchedUrl = fileMap[teamName];
+
+      // Search for file starting with PAY_PROFF_{teamName}_ in Drive folder
+      const fileIter = uploadsFolder.getFilesByName("PAY_PROOF_" + teamName + "_");
+      
+      // Actually, getFilesByName does exact match. Use getFiles and filter
+      const allFiles = uploadsFolder.getFiles();
+      let matchedUrl = null;
+      while (allFiles.hasNext()) {
+        const file = allFiles.next();
+        const fname = file.getName().toUpperCase();
+        if (fname.startsWith("PAY_PROOF_" + teamName + "_")) {
+          matchedUrl = file.getUrl();
+          break;
+        }
+      }
+
       if (matchedUrl) {
         sheet.getRange(i + 1, proofCol).setValue(matchedUrl);
         updated++;
-        Logger.log("  -> MATCHED!");
-      } else {
-        Logger.log("  -> NOT FOUND in fileMap");
+        totalUpdated++;
       }
     }
     Logger.log("Sheet \"" + sheetName + "\": " + updated + " rows updated");
   }
-  Logger.log("Migration complete!");
+  Logger.log("Migration complete! Total: " + totalUpdated + " rows updated");
 }
