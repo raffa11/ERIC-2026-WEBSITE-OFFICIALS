@@ -1,9 +1,11 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { useLanguage } from './LanguageContext';
 import { useAlert } from './AlertModal';
 import { RIC_STAGES } from '../data';
 import { RICSubmission, RICStageSubmission } from '../types';
+import { fetchRICSubmissions } from '../lib/ricSheet';
+import { ricUpsertLocal, ricFetchAllLocal } from '../lib/ricStorage';
 import {
   X, FileText, CheckCircle2, Lock, AlertCircle, Upload,
   ExternalLink, Send, ArrowRight, MessageCircle, Trophy, Check,
@@ -57,6 +59,44 @@ export default function RICSubmissionFlow({
       reader.readAsDataURL(file);
     });
   };
+
+  // Fetch latest status from sheet when modal opens
+  useEffect(() => {
+    if (!isOpen || !registrationId) return;
+    (async () => {
+      try {
+        const result = await fetchRICSubmissions();
+        const rows: any[] = result || [];
+        if (rows.length === 0) return;
+        // Rows are flat objects: {id, registrationId, stage, status, ...}
+        const myRows = rows.filter((r: any) => r.registrationId === registrationId);
+        if (myRows.length === 0) return;
+
+        // Match by submission ID, pick first
+        const sheetRow = myRows[0];
+        const local = await ricFetchAllLocal();
+        const localIdx = local.findIndex(s => s.id === sheetRow.id);
+        if (localIdx < 0) return;
+
+        // Apply status from each matching sheet row to the correct stage
+        for (const row of myRows) {
+          const stageIdx = (parseInt(row.stage) || 1) - 1;
+          if (row.status && row.status !== 'locked') {
+            local[localIdx].stages[stageIdx] = {
+              ...local[localIdx].stages[stageIdx],
+              status: row.status,
+              notes: row.notes || local[localIdx].stages[stageIdx].notes,
+              reviewedAt: row.reviewedAt || local[localIdx].stages[stageIdx].reviewedAt,
+              reviewedBy: row.reviewedBy || local[localIdx].stages[stageIdx].reviewedBy,
+            };
+          }
+        }
+
+        await ricUpsertLocal(local[localIdx]);
+        onSave(local[localIdx]);
+      } catch (_) {}
+    })();
+  }, [isOpen]);
 
   const safeSubmission: RICSubmission = submission || {
     id: `ric-${Date.now()}`,
