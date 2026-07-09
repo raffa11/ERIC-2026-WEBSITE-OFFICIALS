@@ -153,10 +153,10 @@ export default function RegistrationModal({
       setLeaderTwibbonUrl(draft.leaderTwibbonUrl);
       setLeaderAddress(draft.leaderAddress);
       setLeaderCongenitalDisease(draft.leaderCongenitalDisease);
-      // Ensure draft members match current division's maxStaff (e.g. PLC = maxStaff 1)
       const divForDraft = COMPETITION_DIVISIONS.find(d => d.id === draft.selectedDivision);
-      const trimmedMembers = draft.members && draft.members.length > 0 ? [draft.members[0]] : draft.members;
-      setMembers(divForDraft && divForDraft.maxStaff && divForDraft.maxStaff >= 2 ? draft.members : trimmedMembers);
+      const maxForDraft = divForDraft?.maxMembers ?? 1;
+      const trimmedMembers = draft.members ? draft.members.slice(0, maxForDraft) : [];
+      setMembers(trimmedMembers);
       setSubCategory(draft.subCategory);
       setLevel(draft.level);
       setLecturerName(draft.lecturerName);
@@ -202,21 +202,11 @@ export default function RegistrationModal({
       setPaymentProofUrl('');
 
       const divObjForMembers = COMPETITION_DIVISIONS.find(d => d.id === initialDivisionId);
-      const baseMembers = [
-        {
-          id: 'member-1',
-          name: '',
-          whatsapp: '',
-          idCardName: '',
-          idCardUrl: '',
-          twibbonName: '',
-          twibbonUrl: '',
-          congenitalDisease: ''
-        }
-      ];
-      if (divObjForMembers && divObjForMembers.maxStaff && divObjForMembers.maxStaff >= 2) {
+      const baseMembers: Member[] = [];
+      const memberCount = divObjForMembers?.maxMembers ?? 1;
+      for (let i = 0; i < memberCount; i++) {
         baseMembers.push({
-          id: 'member-2',
+          id: `member-${i + 1}`,
           name: '',
           whatsapp: '',
           idCardName: '',
@@ -246,9 +236,8 @@ export default function RegistrationModal({
         setLevel('');
       }
 
-      // Rebuild members array to match new division's maxStaff
       setMembers(prev => {
-        const needed = (divObj.maxStaff && divObj.maxStaff >= 2) ? 2 : 1;
+        const needed = divObj.maxMembers ?? 1;
         const result = [...prev];
         while (result.length < needed) {
           const idx = result.length + 1;
@@ -261,7 +250,6 @@ export default function RegistrationModal({
         while (result.length > needed) {
           result.pop();
         }
-        // Ensure sequential IDs
         return result.map((m, i) => ({ ...m, id: `member-${i + 1}` }));
       });
     }
@@ -443,26 +431,30 @@ export default function RegistrationModal({
         }
       }
       if (wizardStep === 3) {
-        // Validate Anggota Tim 1 (Required)
-        const m1 = members[0];
-        if (!m1 || !m1.name.trim() || !m1.whatsapp.trim() || !m1.idCardUrl || !m1.twibbonUrl) {
-                                  showAlert({ message: t(
-                                    'Please fill out Member 1 details and upload required documents (ID Card & Twibbon).',
-                                    'Mohon lengkapi seluruh data Anggota Tim 1 dan unggah dokumen wajib (Kartu Identitas & Twibbon).'
-                                  ), type: 'error' });
-          return;
-        }
+        const minReq = divisionObj.minMembers ?? 0;
+        const maxMem = divisionObj.maxMembers ?? 1;
 
-        // Validate Anggota Tim 2 (Optional, but if name is present, must be complete)
-        if (divisionObj.maxStaff && divisionObj.maxStaff >= 2) {
-          const m2 = members[1];
-          if (m2 && m2.name.trim() !== '') {
-            if (!m2.whatsapp.trim() || !m2.idCardUrl || !m2.twibbonUrl) {
+        for (let i = 0; i < maxMem; i++) {
+          const m = members[i];
+          const isRequired = i < minReq;
+
+          if (isRequired) {
+            if (!m || !m.name.trim() || !m.whatsapp.trim() || !m.idCardUrl || !m.twibbonUrl) {
               showAlert({ message: t(
-                'Please fill out all Member 2 details or clear their name if not registered.',
-                'Mohon lengkapi seluruh data Anggota Tim 2 atau kosongkan nama jika tidak terdaftar.'
+                `Please fill out Member ${i + 1} details and upload required documents (ID Card & Twibbon).`,
+                `Mohon lengkapi seluruh data Anggota Tim ${i + 1} dan unggah dokumen wajib (Kartu Identitas & Twibbon).`
               ), type: 'error' });
               return;
+            }
+          } else {
+            if (m && m.name.trim() !== '') {
+              if (!m.whatsapp.trim() || !m.idCardUrl || !m.twibbonUrl) {
+                showAlert({ message: t(
+                  `Please fill out all Member ${i + 1} details or clear their name if not registered.`,
+                  `Mohon lengkapi seluruh data Anggota Tim ${i + 1} atau kosongkan nama jika tidak terdaftar.`
+                ), type: 'error' });
+                return;
+              }
             }
           }
         }
@@ -499,16 +491,11 @@ export default function RegistrationModal({
       : 'PAYPAL';
 
     const finalMembers: Member[] = [];
-    if (members[0] && members[0].name.trim() !== '') {
-      finalMembers.push({
-        ...members[0],
-      });
-    }
-    if (members[1] && members[1].name.trim() !== '') {
-      finalMembers.push({
-        ...members[1],
-      });
-    }
+    members.forEach(m => {
+      if (m.name.trim() !== '') {
+        finalMembers.push({ ...m });
+      }
+    });
 
     const finalRegistration: Registration = {
       id: `reg-${Date.now()}`,
@@ -1006,153 +993,95 @@ export default function RegistrationModal({
                         exit={{ opacity: 0, x: -10 }}
                         className="space-y-6"
                       >
-                        {/* Member 1 Section */}
-                        <div className="p-4 bg-zinc-900/30 border border-white/5 rounded-2xl space-y-4">
-                          <div className="flex justify-between items-center select-none border-b border-white/5 pb-2">
-                            <h4 className="font-sans font-black text-xs text-white uppercase tracking-wider flex items-center gap-1.5">
-                              <span className="w-1.5 h-1.5 rounded-full bg-[#FFD700]" />
-                              {t('MEMBER 1', 'ANGGOTA TIM 1')}
-                            </h4>
-                            <span className="text-[8.5px] font-mono text-[#FFD700] uppercase font-bold tracking-widest border border-[#FFD700]/20 bg-[#FFD700]/5 px-2 py-0.5 rounded">
-                              {t('REQUIRED', 'WAJIB')}
-                            </span>
-                          </div>
+                        {/* Member Sections — dynamically rendered based on minMembers/maxMembers */}
+                        {members.map((member, index) => {
+                          const isRequired = index < (divisionObj.minMembers ?? 0);
+                          const memberNum = index + 1;
+                          return (
+                            <div key={member.id} className="p-4 bg-zinc-900/30 border border-white/5 rounded-2xl space-y-4">
+                              <div className="flex justify-between items-center select-none border-b border-white/5 pb-2">
+                                <h4 className="font-sans font-black text-xs text-white uppercase tracking-wider flex items-center gap-1.5">
+                                  <span className={`w-1.5 h-1.5 rounded-full ${isRequired ? 'bg-[#FFD700]' : 'bg-zinc-500'}`} />
+                                  {t(`MEMBER ${memberNum}`, `ANGGOTA TIM ${memberNum}`)}
+                                </h4>
+                                <span className={`text-[8.5px] font-mono uppercase font-bold tracking-widest px-2 py-0.5 rounded border ${
+                                  isRequired
+                                    ? 'text-[#FFD700] border-[#FFD700]/20 bg-[#FFD700]/5'
+                                    : 'text-zinc-500 border-white/10 bg-white/5'
+                                }`}>
+                                  {isRequired ? t('REQUIRED', 'WAJIB') : t('OPTIONAL', 'OPSIONAL')}
+                                </span>
+                              </div>
 
-                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div className="space-y-1">
-                              <label className="text-[9px] font-mono text-zinc-400 uppercase tracking-widest block">{t('Full Name', 'Nama')}</label>
-                              <input
-                                type="text"
-                                required
-                                placeholder="e.g., Member One"
-                                value={members[0]?.name || ''}
-                                onChange={(e) => updateMemberField('member-1', 'name', e.target.value)}
-                                className="w-full bg-zinc-900 border border-white/5 focus:border-[#FFD700] rounded-xl px-3 py-2.5 text-xs text-white focus:outline-none"
-                              />
+                              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div className="space-y-1">
+                                  <label className="text-[9px] font-mono text-zinc-400 uppercase tracking-widest block">{t('Full Name', 'Nama')}</label>
+                                  <input
+                                    type="text"
+                                    required={isRequired}
+                                    placeholder={`e.g., Member ${memberNum}`}
+                                    value={member.name || ''}
+                                    onChange={(e) => updateMemberField(member.id, 'name', e.target.value)}
+                                    className="w-full bg-zinc-900 border border-white/5 focus:border-[#FFD700] rounded-xl px-3 py-2.5 text-xs text-white focus:outline-none"
+                                  />
+                                </div>
+
+                                <div className="space-y-1">
+                                  <label className="text-[9px] font-mono text-zinc-400 uppercase tracking-widest block">{t('WhatsApp Number', 'Nomor WhatsApp')}</label>
+                                  <WhatsAppField
+                                    value={member.whatsapp || ''}
+                                    onChange={(val) => updateMemberField(member.id, 'whatsapp', val)}
+                                    placeholder="e.g., 8123456789"
+                                    required={isRequired}
+                                  />
+                                </div>
+
+                                <div className="space-y-1 md:col-span-2">
+                                  <label className="text-[9px] font-mono text-zinc-400 uppercase tracking-widest block">
+                                    {t('Congenital Disease (Optional)', 'Penyakit Bawaan jika ada')}
+                                  </label>
+                                  <input
+                                    type="text"
+                                    placeholder="e.g., Diabetes, Asthma (optional)"
+                                    value={member.congenitalDisease || ''}
+                                    onChange={(e) => updateMemberField(member.id, 'congenitalDisease', e.target.value)}
+                                    className="w-full bg-zinc-900 border border-white/5 focus:border-[#FFD700] rounded-xl px-3 py-2.5 text-xs text-white focus:outline-none"
+                                  />
+                                </div>
+
+                                <SafeFileUpload
+                                  label={t('ID Card Photo', 'Foto Kartu Identitas')}
+                                  fileName={member.idCardName || ''}
+                                  fileUrl={member.idCardUrl || ''}
+                                  onSelect={(file) => processFileUpload(file,
+                                    (name) => updateMemberField(member.id, 'idCardName', name),
+                                    (url) => updateMemberField(member.id, 'idCardUrl', url)
+                                  )}
+                                  onClear={() => {
+                                    updateMemberField(member.id, 'idCardName', '');
+                                    updateMemberField(member.id, 'idCardUrl', '');
+                                  }}
+                                  id={`${member.id}-id-card-input`}
+                                />
+
+                                <SafeFileUpload
+                                  label={t('Twibbon Photo', 'Foto Twibbon')}
+                                  fileName={member.twibbonName || ''}
+                                  fileUrl={member.twibbonUrl || ''}
+                                  onSelect={(file) => processFileUpload(file,
+                                    (name) => updateMemberField(member.id, 'twibbonName', name),
+                                    (url) => updateMemberField(member.id, 'twibbonUrl', url)
+                                  )}
+                                  onClear={() => {
+                                    updateMemberField(member.id, 'twibbonName', '');
+                                    updateMemberField(member.id, 'twibbonUrl', '');
+                                  }}
+                                  id={`${member.id}-twibbon-input`}
+                                />
+                              </div>
                             </div>
-
-                            <div className="space-y-1">
-                              <label className="text-[9px] font-mono text-zinc-400 uppercase tracking-widest block">{t('WhatsApp Number', 'Nomor WhatsApp')}</label>
-                              <WhatsAppField
-                                value={members[0]?.whatsapp || ''}
-                                onChange={(val) => updateMemberField('member-1', 'whatsapp', val)}
-                                placeholder="e.g., 8123456789"
-                                required
-                              />
-                            </div>
-
-                            <div className="space-y-1 md:col-span-2">
-                              <label className="text-[9px] font-mono text-zinc-400 uppercase tracking-widest block">
-                                {t('Congenital Disease (Optional)', 'Penyakit Bawaan Anggota Tim 1 jika ada')}
-                              </label>
-                              <input
-                                type="text"
-                                placeholder="e.g., Diabetes, Asthma (optional)"
-                                value={members[0]?.congenitalDisease || ''}
-                                onChange={(e) => updateMemberField('member-1', 'congenitalDisease', e.target.value)}
-                                className="w-full bg-zinc-900 border border-white/5 focus:border-[#FFD700] rounded-xl px-3 py-2.5 text-xs text-white focus:outline-none"
-                              />
-                            </div>
-
-                            <SafeFileUpload
-                              label={t('ID Card Photo', 'Foto Kartu Identitas')}
-                              fileName={members[0]?.idCardName || ''}
-                              fileUrl={members[0]?.idCardUrl || ''}
-                              onSelect={(file) => processFileUpload(file, (name) => updateMemberField('member-1', 'idCardName', name), (url) => updateMemberField('member-1', 'idCardUrl', url))}
-                              onClear={() => {
-                                updateMemberField('member-1', 'idCardName', '');
-                                updateMemberField('member-1', 'idCardUrl', '');
-                              }}
-                              id="member1-id-card-input"
-                            />
-
-                            <SafeFileUpload
-                              label={t('Twibbon Photo', 'Foto Twibbon')}
-                              fileName={members[0]?.twibbonName || ''}
-                              fileUrl={members[0]?.twibbonUrl || ''}
-                              onSelect={(file) => processFileUpload(file, (name) => updateMemberField('member-1', 'twibbonName', name), (url) => updateMemberField('member-1', 'twibbonUrl', url))}
-                              onClear={() => {
-                                updateMemberField('member-1', 'twibbonName', '');
-                                updateMemberField('member-1', 'twibbonUrl', '');
-                              }}
-                              id="member1-twibbon-input"
-                            />
-                          </div>
-                        </div>
-
-                        {/* Member 2 Section — only for divisions with maxStaff >= 2 */}
-                        {divisionObj.maxStaff && divisionObj.maxStaff >= 2 && (
-                        <div className="p-4 bg-zinc-900/30 border border-white/5 rounded-2xl space-y-4">
-                          <div className="flex justify-between items-center select-none border-b border-white/5 pb-2">
-                            <h4 className="font-sans font-black text-xs text-white uppercase tracking-wider flex items-center gap-1.5">
-                              <span className="w-1.5 h-1.5 rounded-full bg-zinc-500" />
-                              {t('MEMBER 2', 'ANGGOTA TIM 2')}
-                            </h4>
-                            <span className="text-[8.5px] font-mono text-zinc-500 uppercase tracking-widest border border-white/10 bg-white/5 px-2 py-0.5 rounded">
-                              {t('OPTIONAL', 'OPSIONAL')}
-                            </span>
-                          </div>
-
-                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div className="space-y-1">
-                              <label className="text-[9px] font-mono text-zinc-400 uppercase tracking-widest block">{t('Full Name', 'Nama')}</label>
-                              <input
-                                type="text"
-                                placeholder="e.g., Member Two"
-                                value={members[1]?.name || ''}
-                                onChange={(e) => updateMemberField('member-2', 'name', e.target.value)}
-                                className="w-full bg-zinc-900 border border-white/5 focus:border-[#FFD700] rounded-xl px-3 py-2.5 text-xs text-white focus:outline-none"
-                              />
-                            </div>
-
-                            <div className="space-y-1">
-                              <label className="text-[9px] font-mono text-zinc-400 uppercase tracking-widest block">{t('WhatsApp Number', 'Nomor WhatsApp')}</label>
-                              <WhatsAppField
-                                value={members[1]?.whatsapp || ''}
-                                onChange={(val) => updateMemberField('member-2', 'whatsapp', val)}
-                                placeholder="e.g., 8123456789"
-                              />
-                            </div>
-
-                            <div className="space-y-1 md:col-span-2">
-                              <label className="text-[9px] font-mono text-zinc-400 uppercase tracking-widest block">
-                                {t('Congenital Disease (Optional)', 'Penyakit Bawaan Anggota Tim 2 jika ada')}
-                              </label>
-                              <input
-                                type="text"
-                                placeholder="e.g., Maag, Asthma (optional)"
-                                value={members[1]?.congenitalDisease || ''}
-                                onChange={(e) => updateMemberField('member-2', 'congenitalDisease', e.target.value)}
-                                className="w-full bg-zinc-900 border border-white/5 focus:border-[#FFD700] rounded-xl px-3 py-2.5 text-xs text-white focus:outline-none"
-                              />
-                            </div>
-
-                            <SafeFileUpload
-                              label={t('ID Card Photo', 'Foto Kartu Identitas')}
-                              fileName={members[1]?.idCardName || ''}
-                              fileUrl={members[1]?.idCardUrl || ''}
-                              onSelect={(file) => processFileUpload(file, (name) => updateMemberField('member-2', 'idCardName', name), (url) => updateMemberField('member-2', 'idCardUrl', url))}
-                              onClear={() => {
-                                updateMemberField('member-2', 'idCardName', '');
-                                updateMemberField('member-2', 'idCardUrl', '');
-                              }}
-                              id="member2-id-card-input"
-                            />
-
-                            <SafeFileUpload
-                              label={t('Twibbon Photo', 'Foto Twibbon')}
-                              fileName={members[1]?.twibbonName || ''}
-                              fileUrl={members[1]?.twibbonUrl || ''}
-                              onSelect={(file) => processFileUpload(file, (name) => updateMemberField('member-2', 'twibbonName', name), (url) => updateMemberField('member-2', 'twibbonUrl', url))}
-                              onClear={() => {
-                                updateMemberField('member-2', 'twibbonName', '');
-                                updateMemberField('member-2', 'twibbonUrl', '');
-                              }}
-                              id="member2-twibbon-input"
-                            />
-                          </div>
-                        </div>
-                        )}
+                          );
+                        })}
 
                         {/* Lecturer / Advisor Section */}
                         {divisionObj.hasLecturer && (
@@ -1254,25 +1183,31 @@ export default function RegistrationModal({
                           <button
                             type="button"
                             onClick={() => {
-                              // Validate Anggota Tim 1 (Required)
-                              const m1 = members[0];
-                              if (!m1 || !m1.name.trim() || !m1.whatsapp.trim() || !m1.idCardUrl || !m1.twibbonUrl) {
-                                showAlert({ message: t(
-                                  'Please fill out Member 1 details and upload required documents (ID Card & Twibbon).',
-                                  'Mohon lengkapi seluruh data Anggota Tim 1 dan unggah dokumen wajib (Kartu Identitas & Twibbon).'
-                                ), type: 'error' });
-                                return;
-                              }
+                              const minReq = divisionObj.minMembers ?? 0;
+                              const maxMem = divisionObj.maxMembers ?? 1;
 
-                              // Validate Anggota Tim 2 (Optional, but if name is present, must be complete)
-                              const m2 = members[1];
-                              if (m2 && m2.name.trim() !== '') {
-                                if (!m2.whatsapp.trim() || !m2.idCardUrl || !m2.twibbonUrl) {
-                                  showAlert({ message: t(
-                                    'Please fill out all Member 2 details or clear their name if not registered.',
-                                    'Mohon lengkapi seluruh data Anggota Tim 2 atau kosongkan nama jika tidak terdaftar.'
-                                  ), type: 'error' });
-                                  return;
+                              for (let i = 0; i < maxMem; i++) {
+                                const m = members[i];
+                                const isRequired = i < minReq;
+
+                                if (isRequired) {
+                                  if (!m || !m.name.trim() || !m.whatsapp.trim() || !m.idCardUrl || !m.twibbonUrl) {
+                                    showAlert({ message: t(
+                                      `Please fill out Member ${i + 1} details and upload required documents (ID Card & Twibbon).`,
+                                      `Mohon lengkapi seluruh data Anggota Tim ${i + 1} dan unggah dokumen wajib (Kartu Identitas & Twibbon).`
+                                    ), type: 'error' });
+                                    return;
+                                  }
+                                } else {
+                                  if (m && m.name.trim() !== '') {
+                                    if (!m.whatsapp.trim() || !m.idCardUrl || !m.twibbonUrl) {
+                                      showAlert({ message: t(
+                                        `Please fill out all Member ${i + 1} details or clear their name if not registered.`,
+                                        `Mohon lengkapi seluruh data Anggota Tim ${i + 1} atau kosongkan nama jika tidak terdaftar.`
+                                      ), type: 'error' });
+                                      return;
+                                    }
+                                  }
                                 }
                               }
 

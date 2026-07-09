@@ -50,6 +50,16 @@
   animation: signal-glow 2s ease-in-out infinite;
 }
 
+/* Infinite scroll for sponsor carousel */
+@keyframes scroll {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+.animate-scroll {
+  animation: scroll 40s linear infinite;
+}
+
 html {
   background-color: #050505;
   scroll-behavior: smooth;

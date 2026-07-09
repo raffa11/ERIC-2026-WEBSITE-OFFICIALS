@@ -847,7 +847,7 @@ function doPost(e) {
                     </span>
                     {(() => {
                       const division = COMPETITION_DIVISIONS.find(d => d.id === editingReg.divisionId);
-                      const limit = division?.maxStaff ?? 5;
+                      const limit = division?.maxMembers ?? 5;
                       return editingReg.members.length < limit ? (
                         <button
                           type="button"

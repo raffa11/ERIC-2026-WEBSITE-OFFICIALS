@@ -19,7 +19,8 @@ export interface Division {
   specHighlight: string;
   intensityScore: number; // For technical meter
   glowColor: string; // e.g., 'rgba(0, 255, 136, 0.4)'
-  maxStaff?: number;
+  minMembers: number; // minimum number of team members required (beyond leader)
+  maxMembers: number; // maximum number of team members allowed (beyond leader)
   hasSubCategory?: boolean;
   subCategories?: string[];
   hasLevels?: boolean;

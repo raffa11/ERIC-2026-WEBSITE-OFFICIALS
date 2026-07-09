@@ -343,7 +343,7 @@
                         <button type="button" onclick="goToWizardStep(2)" class="px-5 py-3 border border-zinc-800 text-zinc-400 hover:text-white rounded-xl text-xs uppercase font-mono tracking-wider transition-all">
                             Back
                         </button>
-                        <button type="button" onclick="goToWizardStep(4)" class="px-6 py-3.5 bg-[#00FF88] bg-opacity-100 text-black font-semibold text-xs tracking-wider uppercase rounded-xl flex items-center gap-1.5 hover:scale-101 transition-all text-glow">
+                        <button type="button" onclick="validateMembersAndProceed()" class="px-6 py-3.5 bg-[#00FF88] bg-opacity-100 text-black font-semibold text-xs tracking-wider uppercase rounded-xl flex items-center gap-1.5 hover:scale-101 transition-all text-glow">
                             <span>Proceed to Checkout Invoice</span>
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
                         </button>
@@ -614,15 +614,15 @@
     <script>
         // OFFICIAL COMPETITION DIVISIONS SPEC LIST (Identical match with React website schemas)
         const COMPETITION_DIVISIONS = [
-            { id: 'sumobot-500g', title: 'Sumobot 500g', titleIndo: 'Robot Sumo 500g', detail: 'Micro Force & Tactical Grip' },
-            { id: 'sumobot-3kg', title: 'Sumobot 3kg', titleIndo: 'Robot Sumo 3kg', detail: 'Tractive Force & Dual Brushless' },
-            { id: 'mini-soccerbot', title: 'Mini Soccerbot', titleIndo: 'Robot Sepak Bola Mini', detail: 'Kinematics & Radio Command' },
-            { id: 'line-follower', title: 'Line Follower', titleIndo: 'Robot Pengikut Garis', detail: 'PID Control & 16-Array IR' },
-            { id: 'plc-industrial', title: 'PLC Industrial', titleIndo: 'PLC Otomasi Industri', detail: 'Liaison Relay & HMI Integration' },
-            { id: 'collaborative-robot', title: 'Collaborative Robot', titleIndo: 'Robot Kolaboratif (Cobot)', detail: 'Active Feedback & Spatial Safety' },
-            { id: 'research-challenge', title: 'Research Challenge', titleIndo: 'Tantangan Riset Inovasi', detail: 'Applied Research & Science Papers' },
-            { id: 'creative-innovation', title: 'Creative Innovation', titleIndo: 'Karya Inovasi Kreatif', detail: 'Rapid Prototyping & CAD Design' },
-            { id: 'drone-innovation', title: 'Drone Innovation', titleIndo: 'Inovasi Wahana Drone', detail: 'Lidar Distance & Optical Flow' }
+            { id: 'sumobot-500g', title: 'Sumobot 500g', titleIndo: 'Robot Sumo 500g', detail: 'Micro Force & Tactical Grip', minMembers: 0, maxMembers: 1 },
+            { id: 'sumobot-3kg', title: 'Sumobot 3kg', titleIndo: 'Robot Sumo 3kg', detail: 'Tractive Force & Dual Brushless', minMembers: 0, maxMembers: 1 },
+            { id: 'mini-soccerbot', title: 'Mini Soccerbot', titleIndo: 'Robot Sepak Bola Mini', detail: 'Kinematics & Radio Command', minMembers: 2, maxMembers: 2 },
+            { id: 'line-follower', title: 'Line Follower', titleIndo: 'Robot Pengikut Garis', detail: 'PID Control & 16-Array IR', minMembers: 0, maxMembers: 2 },
+            { id: 'plc-industrial', title: 'PLC Industrial', titleIndo: 'PLC Otomasi Industri', detail: 'Liaison Relay & HMI Integration', minMembers: 1, maxMembers: 1 },
+            { id: 'collaborative-robot', title: 'Collaborative Robot', titleIndo: 'Robot Kolaboratif (Cobot)', detail: 'Active Feedback & Spatial Safety', minMembers: 1, maxMembers: 1 },
+            { id: 'research-challenge', title: 'Research Challenge', titleIndo: 'Tantangan Riset Inovasi', detail: 'Applied Research & Science Papers', minMembers: 1, maxMembers: 2 },
+            { id: 'creative-innovation', title: 'Creative Innovation', titleIndo: 'Karya Inovasi Kreatif', detail: 'Rapid Prototyping & CAD Design', minMembers: 0, maxMembers: 2 },
+            { id: 'drone-innovation', title: 'Drone Innovation', titleIndo: 'Inovasi Wahana Drone', detail: 'Lidar Distance & Optical Flow', minMembers: 0, maxMembers: 2 }
         ];
 
         // GLOBAL PORTAL STATE
@@ -1068,6 +1068,11 @@
                 card.id = `arena-card-${arena.id}`;
                 card.onclick = () => selectWizArena(arena.id);
                 card.className = "p-5 bg-zinc-900/10 border border-zinc-900 rounded-2xl text-left cursor-pointer transition-all hover:bg-zinc-900/30";
+                const memberInfo = arena.maxMembers > 0
+                    ? (arena.minMembers > 0
+                        ? `Members: ${arena.minMembers}-${arena.maxMembers}`
+                        : `Members: 0-${arena.maxMembers} (Optional)`)
+                    : 'Solo Entry';
                 card.innerHTML = `
                     <span class="px-2 py-0.5 text-[8px] font-mono rounded bg-zinc-900 text-zinc-500 border border-zinc-800 uppercase block w-max">
                         ${arena.detail}
@@ -1078,6 +1083,9 @@
                     <p class="text-[9.5px] font-mono text-zinc-500 mt-1 uppercase line-clamp-2">
                         Official division class organized for academic robotics groups.
                     </p>
+                    <span class="inline-block mt-2 text-[8px] font-mono text-[#00FF88]/70 uppercase tracking-wider">
+                        ${memberInfo}
+                    </span>
                 `;
                 container.appendChild(card);
             });
@@ -1102,6 +1110,10 @@
             if (activeEl) {
                 activeEl.className = "p-5 bg-zinc-950 border-[#00FF88] rounded-2xl text-left cursor-pointer transition-all scale-[1.01] shadow-[0_0_15px_rgba(0,255,136,0.1)]";
             }
+
+            // Reset members when switching division
+            wizardMembers = [];
+            renderWizardMembersInputList();
         }
 
         // VALIDATE LEADER STEP ENTRIES
@@ -1121,8 +1133,24 @@
             goToWizardStep(3);
         }
 
+        // VALIDATE MEMBER STEP — check min/max limits before proceeding to checkout
+        function validateMembersAndProceed() {
+            const div = COMPETITION_DIVISIONS.find(d => d.id === wizardSelectedDivision);
+            const cleanMembers = wizardMembers.filter(m => m.name.trim() !== '');
+            if (div && cleanMembers.length < (div.minMembers || 0)) {
+                alert(`${div.title} requires at least ${div.minMembers} team member(s). Please add more members.`);
+                return;
+            }
+            goToWizardStep(4);
+        }
+
         // DYNAMIC TEAM ROSTER BUILDER ACTIONS
         function addWizardMemberInput() {
+            const div = COMPETITION_DIVISIONS.find(d => d.id === wizardSelectedDivision);
+            if (div && wizardMembers.length >= (div.maxMembers || 99)) {
+                alert(`Maximum ${div.maxMembers} member(s) allowed for ${div.title}.`);
+                return;
+            }
             const newMember = {
                 id: `wiz-member-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`,
                 name: '',
