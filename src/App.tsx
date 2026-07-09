@@ -233,15 +233,29 @@ function AppContent() {
   };
 
   // RIC Admin update handler
-  const handleRICAdminUpdate = async (subs: RICSubmission[]) => {
+  const handleRICAdminUpdate = async (subs: RICSubmission[], stageIdx?: number, changedSubId?: string) => {
     setRicSubmissions(subs);
     for (const sub of subs) {
       try {
         await ricUpsertLocal(sub);
-        const ok = await syncRICToSheet(sub);
-        if (!ok) console.warn('RIC admin sync to sheet returned false for', sub.id);
       } catch (err) {
-        console.error('Failed to sync RIC update:', err);
+        console.error('Failed to persist RIC locally:', err);
+      }
+    }
+    if (changedSubId && stageIdx !== undefined) {
+      const changed = subs.find(s => s.id === changedSubId);
+      if (changed) {
+        const ok = await syncRICToSheet(changed, stageIdx);
+        if (!ok) console.warn('RIC admin sync to sheet returned false for', changed.id);
+      }
+    } else {
+      for (const sub of subs) {
+        try {
+          const ok = await syncRICToSheet(sub);
+          if (!ok) console.warn('RIC sync to sheet returned false for', sub.id);
+        } catch (err) {
+          console.error('Failed to sync RIC update:', err);
+        }
       }
     }
   };

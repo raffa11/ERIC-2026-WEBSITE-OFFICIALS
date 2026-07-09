@@ -12,7 +12,7 @@ export const setRICScriptUrl = (url: string) => {
   localStorage.setItem('eric_ric_script_url', url);
 };
 
-export const syncRICToSheet = async (submission: RICSubmission): Promise<boolean> => {
+export const syncRICToSheet = async (submission: RICSubmission, stageIndex?: number): Promise<boolean> => {
   const url = getRICScriptUrl();
   console.log('[RIC sync] using URL:', url);
   if (!url) {
@@ -20,49 +20,52 @@ export const syncRICToSheet = async (submission: RICSubmission): Promise<boolean
     return false;
   }
 
+  const idx = stageIndex ?? submission.currentStage;
+  const stage = submission.stages[idx];
+  if (!stage) {
+    console.warn('RIC sync: stage index', idx, 'not found for submission', submission.id);
+    return false;
+  }
+
   try {
-    for (let stageIndex = 0; stageIndex < submission.stages.length; stageIndex++) {
-      const stage = submission.stages[stageIndex];
+    const payload: any = {
+      id: `${submission.id}--stage${idx}`,
+      registrationId: submission.registrationId,
+      teamName: submission.teamName,
+      leaderEmail: submission.leaderEmail,
+      divisionId: submission.divisionId,
+      stage: idx + 1,
+      status: stage.status,
+      submittedAt: stage.submittedAt || '',
+      reviewedAt: stage.reviewedAt || '',
+      reviewedBy: stage.reviewedBy || '',
+      notes: stage.notes || '',
+      action: 'submit',
+      _submissionId: submission.id,
+    };
 
-      const payload: any = {
-        id: `${submission.id}--stage${stageIndex}`,
-        registrationId: submission.registrationId,
-        teamName: submission.teamName,
-        leaderEmail: submission.leaderEmail,
-        divisionId: submission.divisionId,
-        stage: stageIndex + 1,
-        status: stage.status,
-        submittedAt: stage.submittedAt || '',
-        reviewedAt: stage.reviewedAt || '',
-        reviewedBy: stage.reviewedBy || '',
-        notes: stage.notes || '',
-        action: 'submit',
-        _submissionId: submission.id,
-      };
-
-      if (stageIndex === 0) {
-        payload.abstractFileName = stage.abstractFileName || '';
-        payload.abstractFileUrl = stage.abstractFileUrl || '';
-      } else if (stageIndex === 1) {
-        payload.proposalFileName = stage.proposalFileName || '';
-        payload.proposalFileUrl = stage.proposalFileUrl || '';
-        payload.videoLink = stage.videoLink || '';
-      } else if (stageIndex === 2) {
-        payload.posterFileName = stage.posterFileName || '';
-        payload.posterFileUrl = stage.posterFileUrl || '';
-        payload.pptFileName = stage.pptFileName || '';
-        payload.pptFileUrl = stage.pptFileUrl || '';
-      }
-
-      const postUrl = url.includes('?') ? url : url + '?';
-      console.log('[RIC sync] POST stage', stageIndex, '→', payload.status);
-      await fetch(postUrl, {
-        method: 'POST',
-        mode: 'no-cors',
-        headers: { 'Content-Type': 'text/plain' },
-        body: JSON.stringify(payload),
-      });
+    if (idx === 0) {
+      payload.abstractFileName = stage.abstractFileName || '';
+      payload.abstractFileUrl = stage.abstractFileUrl || '';
+    } else if (idx === 1) {
+      payload.proposalFileName = stage.proposalFileName || '';
+      payload.proposalFileUrl = stage.proposalFileUrl || '';
+      payload.videoLink = stage.videoLink || '';
+    } else if (idx === 2) {
+      payload.posterFileName = stage.posterFileName || '';
+      payload.posterFileUrl = stage.posterFileUrl || '';
+      payload.pptFileName = stage.pptFileName || '';
+      payload.pptFileUrl = stage.pptFileUrl || '';
     }
+
+    const postUrl = url.includes('?') ? url : url + '?';
+    console.log('[RIC sync] POST stage', idx, '→', payload.status);
+    await fetch(postUrl, {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: { 'Content-Type': 'text/plain' },
+      body: JSON.stringify(payload),
+    });
 
     console.log('RIC submission synced to sheet:', submission.id);
     return true;

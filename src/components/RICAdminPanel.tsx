@@ -14,7 +14,7 @@ import { ricUpsertLocal, ricFetchAllLocal } from '../lib/ricStorage';
 
 interface RICAdminPanelProps {
   submissions: RICSubmission[];
-  onUpdateSubmissions: (subs: RICSubmission[]) => void;
+  onUpdateSubmissions: (subs: RICSubmission[], stageIdx?: number, changedSubId?: string) => void;
 }
 
 export default function RICAdminPanel({ submissions, onUpdateSubmissions }: RICAdminPanelProps) {
@@ -148,7 +148,7 @@ export default function RICAdminPanel({ submissions, onUpdateSubmissions }: RICA
     };
 
     const newList = submissions.map(s => s.id === sub.id ? updated : s);
-    onUpdateSubmissions(newList);
+    onUpdateSubmissions(newList, stageIdx, sub.id);
     setActiveReview(null);
     setReviewNotes('');
   };

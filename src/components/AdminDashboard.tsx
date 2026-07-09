@@ -25,7 +25,7 @@ interface AdminDashboardProps {
   onUpdateRegistrations: (newRegs: Registration[]) => void;
   onBackToHome: () => void;
   ricSubmissions: RICSubmission[];
-  onUpdateRICSubmissions: (subs: RICSubmission[]) => void;
+  onUpdateRICSubmissions: (subs: RICSubmission[], stageIdx?: number, changedSubId?: string) => void;
 }
 
 export default function AdminDashboard({
