@@ -51,7 +51,7 @@ function getOrCreateDivisionSheet(divisionId) {
     "Member 1 Name", "Member 1 WhatsApp", "Member 1 Disease", "Member 1 ID Card", "Member 1 Twibbon",
     "Member 2 Name", "Member 2 WhatsApp", "Member 2 Disease", "Member 2 ID Card", "Member 2 Twibbon",
     "Lecturer Name", "Lecturer Email", "Lecturer WhatsApp", "Lecturer Disease", "Lecturer ID Card", "Lecturer Twibbon",
-    "Payment Method", "Payment Status", "Amount Paid", "Ref Code"
+    "Payment Method", "Payment Status", "Amount Paid", "Ref Code", "Payment Proof"
   ];
 
   sheet.appendRow(headers);
@@ -110,7 +110,7 @@ function doPost(e) {
       data.m2Name || "-", data.m2WhatsApp || "-", data.m2CongenitalDisease || "-", m2IdUrl, m2TwibbonUrl,
       data.lecturerName || "-", data.lecturerEmail || "-", data.lecturerWhatsApp || "-",
       data.lecturerCongenitalDisease || "-", lecturerIdUrl, lecturerTwibbonUrl,
-      data.paymentMethod, data.paymentStatus, data.amount || "IDR 150,000", data.refCode
+      data.paymentMethod, data.paymentStatus, data.amount || "IDR 150,000", data.refCode, payProofUrl
     ];
 
     sheet.appendRow(row);
@@ -150,7 +150,7 @@ function doGet(e) {
         "Member 1 Name", "Member 1 WhatsApp", "Member 1 Disease", "Member 1 ID Card", "Member 1 Twibbon",
         "Member 2 Name", "Member 2 WhatsApp", "Member 2 Disease", "Member 2 ID Card", "Member 2 Twibbon",
         "Lecturer Name", "Lecturer Email", "Lecturer WhatsApp", "Lecturer Disease", "Lecturer ID Card", "Lecturer Twibbon",
-        "Payment Method", "Payment Status", "Amount Paid", "Ref Code"
+        "Payment Method", "Payment Status", "Amount Paid", "Ref Code", "Payment Proof"
       ];
 
       function col(name) { return headers.indexOf(name); }
@@ -203,6 +203,7 @@ function doGet(e) {
             paymentStatus: val(col("Payment Status")),
             refCode: val(col("Ref Code")),
             amount: val(col("Amount Paid")),
+            paymentProofUrl: mVal(col("Payment Proof")),
             lecturerName: mVal(col("Lecturer Name")),
             lecturerEmail: mVal(col("Lecturer Email")),
             lecturerWhatsapp: mVal(col("Lecturer WhatsApp")),
