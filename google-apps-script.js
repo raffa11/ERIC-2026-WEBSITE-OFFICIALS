@@ -300,16 +300,50 @@ function migratePaymentProofs() {
   for (let si = 0; si < sheetsToScan.length; si++) {
     const sheet = sheetsToScan[si];
     const sheetName = sheet.getName();
-    if (sheet.getLastRow() <= 1) continue;
+    const rowCount = sheet.getLastRow();
+    if (rowCount <= 1) { Logger.log("Sheet \"" + sheetName + "\": no data rows"); continue; }
 
     const headers = sheet.getRange(1, 1, 1, sheet.getLastColumn()).getValues()[0];
-    Logger.log("Sheet \"" + sheetName + "\" headers: " + JSON.stringify(headers));
-    const proofCol = headers.indexOf("Payment Proof") + 1;
-    const teamColIndex = headers.indexOf("Team Name");
-    const teamCol = teamColIndex + 1;
-    if (!proofCol || !teamCol) {
-      Logger.log("Sheet \"" + sheetName + "\": missing required columns (proofCol=" + proofCol + ", teamCol=" + teamCol + "), skipping");
+    Logger.log("Sheet \"" + sheetName + "\": " + (rowCount - 1) + " data rows, headers: " + JSON.stringify(headers));
+
+    // Find Payment Proof column
+    let proofCol = headers.indexOf("Payment Proof") + 1;
+
+    // Find Team Name column (ALL ERIC DATA might use index 5 with wrong header)
+    let teamCol = headers.indexOf("Team Name") + 1;
+    if (!teamCol && sheetName === "ALL ERIC DATA") {
+      teamCol = 5 + 1; // Kolom index 5 kemungkinan berisi nama tim meski header "Level"
+      Logger.log("Sheet \"" + sheetName + "\": using fallback teamCol=6 (header='" + headers[5] + "')");
+    }
+
+    if (!proofCol) {
+      // Add "Payment Proof" column to sheets that don't have it yet
+      proofCol = headers.length + 1;
+      sheet.getRange(1, proofCol).setValue("Payment Proof");
+      sheet.getRange(1, proofCol).setFontWeight("bold");
+      sheet.getRange(1, proofCol).setBackground("#FFD700");
+      sheet.getRange(1, proofCol).setFontColor("#000000");
+      Logger.log("Sheet \"" + sheetName + "\": added Payment Proof column at " + proofCol);
+    }
+
+    if (!teamCol) {
+      Logger.log("Sheet \"" + sheetName + "\": cannot determine team name column, skipping");
       continue;
+    }
+
+    // Pre-index all PAY_PROOF files by team name for faster matching
+    const fileMap = {};
+    const iter = uploadsFolder.getFiles();
+    while (iter.hasNext()) {
+      const f = iter.next();
+      const fname = f.getName();
+      if (fname.startsWith("PAY_PROOF_")) {
+        // Try first team name segment (before first underscore after prefix)
+        const afterPrefix = fname.substring(10); // Remove "PAY_PROOF_"
+        // Team name could contain spaces, and original filename after last space-segment
+        // Use the actual team names from the sheet as keys
+        fileMap[f.getUrl()] = fname.toUpperCase();
+      }
     }
 
     const data = sheet.getDataRange().getValues();
@@ -317,19 +351,17 @@ function migratePaymentProofs() {
     for (let i = 1; i < data.length; i++) {
       const existingProof = String(data[i][proofCol - 1] || '').trim();
       if (existingProof && existingProof !== '-' && existingProof.startsWith('http')) continue;
-      const teamName = String(data[i][teamCol - 1] || '').trim().toUpperCase();
-      if (!teamName || teamName === '-') continue;
 
-      // Search for file starting with PAY_PROFF_{teamName}_ in Drive folder
-      const fileIter = uploadsFolder.getFilesByName("PAY_PROOF_" + teamName + "_");
-      
-      // Actually, getFilesByName does exact match. Use getFiles and filter
-      const allFiles = uploadsFolder.getFiles();
+      const teamName = String(data[i][teamCol - 1] || '').trim().toUpperCase();
+      if (!teamName || teamName === '-' || teamName.length < 2) continue;
+
+      // Search for matching file
       let matchedUrl = null;
-      while (allFiles.hasNext()) {
-        const file = allFiles.next();
+      const iter2 = uploadsFolder.getFiles();
+      while (iter2.hasNext()) {
+        const file = iter2.next();
         const fname = file.getName().toUpperCase();
-        if (fname.startsWith("PAY_PROOF_" + teamName + "_")) {
+        if (fname.startsWith("PAY_PROOF_" + teamName + "_") || fname === "PAY_PROOF_" + teamName) {
           matchedUrl = file.getUrl();
           break;
         }
