@@ -131,8 +131,15 @@ function AppContent() {
 
   // Registration callback
   const handleRegistrationSuccess = async (newReg: Registration) => {
-    const updated = [...registrations, newReg];
-    setRegistrations(updated);
+    setRegistrations(prev => {
+      const exists = prev.findIndex(r => r.id === newReg.id);
+      if (exists >= 0) {
+        const updated = [...prev];
+        updated[exists] = newReg;
+        return updated;
+      }
+      return [...prev, newReg];
+    });
     
     try {
       await dbUpsertRegistration(newReg, currentUser?.email);

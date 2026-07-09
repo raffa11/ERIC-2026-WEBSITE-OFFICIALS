@@ -419,6 +419,7 @@ export default function RegistrationModal({
   // Submit trigger
   const handleWizardSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    if (isProcessingPayment) return;
     if (wizardStep < 4) {
       if (wizardStep === 1 && !selectedDivision) return;
       if (wizardStep === 2) {
