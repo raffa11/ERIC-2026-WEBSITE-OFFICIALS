@@ -327,8 +327,21 @@ function migratePaymentProofs() {
     }
 
     if (!teamCol) {
+      // Log first 2 data rows to help identify team name column
+      if (rowCount > 1) {
+        const sampleData = sheet.getRange(2, 1, Math.min(2, rowCount - 1), sheet.getLastColumn()).getValues();
+        for (let r = 0; r < sampleData.length; r++) {
+          Logger.log("Sheet \"" + sheetName + "\" row " + (r + 2) + " sample: " + JSON.stringify(sampleData[r]));
+        }
+      }
       Logger.log("Sheet \"" + sheetName + "\": cannot determine team name column, skipping");
       continue;
+    }
+
+    // Log first data row to verify column mapping
+    if (rowCount > 1) {
+      const sampleRow = sheet.getRange(2, 1, 1, sheet.getLastColumn()).getValues()[0];
+      Logger.log("Sheet \"" + sheetName + "\" first row: teamCol=" + teamCol + " value=[" + sampleRow[teamCol - 1] + "], proofCol=" + proofCol + " value=[" + sampleRow[proofCol - 1] + "]");
     }
 
     // Pre-index all PAY_PROOF files by team name for faster matching
