@@ -267,3 +267,63 @@ function doGet(e) {
       .setMimeType(ContentService.MimeType.JSON);
   }
 }
+
+/**
+ * ONE-TIME MIGRATION: Backfill Payment Proof URLs for existing rows.
+ * Sebelum fix, payProofUrl diupload ke Drive tapi tidak ditulis ke sheet.
+ * Fungsi ini mencari file di folder "ERIC_Registrations_Uploads" dan mengisi
+ * URL-nya ke kolom Payment Proof yang kosong.
+ * 
+ * CARA PAKAI:
+ * 1. Buka Apps Script editor (Extensions → Apps Script)
+ * 2. Paste script terbaru, deploy ulang
+ * 3. Di editor, pilih fungsi "migratePaymentProofs" lalu klik Run
+ * 4. Izinkan akses jika diminta
+ */
+function migratePaymentProofs() {
+  const ss = SpreadsheetApp.openById(SPREADSHEET_ID);
+  const folders = DriveApp.getFoldersByName("ERIC_Registrations_Uploads");
+  if (!folders.hasNext()) return;
+  const uploadsFolder = folders.next();
+  const allFiles = uploadsFolder.getFiles();
+  
+  const fileMap = {};
+  while (allFiles.hasNext()) {
+    const file = allFiles.next();
+    const name = file.getName();
+    if (name.startsWith("PAY_PROOF_")) {
+      const teamPart = name.replace("PAY_PROOF_", "").replace(/_proof$/, "").replace(/_id_card$/, "").trim().toUpperCase();
+      fileMap[teamPart] = file.getUrl();
+    }
+  }
+
+  const sheets = ss.getSheets();
+  for (let s = 0; s < sheets.length; s++) {
+    const sheet = sheets[s];
+    const sheetName = sheet.getName();
+    const isDivision = Object.values(DIVISION_MAP).includes(sheetName);
+    if (!isDivision) continue;
+    if (sheet.getLastRow() <= 1) continue;
+
+    const headers = sheet.getRange(1, 1, 1, sheet.getLastColumn()).getValues()[0];
+    const proofCol = headers.indexOf("Payment Proof") + 1;
+    const teamCol = headers.indexOf("Team Name") + 1;
+    if (!proofCol || !teamCol) continue;
+
+    const data = sheet.getDataRange().getValues();
+    let updated = 0;
+    for (let i = 1; i < data.length; i++) {
+      const existingProof = String(data[i][proofCol - 1] || '').trim();
+      if (existingProof && existingProof !== '-' && existingProof.startsWith('http')) continue;
+      const teamName = String(data[i][teamCol - 1] || '').trim().toUpperCase();
+      if (!teamName || teamName === '-') continue;
+      const matchedUrl = fileMap[teamName];
+      if (matchedUrl) {
+        sheet.getRange(i + 1, proofCol).setValue(matchedUrl);
+        updated++;
+      }
+    }
+    Logger.log(`Sheet "${sheetName}": ${updated} rows updated`);
+  }
+  Logger.log("Migration complete!");
+}
