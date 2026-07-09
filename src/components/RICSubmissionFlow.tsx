@@ -9,7 +9,7 @@ import { ricUpsertLocal, ricFetchAllLocal } from '../lib/ricStorage';
 import {
   X, FileText, CheckCircle2, Lock, AlertCircle, Upload,
   ExternalLink, Send, ArrowRight, MessageCircle, Trophy, Check,
-  Clock, ThumbsUp, ThumbsDown, Link2, File
+  Clock, ThumbsUp, ThumbsDown, Link2, File, RefreshCw
 } from 'lucide-react';
 
 interface RICSubmissionFlowProps {
@@ -46,6 +46,7 @@ export default function RICSubmissionFlow({
   const [activeStage, setActiveStage] = useState(0);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [successMsg, setSuccessMsg] = useState('');
+  const [syncingFromSheet, setSyncingFromSheet] = useState(false);
 
   const processFile = (file: File): Promise<{ name: string; url: string }> => {
     return new Promise((resolve, reject) => {
@@ -60,43 +61,55 @@ export default function RICSubmissionFlow({
     });
   };
 
-  // Fetch latest status from sheet when modal opens
-  useEffect(() => {
-    if (!isOpen || !registrationId) return;
-    (async () => {
-      try {
-        const result = await fetchRICSubmissions();
-        const rows: any[] = result || [];
-        if (rows.length === 0) return;
-        // Rows are flat objects: {id, registrationId, stage, status, ...}
-        const myRows = rows.filter((r: any) => r.registrationId === registrationId);
-        if (myRows.length === 0) return;
+  // Fetch latest status from sheet
+  const syncFromSheet = useCallback(async () => {
+    if (!registrationId) return;
+    setSyncingFromSheet(true);
+    try {
+      const result = await fetchRICSubmissions();
+      const rows: any[] = result || [];
+      console.log('[RIC syncFromSheet] rows from sheet:', rows.length);
+      if (rows.length === 0) { console.log('[RIC] sheet returned 0 rows'); return; }
 
-        // Match by submission ID, pick first
-        const sheetRow = myRows[0];
-        const local = await ricFetchAllLocal();
-        const localIdx = local.findIndex(s => s.id === sheetRow.id);
-        if (localIdx < 0) return;
+      const myRows = rows.filter((r: any) => r.registrationId === registrationId);
+      console.log('[RIC syncFromSheet] myRows:', myRows.length);
+      if (myRows.length === 0) return;
 
-        // Apply status from each matching sheet row to the correct stage
-        for (const row of myRows) {
-          const stageIdx = (parseInt(row.stage) || 1) - 1;
-          if (row.status && row.status !== 'locked') {
-            local[localIdx].stages[stageIdx] = {
-              ...local[localIdx].stages[stageIdx],
-              status: row.status,
-              notes: row.notes || local[localIdx].stages[stageIdx].notes,
-              reviewedAt: row.reviewedAt || local[localIdx].stages[stageIdx].reviewedAt,
-              reviewedBy: row.reviewedBy || local[localIdx].stages[stageIdx].reviewedBy,
-            };
-          }
+      const sheetRow = myRows[0];
+      const local = await ricFetchAllLocal();
+      const localIdx = local.findIndex(s => s.id === sheetRow.id);
+      console.log('[RIC syncFromSheet] found in local:', localIdx, 'sheet id:', sheetRow.id);
+      if (localIdx < 0) return;
+
+      for (const row of myRows) {
+        const stageIdx = (parseInt(row.stage) || 1) - 1;
+        if (row.status && row.status !== 'locked' && local[localIdx].stages[stageIdx]) {
+          console.log('[RIC syncFromSheet] update stage', stageIdx, '→', row.status);
+          local[localIdx].stages[stageIdx] = {
+            ...local[localIdx].stages[stageIdx],
+            status: row.status,
+            notes: row.notes || local[localIdx].stages[stageIdx].notes,
+            reviewedAt: row.reviewedAt || local[localIdx].stages[stageIdx].reviewedAt,
+            reviewedBy: row.reviewedBy || local[localIdx].stages[stageIdx].reviewedBy,
+          };
         }
+      }
 
-        await ricUpsertLocal(local[localIdx]);
-        onSave(local[localIdx]);
-      } catch (_) {}
-    })();
-  }, [isOpen]);
+      await ricUpsertLocal(local[localIdx]);
+      onSave(local[localIdx]);
+      console.log('[RIC] syncFromSheet done — status updated');
+    } catch (err) {
+      console.error('[RIC] syncFromSheet error:', err);
+    } finally {
+      setSyncingFromSheet(false);
+    }
+  }, [registrationId, onSave]);
+
+  // Auto-fetch when modal opens
+  useEffect(() => {
+    if (!isOpen) return;
+    syncFromSheet();
+  }, [isOpen, syncFromSheet]);
 
   const safeSubmission: RICSubmission = submission || {
     id: `ric-${Date.now()}`,
@@ -200,16 +213,26 @@ export default function RICSubmissionFlow({
 
               {/* Header */}
               <div className="border-b border-white/5 pb-4 mb-6">
-                <div className="space-y-1">
-                  <span className="text-[9px] font-mono text-[#FFD700] uppercase tracking-[0.25em] font-black block">
-                    {t('RESEARCH INNOVATION CHALLENGE', 'RESEARCH INNOVATION CHALLENGE')}
-                  </span>
-                  <h3 className="text-xl md:text-2xl font-sans font-black text-white uppercase tracking-tight">
-                    {t('SUBMISSION PORTAL', 'PORTAL PENGUMPULAN')}
-                  </h3>
-                  <p className="text-[10px] font-mono text-zinc-500">
-                    {teamName} — {t('Registration', 'Registrasi')}: {registrationId.slice(-8)}
-                  </p>
+                <div className="flex items-start justify-between">
+                  <div className="space-y-1">
+                    <span className="text-[9px] font-mono text-[#FFD700] uppercase tracking-[0.25em] font-black block">
+                      {t('RESEARCH INNOVATION CHALLENGE', 'RESEARCH INNOVATION CHALLENGE')}
+                    </span>
+                    <h3 className="text-xl md:text-2xl font-sans font-black text-white uppercase tracking-tight">
+                      {t('SUBMISSION PORTAL', 'PORTAL PENGUMPULAN')}
+                    </h3>
+                    <p className="text-[10px] font-mono text-zinc-500">
+                      {teamName} — {t('Registration', 'Registrasi')}: {registrationId.slice(-8)}
+                    </p>
+                  </div>
+                  <button
+                    onClick={syncFromSheet}
+                    disabled={syncingFromSheet}
+                    className="p-2 bg-zinc-900 border border-white/5 hover:border-[#4D90FE]/30 text-zinc-400 hover:text-[#4D90FE] rounded-xl transition-all cursor-pointer disabled:opacity-50 shrink-0"
+                    title={t('Sync from Sheet', 'Sinkron dari Sheet')}
+                  >
+                    <RefreshCw className={`w-4 h-4 ${syncingFromSheet ? 'animate-spin' : ''}`} />
+                  </button>
                 </div>
               </div>
 
