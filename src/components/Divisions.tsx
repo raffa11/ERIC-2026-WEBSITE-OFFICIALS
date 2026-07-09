@@ -49,7 +49,7 @@ export default function Divisions({ onSelectDivision }: DivisionsProps) {
   };
 
   return (
-    <section id="divisions-section" className="relative py-28 bg-[#050505] border-t border-white/5">
+    <section id="divisions-section" className="relative py-16 md:py-28 bg-[#050505] border-t border-white/5">
       {/* Visual cybernetic backdrops - hidden on touch for performance */}
       {!isTouchDevice && (
         <>
@@ -61,12 +61,12 @@ export default function Divisions({ onSelectDivision }: DivisionsProps) {
       <div className="max-w-7xl mx-auto px-6 relative z-10">
         
         {/* Section Header */}
-        <div className="mb-20 select-none">
+        <div className="mb-12 md:mb-20 select-none">
           <div className="flex items-center gap-3 text-xs font-mono text-[#FFD700] tracking-[0.4em] uppercase mb-4">
             <LucideIcons.Trophy className="w-4 h-4 text-[#FFD700]" />
             <span>{t('COMPETITION DIVISIONS', 'DIVISI PERLOMBAAN')}</span>
           </div>
-          <h2 className="text-4xl md:text-7xl font-sans font-black tracking-tighter text-white uppercase leading-none">
+          <h2 className="text-3xl sm:text-4xl md:text-7xl font-sans font-black tracking-tighter text-white uppercase leading-none">
             {t('THE', '')} <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#FFD700] to-[#FFE44D]">{t('ARENAS', 'ARENA PERTANDINGAN')}</span>
           </h2>
           <p className="text-[#B3B3B3] font-mono text-sm uppercase max-w-xl mt-4">
@@ -81,7 +81,7 @@ export default function Divisions({ onSelectDivision }: DivisionsProps) {
           </p>
           {/* MOBILE: plain text links */}
           {isTouchDevice && (
-            <div className="grid grid-cols-2 gap-3 max-w-md">
+            <div className="grid grid-cols-2 gap-2 max-w-sm">
               {[
                 { href: "https://drive.google.com/drive/folders/1co00vzy633xZzgyBG0G4dvWEtvsHenXt", icon: "FileText", label: "All Information", labelId: "Semua Informasi" },
                 { href: "https://drive.google.com/drive/folders/10w9yn_Tvfa7Kw7fEdQgRgHy6ARn04N_r?usp=drive_link", icon: "BookOpen", label: "Guidebook", labelId: "Buku Panduan" },
@@ -90,9 +90,9 @@ export default function Divisions({ onSelectDivision }: DivisionsProps) {
               ].map((link) => {
                 const IconComp = LucideIcons[link.icon as keyof typeof LucideIcons] as React.ComponentType<{ className?: string }> | undefined;
                 return (
-                  <a key={link.href} href={link.href} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-white/80">
-                    {IconComp && <IconComp className="w-4 h-4 flex-shrink-0 text-[#FFD700]" />}
-                    <span className="text-xs font-sans font-black uppercase">{t(link.label, link.labelId)}</span>
+                  <a key={link.href} href={link.href} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1.5 text-white/80 break-words min-w-0">
+                    {IconComp && <IconComp className="w-4 h-4 shrink-0 text-[#FFD700]" />}
+                    <span className="text-[10px] leading-tight font-sans font-black uppercase break-words hyphens-auto">{t(link.label, link.labelId)}</span>
                   </a>
                 );
               })}
@@ -163,7 +163,7 @@ export default function Divisions({ onSelectDivision }: DivisionsProps) {
 
                 {/* Main Card Shell */}
                 <div
-                  className={`relative overflow-hidden bg-gradient-to-b from-zinc-900/90 to-black border ${isTouchDevice ? 'border-white/10' : 'border-white/5 group-hover:border-white/20'} p-8 min-h-[400px] rounded-2xl flex flex-col justify-between shadow-[0_15px_35px_rgba(0,0,0,0.6)]`}
+                  className={`relative overflow-hidden bg-gradient-to-b from-zinc-900/90 to-black border ${isTouchDevice ? 'border-white/10' : 'border-white/5 group-hover:border-white/20'} p-5 sm:p-8 min-h-[360px] md:min-h-[400px] rounded-2xl flex flex-col justify-between shadow-[0_15px_35px_rgba(0,0,0,0.6)]`}
                   style={
                     isTouchDevice || division.comingSoon
                       ? {}
@@ -203,12 +203,12 @@ export default function Divisions({ onSelectDivision }: DivisionsProps) {
                   <div>
                     <div className="flex justify-between items-start mb-6">
                       {division.image ? (
-                        <div className={`w-20 h-20 rounded-xl border overflow-hidden bg-zinc-950/80 shrink-0 flex items-center justify-center p-1.5 ${isTouchDevice ? 'border-white/10' : 'border-white/10 group-hover:border-[#FFD700]/40 transition-colors duration-300'}`}>
+                        <div className={`w-14 h-14 sm:w-20 sm:h-20 rounded-xl border overflow-hidden bg-zinc-950/80 shrink-0 flex items-center justify-center p-1 sm:p-1.5 ${isTouchDevice ? 'border-white/10' : 'border-white/10 group-hover:border-[#FFD700]/40 transition-colors duration-300'}`}>
                           <img src={division.image} alt={division.title} loading="lazy" className="w-full h-full object-contain" />
                         </div>
                       ) : (
-                        <div className={`p-3 bg-zinc-950/80 rounded-xl border text-white ${isTouchDevice ? 'border-white/10' : 'border-white/10 group-hover:text-[#FFD700] group-hover:border-[#FFD700]/40 transition-colors duration-300'}`}>
-                          <IconComponent className="w-6 h-6" />
+                        <div className={`p-2 sm:p-3 bg-zinc-950/80 rounded-xl border text-white ${isTouchDevice ? 'border-white/10' : 'border-white/10 group-hover:text-[#FFD700] group-hover:border-[#FFD700]/40 transition-colors duration-300'}`}>
+                          <IconComponent className="w-5 h-5 sm:w-6 sm:h-6" />
                         </div>
                       )}
                       <span className="font-mono text-[9px] text-zinc-500 uppercase">
@@ -265,12 +265,12 @@ export default function Divisions({ onSelectDivision }: DivisionsProps) {
                               target="_blank"
                               rel="noopener noreferrer"
                               onClick={(e) => e.stopPropagation()}
-                              className="inline-flex items-center gap-1 px-2 py-1 bg-[#25D366]/10 border border-[#25D366]/20 rounded-md text-[9px] font-mono text-[#25D366] hover:bg-[#25D366]/20 hover:border-[#25D366]/40 transition-all"
+                              className="inline-flex items-center gap-1 px-2 py-1 bg-[#25D366]/10 border border-[#25D366]/20 rounded-md text-[8.5px] font-mono text-[#25D366] hover:bg-[#25D366]/20 hover:border-[#25D366]/40 transition-all truncate max-w-full"
                             >
-                              <LucideIcons.MessageCircle className="w-3 h-3" />
-                              <span className="font-bold">{cp.label}</span>
-                              <span className="text-white/30">/</span>
-                              <span>{cp.name}</span>
+                              <LucideIcons.MessageCircle className="w-3 h-3 shrink-0" />
+                              <span className="font-bold shrink-0">{cp.label}</span>
+                              <span className="text-white/30 shrink-0">/</span>
+                              <span className="truncate min-w-0">{cp.name}</span>
                             </a>
                           ))}
                         </div>
