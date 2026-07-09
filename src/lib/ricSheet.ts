@@ -22,6 +22,7 @@ export const syncRICToSheet = async (submission: RICSubmission, stageIndex?: num
 
   const idx = stageIndex ?? submission.currentStage;
   const stage = submission.stages[idx];
+  const safeId = submission.id.replace(/--stage\d+/g, '');
   if (!stage) {
     console.warn('RIC sync: stage index', idx, 'not found for submission', submission.id);
     return false;
@@ -29,7 +30,7 @@ export const syncRICToSheet = async (submission: RICSubmission, stageIndex?: num
 
   try {
     const payload: any = {
-      id: `${submission.id}--stage${idx}`,
+      id: `${safeId}--stage${idx}`,
       registrationId: submission.registrationId,
       teamName: submission.teamName,
       leaderEmail: submission.leaderEmail,
@@ -41,7 +42,7 @@ export const syncRICToSheet = async (submission: RICSubmission, stageIndex?: num
       reviewedBy: stage.reviewedBy || '',
       notes: stage.notes || '',
       action: 'submit',
-      _submissionId: submission.id,
+      _submissionId: safeId,
     };
 
     if (idx === 0) {

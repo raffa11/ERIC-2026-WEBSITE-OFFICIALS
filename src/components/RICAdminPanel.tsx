@@ -38,10 +38,9 @@ export default function RICAdminPanel({ submissions, onUpdateSubmissions }: RICA
     const merged: RICSubmission[] = [...local];
 
     for (const row of sheetData) {
-      if (!row.id) continue;
-      const localIdx = merged.findIndex(m => m.id === row.id);
+      if (!row.registrationId) continue;
+      const localIdx = merged.findIndex(m => m.registrationId === row.registrationId);
       if (localIdx >= 0) {
-        // Update status from sheet for the specific stage
         const stageIdx = (parseInt(row.stage) || 1) - 1;
         if (merged[localIdx].stages[stageIdx]) {
           merged[localIdx].stages[stageIdx].status = row.status || merged[localIdx].stages[stageIdx].status;
@@ -50,21 +49,34 @@ export default function RICAdminPanel({ submissions, onUpdateSubmissions }: RICA
           merged[localIdx].stages[stageIdx].reviewedBy = row.reviewedBy || merged[localIdx].stages[stageIdx].reviewedBy;
         }
       } else {
-        // Submission exists in sheet but not locally — add it
         merged.push({
-          id: row.id,
+          id: row._submissionId || row.registrationId,
           registrationId: row.registrationId || '',
           teamName: row.teamName || 'Unknown',
           leaderEmail: row.leaderEmail || '',
           divisionId: row.divisionId || 'research-innovation',
           stages: [
-            { stage: 1, status: row.stage === '1' ? (row.status || 'pending') : 'locked' },
-            { stage: 2, status: row.stage === '2' ? (row.status || 'pending') : 'locked' },
-            { stage: 3, status: row.stage === '3' ? (row.status || 'pending') : 'locked' },
+            { stage: 1, status: 'pending' },
+            { stage: 2, status: 'locked' },
+            { stage: 3, status: 'locked' },
           ],
           currentStage: 0,
           completed: false,
         });
+      }
+    }
+
+    // Second pass: apply stage data from ALL rows regardless of order
+    for (const row of sheetData) {
+      if (!row.registrationId) continue;
+      const localIdx = merged.findIndex(m => m.registrationId === row.registrationId);
+      if (localIdx < 0) continue;
+      const stageIdx = (parseInt(row.stage) || 1) - 1;
+      if (merged[localIdx].stages[stageIdx]) {
+        merged[localIdx].stages[stageIdx].status = row.status || merged[localIdx].stages[stageIdx].status;
+        merged[localIdx].stages[stageIdx].notes = row.notes || merged[localIdx].stages[stageIdx].notes;
+        merged[localIdx].stages[stageIdx].reviewedAt = row.reviewedAt || merged[localIdx].stages[stageIdx].reviewedAt;
+        merged[localIdx].stages[stageIdx].reviewedBy = row.reviewedBy || merged[localIdx].stages[stageIdx].reviewedBy;
       }
     }
 

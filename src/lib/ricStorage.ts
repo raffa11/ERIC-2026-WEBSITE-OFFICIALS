@@ -17,16 +17,21 @@ function safeSet(list: RICSubmission[]): void {
 }
 
 export async function ricFetchLocal(email?: string): Promise<RICSubmission[]> {
-  const all = safeGet();
+  const all = safeGet().map(s => ({ ...s, id: cleanSubmissionId(s.id) }));
   if (!email) return all;
   return all.filter(s => s.leaderEmail.toLowerCase() === email.toLowerCase());
 }
 
+function cleanSubmissionId(id: string): string {
+  return id.replace(/--stage\d+/g, '');
+}
+
 export async function ricUpsertLocal(submission: RICSubmission): Promise<void> {
-  const list = safeGet();
-  const idx = list.findIndex(s => s.id === submission.id);
-  if (idx >= 0) list[idx] = submission;
-  else list.push(submission);
+  const cleaned = { ...submission, id: cleanSubmissionId(submission.id) };
+  const list = safeGet().map(s => ({ ...s, id: cleanSubmissionId(s.id) }));
+  const idx = list.findIndex(s => s.id === cleaned.id);
+  if (idx >= 0) list[idx] = cleaned;
+  else list.push(cleaned);
   safeSet(list);
 }
 
@@ -35,5 +40,5 @@ export async function ricDeleteLocal(id: string): Promise<void> {
 }
 
 export async function ricFetchAllLocal(): Promise<RICSubmission[]> {
-  return safeGet();
+  return safeGet().map(s => ({ ...s, id: cleanSubmissionId(s.id) }));
 }
