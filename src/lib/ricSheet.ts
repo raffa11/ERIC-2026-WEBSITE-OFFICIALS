@@ -14,6 +14,7 @@ export const setRICScriptUrl = (url: string) => {
 
 export const syncRICToSheet = async (submission: RICSubmission): Promise<boolean> => {
   const url = getRICScriptUrl();
+  console.log('[RIC sync] using URL:', url);
   if (!url) {
     console.warn('RIC Google Script URL not configured.');
     return false;

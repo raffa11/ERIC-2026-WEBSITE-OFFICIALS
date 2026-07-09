@@ -215,7 +215,8 @@ function AppContent() {
     // Persist to localStorage + sync to sheet
     try {
       await ricUpsertLocal(submission);
-      syncRICToSheet(submission).catch(() => {});
+      const ok = await syncRICToSheet(submission);
+      if (!ok) console.warn('RIC sync to sheet returned false');
     } catch (err) {
       console.error('Failed to save RIC submission:', err);
     }
@@ -237,7 +238,8 @@ function AppContent() {
     for (const sub of subs) {
       try {
         await ricUpsertLocal(sub);
-        syncRICToSheet(sub).catch(() => {});
+        const ok = await syncRICToSheet(sub);
+        if (!ok) console.warn('RIC admin sync to sheet returned false for', sub.id);
       } catch (err) {
         console.error('Failed to sync RIC update:', err);
       }
