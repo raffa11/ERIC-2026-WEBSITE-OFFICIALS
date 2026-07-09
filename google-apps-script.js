@@ -292,7 +292,16 @@ function migratePaymentProofs() {
     const file = allFiles.next();
     const name = file.getName();
     if (name.startsWith("PAY_PROOF_")) {
-      const teamPart = name.replace("PAY_PROOF_", "").replace(/_proof$/, "").replace(/_id_card$/, "").trim().toUpperCase();
+      // Format: PAY_PROOF_{teamName}_{originalFilename}.ext
+      // Example: PAY_PROOF_GARUDA UNJ 1_bukti_pembayaran.jpg
+      let teamPart = name.replace("PAY_PROOF_", "");
+      // Remove file extension (.jpg, .png, .pdf, etc.)
+      const extIdx = teamPart.lastIndexOf(".");
+      if (extIdx > 0) teamPart = teamPart.slice(0, extIdx);
+      // Remove the last underscore segment (the original filename suffix)
+      const lastUs = teamPart.lastIndexOf("_");
+      if (lastUs > 0) teamPart = teamPart.slice(0, lastUs);
+      teamPart = teamPart.trim().toUpperCase();
       fileMap[teamPart] = file.getUrl();
     }
   }
