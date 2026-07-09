@@ -287,37 +287,41 @@ function migratePaymentProofs() {
   const uploadsFolder = folders.next();
   const allFiles = uploadsFolder.getFiles();
   
+  Logger.log("Scanning files in ERIC_Registrations_Uploads...");
   const fileMap = {};
   while (allFiles.hasNext()) {
     const file = allFiles.next();
     const name = file.getName();
+    Logger.log("Found file: " + name);
     if (name.startsWith("PAY_PROOF_")) {
       // Format: PAY_PROOF_{teamName}_{originalFilename}.ext
-      // Example: PAY_PROOF_GARUDA UNJ 1_bukti_pembayaran.jpg
       let teamPart = name.replace("PAY_PROOF_", "");
-      // Remove file extension (.jpg, .png, .pdf, etc.)
       const extIdx = teamPart.lastIndexOf(".");
       if (extIdx > 0) teamPart = teamPart.slice(0, extIdx);
-      // Remove the last underscore segment (the original filename suffix)
       const lastUs = teamPart.lastIndexOf("_");
       if (lastUs > 0) teamPart = teamPart.slice(0, lastUs);
       teamPart = teamPart.trim().toUpperCase();
+      Logger.log("  -> Extracted team: [" + teamPart + "]");
       fileMap[teamPart] = file.getUrl();
+    } else {
+      Logger.log("  -> Skipped (not PAY_PROOF_)");
     }
   }
+  Logger.log("File map keys: " + JSON.stringify(Object.keys(fileMap)));
 
+  Logger.log("Scanning sheets...");
   const sheets = ss.getSheets();
   for (let s = 0; s < sheets.length; s++) {
     const sheet = sheets[s];
     const sheetName = sheet.getName();
     const isDivision = Object.values(DIVISION_MAP).includes(sheetName);
-    if (!isDivision) continue;
-    if (sheet.getLastRow() <= 1) continue;
+    if (!isDivision) { Logger.log("Sheet \"" + sheetName + "\": skipped (not a division)"); continue; }
+    if (sheet.getLastRow() <= 1) { Logger.log("Sheet \"" + sheetName + "\": skipped (no data rows)"); continue; }
 
     const headers = sheet.getRange(1, 1, 1, sheet.getLastColumn()).getValues()[0];
     const proofCol = headers.indexOf("Payment Proof") + 1;
     const teamCol = headers.indexOf("Team Name") + 1;
-    if (!proofCol || !teamCol) continue;
+    if (!proofCol || !teamCol) { Logger.log("Sheet \"" + sheetName + "\": missing required columns"); continue; }
 
     const data = sheet.getDataRange().getValues();
     let updated = 0;
@@ -326,13 +330,17 @@ function migratePaymentProofs() {
       if (existingProof && existingProof !== '-' && existingProof.startsWith('http')) continue;
       const teamName = String(data[i][teamCol - 1] || '').trim().toUpperCase();
       if (!teamName || teamName === '-') continue;
+      Logger.log("Sheet \"" + sheetName + "\" row " + (i+1) + ": team=[" + teamName + "]");
       const matchedUrl = fileMap[teamName];
       if (matchedUrl) {
         sheet.getRange(i + 1, proofCol).setValue(matchedUrl);
         updated++;
+        Logger.log("  -> MATCHED!");
+      } else {
+        Logger.log("  -> NOT FOUND in fileMap");
       }
     }
-    Logger.log(`Sheet "${sheetName}": ${updated} rows updated`);
+    Logger.log("Sheet \"" + sheetName + "\": " + updated + " rows updated");
   }
   Logger.log("Migration complete!");
 }
