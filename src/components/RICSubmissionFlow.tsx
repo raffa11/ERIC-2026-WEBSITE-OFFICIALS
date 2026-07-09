@@ -77,7 +77,7 @@ export default function RICSubmissionFlow({
 
       const sheetRow = myRows[0];
       const local = await ricFetchAllLocal();
-      const localIdx = local.findIndex(s => s.id === sheetRow.id);
+      const localIdx = local.findIndex(s => s.registrationId === sheetRow.registrationId);
       console.log('[RIC syncFromSheet] found in local:', localIdx, 'sheet id:', sheetRow.id);
       if (localIdx < 0) return;
 
