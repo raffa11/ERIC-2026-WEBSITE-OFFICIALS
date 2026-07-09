@@ -303,11 +303,12 @@ function migratePaymentProofs() {
     if (sheet.getLastRow() <= 1) continue;
 
     const headers = sheet.getRange(1, 1, 1, sheet.getLastColumn()).getValues()[0];
+    Logger.log("Sheet \"" + sheetName + "\" headers: " + JSON.stringify(headers));
     const proofCol = headers.indexOf("Payment Proof") + 1;
     const teamColIndex = headers.indexOf("Team Name");
     const teamCol = teamColIndex + 1;
     if (!proofCol || !teamCol) {
-      Logger.log("Sheet \"" + sheetName + "\": missing required columns, skipping");
+      Logger.log("Sheet \"" + sheetName + "\": missing required columns (proofCol=" + proofCol + ", teamCol=" + teamCol + "), skipping");
       continue;
     }
 
