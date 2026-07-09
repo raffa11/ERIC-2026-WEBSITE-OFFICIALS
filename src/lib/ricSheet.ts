@@ -59,13 +59,14 @@ export const syncRICToSheet = async (submission: RICSubmission, stageIndex?: num
     }
 
     const postUrl = url.includes('?') ? url : url + '?';
-    console.log('[RIC sync] POST stage', idx, '→', payload.status);
+    console.log('[RIC sync] POST stage', idx, '→', payload.status, '| id:', payload.id);
     await fetch(postUrl, {
       method: 'POST',
       mode: 'no-cors',
       headers: { 'Content-Type': 'text/plain' },
       body: JSON.stringify(payload),
     });
+    console.log('[RIC sync] fetch done (no-cors, cannot read response)');
 
     console.log('RIC submission synced to sheet:', submission.id);
     return true;
