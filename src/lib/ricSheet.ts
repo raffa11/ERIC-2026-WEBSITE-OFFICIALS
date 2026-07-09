@@ -53,10 +53,13 @@ export const syncRICToSheet = async (submission: RICSubmission): Promise<boolean
       payload.pptFileUrl = stage.pptFileUrl || '';
     }
 
-    await fetch(url, {
+    // Append ? to avoid GAS 302 redirect that drops POST body
+    const postUrl = url.includes('?') ? url : url + '?';
+    console.log('[RIC sync] POST to:', postUrl);
+    await fetch(postUrl, {
       method: 'POST',
       mode: 'no-cors',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'text/plain' },
       body: JSON.stringify(payload),
     });
 
