@@ -71,12 +71,27 @@ function safeSetItem(list: Registration[]): void {
 
 /**
  * Fetch registrations from localStorage + Google Sheets.
- * Google Sheets is the primary source (survives browser clears).
+ * Returns localStorage data immediately, then fetches from Sheets in background.
+ * This means users always see their registrations (even from cache) instantly.
  */
-export async function dbFetchRegistrations(userEmail?: string): Promise<Registration[]> {
+export async function dbFetchRegistrations(
+  userEmail?: string,
+  onBackgroundUpdate?: (merged: Registration[]) => void
+): Promise<Registration[]> {
   const localRegs = safeGetItem();
   if (!userEmail) return localRegs;
 
+  // If we have local data, return it immediately — don't block on Sheets
+  const hasLocalData = localRegs.length > 0;
+  if (hasLocalData && !onBackgroundUpdate) {
+    // Fire-and-forget background refresh to update localStorage for next visit
+    dbFetchRegistrations(userEmail, (merged) => {
+      // Callback re-invokes to let caller update state if desired
+    }).catch(() => {});
+    return localRegs;
+  }
+
+  // Full fetch from Sheets (used during login or explicit refresh)
   try {
     const sheetRegs = await fetchUserRegistrations(userEmail);
     if (sheetRegs && sheetRegs.length > 0) {
@@ -87,12 +102,15 @@ export async function dbFetchRegistrations(userEmail?: string): Promise<Registra
         else merged.push(sReg);
       }
       safeSetItem(merged);
+      if (onBackgroundUpdate) onBackgroundUpdate(merged);
       return merged;
     }
   } catch (err) {
     console.warn('Google Sheets fetch failed, using localStorage:', err);
   }
 
+  // If this was a background refresh with no local data, still return []
+  if (onBackgroundUpdate) onBackgroundUpdate(localRegs);
   return localRegs;
 }
 

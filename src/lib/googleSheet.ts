@@ -101,27 +101,20 @@ export const syncToGoogleSheet = async (reg: Registration): Promise<boolean> => 
 /**
  * Fetch user registrations from Google Sheets via Apps Script doGet using JSONP.
  * This bypasses CORS issues often encountered with standard fetch requests to GAS Web Apps.
+ * Includes retry logic with exponential backoff for reliability.
  */
-export const fetchUserRegistrations = async (email: string): Promise<Registration[] | null> => {
-  const url = getGoogleScriptUrl();
-  if (!url) return null;
-
+const jsonpFetch = (url: string, email: string): Promise<Registration[] | null> => {
   return new Promise((resolve) => {
-    // Generate a unique callback function name
     const callbackName = 'jsonp_callback_' + Math.round(100000 * Math.random());
-    
-    // Create the script element
     const script = document.createElement('script');
     script.src = `${url}?action=getRegistrations&email=${encodeURIComponent(email)}&callback=${callbackName}`;
-    
-    // Timeout handler to prevent hanging (10 seconds)
+
     const timeoutId = setTimeout(() => {
       cleanup();
       console.warn('JSONP request timed out for Google Sheets.');
       resolve(null);
-    }, 10000);
+    }, 15000);
 
-    // Cleanup function to remove script and global callback
     const cleanup = () => {
       clearTimeout(timeoutId);
       if (script.parentNode) {
@@ -130,7 +123,6 @@ export const fetchUserRegistrations = async (email: string): Promise<Registratio
       delete (window as any)[callbackName];
     };
 
-    // The callback function that Apps Script will execute
     (window as any)[callbackName] = (data: any) => {
       cleanup();
       if (Array.isArray(data)) {
@@ -140,14 +132,29 @@ export const fetchUserRegistrations = async (email: string): Promise<Registratio
       }
     };
 
-    // Handle script load errors (e.g., network failure)
     script.onerror = () => {
       cleanup();
       console.warn('Failed to load JSONP script from Google Sheets.');
       resolve(null);
     };
 
-    // Inject the script into the document to trigger the request
     document.body.appendChild(script);
   });
+};
+
+export const fetchUserRegistrations = async (email: string): Promise<Registration[] | null> => {
+  const url = getGoogleScriptUrl();
+  if (!url) return null;
+
+  const maxAttempts = 3;
+  for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+    const result = await jsonpFetch(url, email);
+    if (result !== null) return result;
+    if (attempt < maxAttempts) {
+      const delay = attempt * 2000;
+      await new Promise(r => setTimeout(r, delay));
+    }
+  }
+
+  return null;
 };

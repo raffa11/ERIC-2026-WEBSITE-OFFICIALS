@@ -98,12 +98,18 @@ function AppContent() {
     init();
   }, []);
 
-  // Re-fetch registrations when user logs in
+  // Re-fetch registrations when user logs in — with background merge support
   const refreshRegistrations = useCallback(async (email?: string) => {
-    try {
-      const data = await dbFetchRegistrations(email);
+    const applyData = (data: Registration[]) => {
       const filtered = data.filter((r: any) => r && r.id && r.leader && r.leader.email && !r.id.toString().startsWith('seed-'));
       setRegistrations(filtered);
+    };
+
+    try {
+      const data = await dbFetchRegistrations(email, (merged) => {
+        applyData(merged);
+      });
+      applyData(data);
     } catch (err) {
       console.error('Failed to refresh registrations:', err);
     }
@@ -140,13 +146,17 @@ function AppContent() {
       }
       return [...prev, newReg];
     });
-    
+
+    // Immediately persist to localStorage so My Registration works even before Sheets sync
     try {
       await dbUpsertRegistration(newReg, currentUser?.email);
     } catch (err) {
-      console.error('Failed to save to Supabase:', err);
-      showAlert({ message: 'Registrasi tersimpan di lokal, gagal menyinkronkan ke cloud database: ' + err, type: 'warning' });
+      console.error('Failed to save to localStorage:', err);
+      showAlert({ message: 'Registrasi tersimpan, gagal menyinkronkan ke penyimpanan lokal: ' + err, type: 'warning' });
     }
+
+    // Silently refresh from server in the background to pick up any server-side data
+    refreshRegistrations(currentUser?.email).catch(() => {});
   };
 
   // Update registrations list directly (e.g., from edit or delete)
