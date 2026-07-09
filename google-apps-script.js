@@ -39,12 +39,7 @@ function getOrCreateDivisionSheet(divisionId) {
   const ss = SpreadsheetApp.openById(SPREADSHEET_ID);
   const sheetName = getDivisionSheetName(divisionId);
 
-  let sheet = ss.getSheetByName(sheetName);
-  if (sheet) return sheet;
-
-  sheet = ss.insertSheet(sheetName);
-
-  const headers = [
+  const FULL_HEADERS = [
     "ID", "Timestamp", "Division", "Sub Category", "Level", "Team Name",
     "Leader Name", "Leader Email", "Leader WhatsApp", "Leader Institution", "Leader Address", "Leader Congenital Disease",
     "Leader ID Card", "Leader Twibbon",
@@ -54,8 +49,23 @@ function getOrCreateDivisionSheet(divisionId) {
     "Payment Method", "Payment Status", "Amount Paid", "Ref Code", "Payment Proof"
   ];
 
-  sheet.appendRow(headers);
-  const headerRange = sheet.getRange(1, 1, 1, headers.length);
+  let sheet = ss.getSheetByName(sheetName);
+  if (sheet) {
+    // Ensure existing sheets have the "Payment Proof" column
+    const existingHeaders = sheet.getRange(1, 1, 1, sheet.getLastColumn()).getValues()[0];
+    if (!existingHeaders.includes("Payment Proof")) {
+      const newCol = existingHeaders.length + 1;
+      sheet.getRange(1, newCol).setValue("Payment Proof");
+      sheet.getRange(1, newCol).setFontWeight("bold");
+      sheet.getRange(1, newCol).setBackground("#FFD700");
+      sheet.getRange(1, newCol).setFontColor("#000000");
+    }
+    return sheet;
+  }
+
+  sheet = ss.insertSheet(sheetName);
+  sheet.appendRow(FULL_HEADERS);
+  const headerRange = sheet.getRange(1, 1, 1, FULL_HEADERS.length);
   headerRange.setFontWeight("bold");
   headerRange.setBackground("#FFD700");
   headerRange.setFontColor("#000000");
