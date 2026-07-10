@@ -33,7 +33,7 @@ import {
   dbDeleteRegistration, 
   getSupabaseAuth
 } from './lib/supabase';
-import RICSubmissionFlow from './components/RICSubmissionFlow';
+
 
 function AppContent() {
   const { showAlert } = useAlert();
@@ -51,9 +51,7 @@ function AppContent() {
   const [selectedDivisionId, setSelectedDivisionId] = useState('rov-underwater');
   const [registrations, setRegistrations] = useState<Registration[]>([]);
 
-  // RIC Submission states
-  const [isRICOpen, setIsRICOpen] = useState(false);
-  const [activeRICReg, setActiveRICReg] = useState<{ id: string; teamName: string; divisionId: string } | null>(null);
+
 
   // Load state on mount
   useEffect(() => {
@@ -189,16 +187,6 @@ function AppContent() {
     }
   };
 
-  const handleOpenRIC = (reg: { id: string; teamName: string; divisionId: string }) => {
-    setActiveRICReg(reg);
-    setIsRICOpen(true);
-  };
-
-  const handleCloseRIC = () => {
-    setIsRICOpen(false);
-    setActiveRICReg(null);
-  };
-
     // Division selection from cards
     const handleSelectDivision = (divisionId: string) => {
       // If not logged in, prompt them to login first to maintain a clean authorized roster flow
@@ -295,19 +283,7 @@ function AppContent() {
               divisionsSection.scrollIntoView({ behavior: 'smooth' });
             }
           }}
-          onOpenRIC={handleOpenRIC}
         />
-
-        {activeRICReg && (
-          <RICSubmissionFlow
-            isOpen={isRICOpen}
-            onClose={handleCloseRIC}
-            registrationId={activeRICReg.id}
-            teamName={activeRICReg.teamName}
-            leaderEmail={currentUser?.email || ''}
-            divisionId={activeRICReg.divisionId}
-          />
-        )}
 
       </div>
     </LanguageProvider>

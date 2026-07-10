@@ -7,8 +7,8 @@ import React from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { useLanguage } from './LanguageContext';
 import { COMPETITION_DIVISIONS, MAIN_WHATSAPP_GROUP } from '../data';
-import { Registration, RIC_DIVISION_IDS } from '../types';
-import { Trophy, X, MessageCircle, CheckCircle, Download, FileText } from 'lucide-react';
+import { Registration } from '../types';
+import { Trophy, X, MessageCircle, CheckCircle, Download } from 'lucide-react';
 import { generateRegistrationPDF } from '../lib/generatePDF';
 
 interface MyRegistrationsModalProps {
@@ -18,7 +18,6 @@ interface MyRegistrationsModalProps {
   registrations: Registration[];
   onUpdateRegistrations: (newRegs: Registration[]) => void;
   onRegisterNewTeamClick: () => void;
-  onOpenRIC: (reg: { id: string; teamName: string; divisionId: string }) => void;
 }
 
 export default function MyRegistrationsModal({
@@ -28,7 +27,6 @@ export default function MyRegistrationsModal({
   registrations,
   onUpdateRegistrations,
   onRegisterNewTeamClick,
-  onOpenRIC
 }: MyRegistrationsModalProps) {
   const { t } = useLanguage();
 
@@ -152,15 +150,7 @@ export default function MyRegistrationsModal({
                         <span>WHATSAPP GROUP — ALL PARTICIPANTS</span>
                       </a>
 
-                      {RIC_DIVISION_IDS.includes(reg.divisionId) && (
-                        <button
-                          onClick={() => onOpenRIC({ id: reg.id.toString(), teamName: reg.teamName, divisionId: reg.divisionId })}
-                          className="w-full flex items-center justify-center gap-2 px-3 py-2 bg-emerald-950/20 border border-emerald-500/20 hover:bg-emerald-950/30 hover:border-emerald-400/40 rounded-xl text-[10px] font-mono text-emerald-300 hover:text-emerald-200 transition-all cursor-pointer"
-                        >
-                          <FileText className="w-3.5 h-3.5 shrink-0" />
-                          <span>RIC SUBMISSION</span>
-                        </button>
-                      )}
+
                     </div>
                   );
                 })}

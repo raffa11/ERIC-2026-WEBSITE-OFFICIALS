@@ -9,7 +9,7 @@ import { useLanguage } from './LanguageContext';
 import { useAlert } from './AlertModal';
 import { COMPETITION_DIVISIONS } from '../data';
 import { Registration } from '../types';
-import RICAdminPanel from './RICAdminPanel';
+
 import * as XLSX from 'xlsx';
 import { 
   Trophy, Terminal, Download, 
@@ -34,7 +34,7 @@ export default function AdminDashboard({
   const { t } = useLanguage();
   const { showAlert, showConfirm } = useAlert();
 
-  const [activeTab, setActiveTab] = useState<'registrations' | 'ric'>('registrations');
+  const [activeTab, setActiveTab] = useState<'registrations'>('registrations');
 
   // Google Sheets integration state
   const [googleScriptUrl, setGoogleScriptUrlState] = useState(getGoogleScriptUrl());
@@ -179,12 +179,7 @@ export default function AdminDashboard({
         >
           REGISTRATIONS
         </button>
-        <button
-          onClick={() => setActiveTab('ric')}
-          className={`px-5 py-2 text-xs font-mono font-black uppercase rounded-xl transition-all cursor-pointer ${activeTab === 'ric' ? 'bg-emerald-500 text-black shadow-[0_0_15px_rgba(16,185,129,0.2)]' : 'text-zinc-400 hover:text-white'}`}
-        >
-          RIC REVIEW
-        </button>
+
       </div>
 
       {activeTab === 'registrations' && (<>
@@ -506,10 +501,6 @@ function doPost(e) {
 
 
       </>      
-      )}
-
-      {activeTab === 'ric' && (
-        <RICAdminPanel />
       )}
 
     </div>
