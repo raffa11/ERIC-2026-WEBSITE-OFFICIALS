@@ -120,7 +120,7 @@ export interface Registration {
 
 export interface RICStageSubmission {
   stage: number; // 1, 2, or 3
-  status: 'locked' | 'pending' | 'review' | 'accepted' | 'rejected';
+  status: 'locked' | 'pending' | 'submitted' | 'review' | 'accepted' | 'rejected';
   submittedAt?: string;
   reviewedAt?: string;
   reviewedBy?: string;

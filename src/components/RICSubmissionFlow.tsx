@@ -3,11 +3,10 @@ import { motion, AnimatePresence } from 'motion/react';
 import { useLanguage } from './LanguageContext';
 import { useAlert } from './AlertModal';
 import { RIC_STAGES } from '../data';
-import { RICSubmission, RICStageSubmission } from '../types';
-import { fetchRICSubmissions, syncRICToSheet } from '../lib/ricSheet';
+import { RICSubmission } from '../types';
+import { fetchRICSubmissions, syncRICToSheet, fetchActiveStage } from '../lib/ricSheet';
 import {
-  X, FileText, CheckCircle2, Lock, AlertCircle, Upload, Send, ArrowRight,
-  MessageCircle, Trophy, Check, Clock, ThumbsUp, ThumbsDown, Link2, RefreshCw
+  X, FileText, CheckCircle2, Lock, Upload, Send, Clock, Link2, Check
 } from 'lucide-react';
 
 interface RICSubmissionFlowProps {
@@ -17,23 +16,6 @@ interface RICSubmissionFlowProps {
   teamName: string;
   leaderEmail: string;
   divisionId: string;
-}
-
-function stageStatusBadge(status: string, t: (en: string, id: string) => string) {
-  switch (status) {
-    case 'locked':
-      return { label: t('LOCKED', 'TERKUNCI'), cls: 'bg-zinc-800 text-zinc-500 border-zinc-700', icon: Lock };
-    case 'pending':
-      return { label: t('PENDING', 'MENUNGGU'), cls: 'bg-amber-950/30 border-amber-500/30 text-amber-400', icon: Clock };
-    case 'review':
-      return { label: t('REVISION', 'REVISI'), cls: 'bg-orange-950/30 border-orange-500/30 text-orange-400', icon: MessageCircle };
-    case 'accepted':
-      return { label: t('ACCEPTED', 'DITERIMA'), cls: 'bg-emerald-950/30 border-emerald-500/30 text-emerald-400', icon: ThumbsUp };
-    case 'rejected':
-      return { label: t('REJECTED', 'DITOLAK'), cls: 'bg-red-950/30 border-red-500/30 text-red-400', icon: ThumbsDown };
-    default:
-      return { label: status, cls: 'bg-zinc-800 text-zinc-500 border-zinc-700', icon: Lock };
-  }
 }
 
 function newSubmission(registrationId: string, teamName: string, leaderEmail: string, divisionId: string): RICSubmission {
@@ -58,12 +40,12 @@ export default function RICSubmissionFlow({
 }: RICSubmissionFlowProps) {
   const { t } = useLanguage();
   const { showAlert } = useAlert();
-  const [activeStage, setActiveStage] = useState(0);
   const [submission, setSubmission] = useState<RICSubmission | null>(null);
+  const [activeStage, setActiveStage] = useState(1);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [syncing, setSyncing] = useState(false);
   const [successMsg, setSuccessMsg] = useState('');
-  const [fetchAttempted, setFetchAttempted] = useState(false);
+  const [submittedStages, setSubmittedStages] = useState<Set<number>>(new Set());
 
   const processFile = (file: File): Promise<{ name: string; url: string }> => {
     return new Promise((resolve, reject) => {
@@ -78,70 +60,74 @@ export default function RICSubmissionFlow({
     });
   };
 
-  const loadFromSheet = useCallback(async (force?: boolean) => {
+  const loadData = useCallback(async () => {
     if (!registrationId) return;
-    if (fetchAttempted && !force) return;
     setSyncing(true);
     try {
-      const result = await fetchRICSubmissions();
-      const rows: any[] = result || [];
-      const myRow = rows.find((r: any) => r.registrationId === registrationId);
-      if (myRow) {
-        setSubmission(myRow as RICSubmission);
-      } else {
-        setSubmission(newSubmission(registrationId, teamName, leaderEmail, divisionId));
+      const [stage, rows] = await Promise.all([
+        fetchActiveStage(),
+        fetchRICSubmissions(),
+      ]);
+      setActiveStage(stage);
+
+      const submitted = new Set<number>();
+      if (rows && Array.isArray(rows)) {
+        for (const row of rows as any[]) {
+          if (row.registrationId === registrationId && row.id !== '__config__') {
+            const sIdx = (parseInt(row.stage) || 1) - 1;
+            submitted.add(sIdx);
+          }
+        }
       }
+      setSubmittedStages(submitted);
+      setSubmission(newSubmission(registrationId, teamName, leaderEmail, divisionId));
     } catch (err) {
-      console.error('[RIC] loadFromSheet error:', err);
+      console.error('[RIC] loadData error:', err);
       setSubmission(newSubmission(registrationId, teamName, leaderEmail, divisionId));
     } finally {
       setSyncing(false);
-      setFetchAttempted(true);
     }
-  }, [registrationId, teamName, leaderEmail, divisionId, fetchAttempted]);
+  }, [registrationId, teamName, leaderEmail, divisionId]);
 
   useEffect(() => {
     if (!isOpen) return;
-    setFetchAttempted(false);
-    loadFromSheet(true);
-  }, [isOpen]);
+    loadData();
+  }, [isOpen, loadData]);
 
   const safeSub = submission;
 
-  const isStageAccessible = (idx: number): boolean => {
-    if (idx === 0) return true;
-    const prev = safeSub?.stages[idx - 1];
-    return prev?.status === 'accepted';
+  const getStageStatus = (idx: number): 'past-submitted' | 'past-missing' | 'active' | 'future' => {
+    const stageNum = idx + 1;
+    if (submittedStages.has(idx)) return 'past-submitted';
+    if (stageNum < activeStage) return 'past-missing';
+    if (stageNum === activeStage) return 'active';
+    return 'future';
   };
 
-  const currentStageData: RICStageSubmission | undefined = safeSub?.stages[activeStage];
+  const currentStageData = safeSub?.stages[activeStage - 1];
 
-  const updateStageField = (field: string, value: any) => {
-    if (!safeSub) return;
-    const updatedStages = [...safeSub.stages];
-    updatedStages[activeStage] = { ...updatedStages[activeStage], [field]: value };
-    setSubmission({ ...safeSub, stages: updatedStages, currentStage: activeStage });
-  };
-
-  const handleSubmitStage = async () => {
+  const updateField = (field: string, value: any) => {
     if (!safeSub || !currentStageData) return;
-    const stageIdx = activeStage;
+    const updatedStages = [...safeSub.stages];
+    updatedStages[activeStage - 1] = { ...currentStageData, [field]: value };
+    setSubmission({ ...safeSub, stages: updatedStages, currentStage: activeStage - 1 });
+  };
 
-    if (stageIdx === 0) {
-      if (!currentStageData.abstractFileUrl) {
-        showAlert({ message: t('Please upload your abstract PDF file.', 'Mohon unggah file abstrak PDF Anda.'), type: 'error' });
-        return;
-      }
-    } else if (stageIdx === 1) {
-      if (!currentStageData.proposalFileUrl || !currentStageData.videoLink) {
-        showAlert({ message: t('Please upload full proposal PDF and provide video link.', 'Mohon unggah proposal PDF dan tautan video.'), type: 'error' });
-        return;
-      }
-    } else if (stageIdx === 2) {
-      if (!currentStageData.posterFileUrl || !currentStageData.pptFileUrl) {
-        showAlert({ message: t('Please upload both digital poster PDF and PPT file.', 'Mohon unggah poster digital PDF dan file PPT.'), type: 'error' });
-        return;
-      }
+  const handleSubmit = async () => {
+    if (!safeSub || !currentStageData) return;
+    const stageIdx = activeStage - 1;
+
+    if (stageIdx === 0 && !currentStageData.abstractFileUrl) {
+      showAlert({ message: t('Please upload your abstract PDF file.', 'Mohon unggah file abstrak PDF Anda.'), type: 'error' });
+      return;
+    }
+    if (stageIdx === 1 && (!currentStageData.proposalFileUrl || !currentStageData.videoLink)) {
+      showAlert({ message: t('Please upload full proposal PDF and provide video link.', 'Mohon unggah proposal PDF dan tautan video.'), type: 'error' });
+      return;
+    }
+    if (stageIdx === 2 && (!currentStageData.posterFileUrl || !currentStageData.pptFileUrl)) {
+      showAlert({ message: t('Please upload both digital poster PDF and PPT file.', 'Mohon unggah poster digital PDF dan file PPT.'), type: 'error' });
+      return;
     }
 
     setIsSubmitting(true);
@@ -149,7 +135,7 @@ export default function RICSubmissionFlow({
       const updatedStages = [...safeSub.stages];
       updatedStages[stageIdx] = {
         ...currentStageData,
-        status: 'pending',
+        status: 'submitted',
         submittedAt: new Date().toISOString(),
       };
 
@@ -160,9 +146,12 @@ export default function RICSubmissionFlow({
       };
 
       setSubmission(updated);
+      setSubmittedStages(prev => new Set(prev).add(stageIdx));
+
       const ok = await syncRICToSheet(updated, stageIdx);
       if (!ok) console.warn('[RIC] sync result false');
-      setSuccessMsg(t('Submission sent! Waiting for admin review.', 'Pengumpulan berhasil! Menunggu review admin.'));
+
+      setSuccessMsg(t('Submission sent!', 'Pengumpulan berhasil!'));
       setTimeout(() => setSuccessMsg(''), 3000);
     } catch (err: any) {
       showAlert({ message: err.message || 'Submission failed', type: 'error' });
@@ -187,16 +176,13 @@ export default function RICSubmissionFlow({
               <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.012)_1px,transparent_1px)] bg-[size:25px_25px] pointer-events-none" />
               <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-[#FFD700] to-[#0047AB]" />
 
-              <button
-                onClick={onClose}
-                className="absolute top-4 right-4 p-2 bg-zinc-900 border border-white/5 hover:border-white/10 text-zinc-400 hover:text-white rounded-xl transition-all cursor-pointer z-20"
-              >
+              <button onClick={onClose} className="absolute top-4 right-4 p-2 bg-zinc-900 border border-white/5 hover:border-white/10 text-zinc-400 hover:text-white rounded-xl transition-all cursor-pointer z-20">
                 <X className="w-4 h-4" />
               </button>
 
               <div className="border-b border-white/5 pb-4 mb-6">
-                <div className="flex items-start justify-between">
-                  <div className="space-y-1">
+                <div className="flex items-start gap-3">
+                  <div className="space-y-1 flex-1">
                     <span className="text-[9px] font-mono text-[#FFD700] uppercase tracking-[0.25em] font-black block">
                       {t('RESEARCH INNOVATION CHALLENGE', 'RESEARCH INNOVATION CHALLENGE')}
                     </span>
@@ -207,64 +193,64 @@ export default function RICSubmissionFlow({
                       {teamName} — {t('Registration', 'Registrasi')}: {registrationId.slice(-8)}
                     </p>
                   </div>
-                  <button
-                    onClick={() => loadFromSheet(true)}
-                    disabled={syncing}
-                    className="p-2 bg-zinc-900 border border-white/5 hover:border-[#4D90FE]/30 text-zinc-400 hover:text-[#4D90FE] rounded-xl transition-all cursor-pointer disabled:opacity-50 shrink-0"
-                    title={t('Sync from Sheet', 'Sinkron dari Sheet')}
-                  >
-                    <RefreshCw className={`w-4 h-4 ${syncing ? 'animate-spin' : ''}`} />
-                  </button>
+                  {syncing && (
+                    <div className="animate-spin w-4 h-4 border-2 border-[#FFD700] border-t-transparent rounded-full shrink-0 mt-1" />
+                  )}
                 </div>
               </div>
 
-              <div className="grid grid-cols-3 gap-2 mb-6">
-                {RIC_STAGES.map((s, idx) => {
-                  const accessible = isStageAccessible(idx);
-                  const st = safeSub.stages[idx];
-                  const isActive = activeStage === idx;
-                  const badge = st ? stageStatusBadge(st.status, t) : null;
+              {/* Stage Cards */}
+              <div className="grid grid-cols-3 gap-3 mb-6">
+                {[0, 1, 2].map((idx) => {
+                  const status = getStageStatus(idx);
+                  const s = RIC_STAGES[idx];
+                  const isActive = status === 'active';
 
                   return (
-                    <button
-                      key={s.stage}
-                      onClick={() => { if (accessible) setActiveStage(idx); }}
-                      disabled={!accessible}
-                      className={`relative p-3 rounded-xl border text-left transition-all ${
+                    <div
+                      key={idx}
+                      className={`relative p-4 rounded-xl border transition-all ${
                         isActive
-                          ? 'bg-zinc-900 border-[#FFD700]/40 scale-102'
-                          : accessible
-                            ? 'bg-zinc-950 border-white/10 hover:border-white/20 cursor-pointer'
-                            : 'bg-zinc-950/50 border-white/5 opacity-50 cursor-not-allowed'
+                          ? 'bg-zinc-900 border-[#FFD700]/40'
+                          : status === 'future'
+                            ? 'bg-zinc-950/50 border-white/5 opacity-60'
+                            : 'bg-zinc-950 border-white/10'
                       }`}
                     >
                       <div className="flex items-center justify-between mb-1.5">
                         <span className={`text-[8px] font-mono font-black tracking-widest ${isActive ? 'text-[#FFD700]' : 'text-zinc-500'}`}>
                           {t('STAGE', 'TAHAP')} {s.stage}
                         </span>
-                        {st && st.status !== 'locked' && !isActive && (
-                          <div className="flex items-center gap-0.5">
-                            {st.status === 'accepted' && <CheckCircle2 className="w-3 h-3 text-emerald-400" />}
-                            {st.status === 'pending' && <Clock className="w-3 h-3 text-amber-400" />}
-                            {st.status === 'review' && <MessageCircle className="w-3 h-3 text-orange-400" />}
-                            {st.status === 'rejected' && <AlertCircle className="w-3 h-3 text-red-400" />}
-                          </div>
-                        )}
+                        {status === 'past-submitted' && <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />}
+                        {status === 'active' && <Clock className="w-3.5 h-3.5 text-[#FFD700]" />}
+                        {status === 'future' && <Lock className="w-3.5 h-3.5 text-zinc-600" />}
                       </div>
                       <span className={`text-[10px] font-sans font-bold uppercase block leading-tight ${isActive ? 'text-white' : 'text-zinc-400'}`}>
                         {t(s.titleEn, s.titleId)}
                       </span>
-                      {badge && st && st.status !== 'locked' && (
-                        <span className={`inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[7px] font-mono font-bold mt-1.5 border ${badge.cls}`}>
-                          <badge.icon className="w-2.5 h-2.5" />
-                          {badge.label}
+
+                      {status === 'future' && (
+                        <span className="inline-flex items-center gap-1 px-1.5 py-0.5 mt-2 rounded text-[7px] font-mono font-bold bg-zinc-800 text-zinc-500 border border-zinc-700">
+                          {t('AVAILABLE SOON', 'SEGERA HADIR')}
                         </span>
                       )}
-                    </button>
+                      {status === 'past-submitted' && (
+                        <span className="inline-flex items-center gap-1 px-1.5 py-0.5 mt-2 rounded text-[7px] font-mono font-bold bg-emerald-950/20 text-emerald-400 border border-emerald-500/20">
+                          <Check className="w-2.5 h-2.5" />
+                          {t('SUBMITTED', 'TERKIRIM')}
+                        </span>
+                      )}
+                      {status === 'past-missing' && (
+                        <span className="inline-flex items-center gap-1 px-1.5 py-0.5 mt-2 rounded text-[7px] font-mono font-bold bg-zinc-800 text-zinc-500 border border-zinc-700">
+                          -
+                        </span>
+                      )}
+                    </div>
                   );
                 })}
               </div>
 
+              {/* Content Area */}
               <div className="space-y-5">
                 {successMsg && (
                   <div className="p-3 bg-emerald-950/20 border border-emerald-500/20 rounded-xl flex items-center gap-2 text-[11px] font-mono text-emerald-400">
@@ -273,136 +259,50 @@ export default function RICSubmissionFlow({
                   </div>
                 )}
 
-                {currentStageData.status === 'accepted' && (
-                  <div className="p-3 bg-emerald-950/20 border border-emerald-500/20 rounded-xl flex items-center gap-2 text-[11px] font-mono text-emerald-400">
-                    <ThumbsUp className="w-4 h-4 shrink-0" />
-                    {activeStage === 2
-                      ? t('Congratulations! You have completed all stages!', 'Selamat! Anda telah menyelesaikan semua tahap!')
-                      : t('This stage has been accepted! Proceed to the next stage.', 'Tahap ini telah diterima! Lanjut ke tahap berikutnya.')}
-                  </div>
-                )}
-
-                {currentStageData.status === 'review' && (
-                  <div className="p-3 bg-orange-950/20 border border-orange-500/20 rounded-xl space-y-1">
-                    <div className="flex items-center gap-2 text-[11px] font-mono text-orange-400">
-                      <MessageCircle className="w-4 h-4 shrink-0" />
-                      {t('Revision requested by admin.', 'Revisi diminta oleh admin.')}
-                    </div>
-                    {currentStageData.notes && (
-                      <div className="mt-1 p-2 bg-zinc-900/50 border border-white/5 rounded-lg">
-                        <p className="text-[10px] font-mono text-zinc-300 whitespace-pre-wrap">
-                          {currentStageData.notes}
-                        </p>
-                      </div>
-                    )}
-                    <p className="text-[10px] font-mono text-amber-400">
-                      {t('Please review the feedback above, make corrections, and resubmit.', 'Silakan periksa masukan di atas, lakukan perbaikan, dan kumpulkan ulang.')}
-                    </p>
-                  </div>
-                )}
-
-                {currentStageData.status === 'rejected' && (
-                  <div className="p-4 bg-red-950/20 border border-red-500/20 rounded-xl space-y-2">
-                    <div className="flex items-center gap-2 text-[11px] font-mono text-red-400">
-                      <ThumbsDown className="w-4 h-4 shrink-0" />
-                      {t('This submission was not accepted.', 'Pengumpulan ini tidak diterima.')}
-                    </div>
-                    {currentStageData.notes && (
-                      <div className="p-2 bg-zinc-900/50 border border-white/5 rounded-lg">
-                        <p className="text-[10px] font-mono text-zinc-300 whitespace-pre-wrap">
-                          {currentStageData.notes}
-                        </p>
-                      </div>
-                    )}
-                    <p className="text-[10px] font-mono text-zinc-400 leading-relaxed">
-                      {t(
-                        "We appreciate the effort you've put into this competition. Unfortunately, your submission does not meet the required criteria at this stage. We encourage you to keep innovating and consider participating in future editions of ERIC!",
-                        'Kami menghargai usaha yang telah Anda lakukan dalam kompetisi ini. Sayangnya, pengumpulan Anda belum memenuhi kriteria yang diperlukan pada tahap ini. Kami mendorong Anda untuk terus berinovasi dan mempertimbangkan untuk berpartisipasi di edisi ERIC mendatang!'
-                      )}
-                    </p>
-                  </div>
-                )}
-
-                {currentStageData.status === 'pending' && (
-                  <div className="p-3 bg-amber-950/20 border border-amber-500/20 rounded-xl flex items-center gap-2 text-[11px] font-mono text-amber-400">
-                    <Clock className="w-4 h-4 shrink-0" />
-                    {t('Your submission is being reviewed by the admin.', 'Pengumpulan Anda sedang direview oleh admin.')}
-                  </div>
-                )}
-
-                {activeStage === 0 && currentStageData.status !== 'rejected' && (
-                  <div className="space-y-4">
+                {getStageStatus(activeStage - 1) === 'active' && (
+                  <>
+                    {/* Stage description */}
                     <div className="p-4 bg-zinc-900/30 border border-white/5 rounded-2xl">
                       <p className="text-xs font-mono text-zinc-400 leading-relaxed">
-                        {t(RIC_STAGES[0].descriptionEn, RIC_STAGES[0].descriptionId)}
+                        {t(RIC_STAGES[activeStage - 1].descriptionEn, RIC_STAGES[activeStage - 1].descriptionId)}
                       </p>
                       <ul className="mt-2 space-y-1">
-                        {RIC_STAGES[0].requirements.map((req, i) => (
+                        {RIC_STAGES[activeStage - 1].requirements.map((req, i) => (
                           <li key={i} className="text-[10px] font-mono text-zinc-500 flex items-center gap-1.5">
-                            <span className="w-1 h-1 bg-[#FFD700] rounded-full" />
+                            <span className="w-1 h-1 bg-[#FFD700] rounded-full shrink-0" />
                             {req}
                           </li>
                         ))}
                       </ul>
                     </div>
-                    {currentStageData.status !== 'accepted' && (
+
+                    {/* Stage 1: Abstract */}
+                    {activeStage === 1 && (
                       <FileUploadField
                         label={t('Abstract PDF', 'Abstrak PDF')}
                         fileName={currentStageData.abstractFileName || ''}
                         fileUrl={currentStageData.abstractFileUrl || ''}
                         onSelect={async (file) => {
-                          try {
-                            const result = await processFile(file);
-                            updateStageField('abstractFileName', result.name);
-                            updateStageField('abstractFileUrl', result.url);
-                          } catch (err: any) {
-                            showAlert({ message: err, type: 'error' });
-                          }
+                          try { const r = await processFile(file); updateField('abstractFileName', r.name); updateField('abstractFileUrl', r.url); }
+                          catch (err: any) { showAlert({ message: err, type: 'error' }); }
                         }}
-                        onClear={() => {
-                          updateStageField('abstractFileName', '');
-                          updateStageField('abstractFileUrl', '');
-                        }}
+                        onClear={() => { updateField('abstractFileName', ''); updateField('abstractFileUrl', ''); }}
                         id="ric-abstract-file"
                       />
                     )}
-                  </div>
-                )}
 
-                {activeStage === 1 && currentStageData.status !== 'rejected' && (
-                  <div className="space-y-4">
-                    <div className="p-4 bg-zinc-900/30 border border-white/5 rounded-2xl">
-                      <p className="text-xs font-mono text-zinc-400 leading-relaxed">
-                        {t(RIC_STAGES[1].descriptionEn, RIC_STAGES[1].descriptionId)}
-                      </p>
-                      <ul className="mt-2 space-y-1">
-                        {RIC_STAGES[1].requirements.map((req, i) => (
-                          <li key={i} className="text-[10px] font-mono text-zinc-500 flex items-center gap-1.5">
-                            <span className="w-1 h-1 bg-[#FFD700] rounded-full" />
-                            {req}
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                    {currentStageData.status !== 'accepted' && (
-                      <>
+                    {/* Stage 2: Proposal + Video */}
+                    {activeStage === 2 && (
+                      <div className="space-y-4">
                         <FileUploadField
                           label={t('Full Proposal PDF', 'Proposal Lengkap PDF')}
                           fileName={currentStageData.proposalFileName || ''}
                           fileUrl={currentStageData.proposalFileUrl || ''}
                           onSelect={async (file) => {
-                            try {
-                              const result = await processFile(file);
-                              updateStageField('proposalFileName', result.name);
-                              updateStageField('proposalFileUrl', result.url);
-                            } catch (err: any) {
-                              showAlert({ message: err, type: 'error' });
-                            }
+                            try { const r = await processFile(file); updateField('proposalFileName', r.name); updateField('proposalFileUrl', r.url); }
+                            catch (err: any) { showAlert({ message: err, type: 'error' }); }
                           }}
-                          onClear={() => {
-                            updateStageField('proposalFileName', '');
-                            updateStageField('proposalFileUrl', '');
-                          }}
+                          onClear={() => { updateField('proposalFileName', ''); updateField('proposalFileUrl', ''); }}
                           id="ric-proposal-file"
                         />
                         <div className="space-y-1">
@@ -415,50 +315,26 @@ export default function RICSubmissionFlow({
                               type="url"
                               placeholder="https://youtube.com/watch?v=... or https://drive.google.com/..."
                               value={currentStageData.videoLink || ''}
-                              onChange={(e) => updateStageField('videoLink', e.target.value)}
+                              onChange={(e) => updateField('videoLink', e.target.value)}
                               className="w-full bg-zinc-900 border border-white/5 focus:border-[#FFD700] rounded-xl px-3 py-2.5 text-xs text-white focus:outline-none"
                             />
                           </div>
                         </div>
-                      </>
+                      </div>
                     )}
-                  </div>
-                )}
 
-                {activeStage === 2 && currentStageData.status !== 'rejected' && (
-                  <div className="space-y-4">
-                    <div className="p-4 bg-zinc-900/30 border border-white/5 rounded-2xl">
-                      <p className="text-xs font-mono text-zinc-400 leading-relaxed">
-                        {t(RIC_STAGES[2].descriptionEn, RIC_STAGES[2].descriptionId)}
-                      </p>
-                      <ul className="mt-2 space-y-1">
-                        {RIC_STAGES[2].requirements.map((req, i) => (
-                          <li key={i} className="text-[10px] font-mono text-zinc-500 flex items-center gap-1.5">
-                            <span className="w-1 h-1 bg-[#FFD700] rounded-full" />
-                            {req}
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                    {currentStageData.status !== 'accepted' && (
-                      <>
+                    {/* Stage 3: Poster + PPT */}
+                    {activeStage === 3 && (
+                      <div className="space-y-4">
                         <FileUploadField
                           label={t('Digital Poster PDF', 'Poster Digital PDF')}
                           fileName={currentStageData.posterFileName || ''}
                           fileUrl={currentStageData.posterFileUrl || ''}
                           onSelect={async (file) => {
-                            try {
-                              const result = await processFile(file);
-                              updateStageField('posterFileName', result.name);
-                              updateStageField('posterFileUrl', result.url);
-                            } catch (err: any) {
-                              showAlert({ message: err, type: 'error' });
-                            }
+                            try { const r = await processFile(file); updateField('posterFileName', r.name); updateField('posterFileUrl', r.url); }
+                            catch (err: any) { showAlert({ message: err, type: 'error' }); }
                           }}
-                          onClear={() => {
-                            updateStageField('posterFileName', '');
-                            updateStageField('posterFileUrl', '');
-                          }}
+                          onClear={() => { updateField('posterFileName', ''); updateField('posterFileUrl', ''); }}
                           id="ric-poster-file"
                         />
                         <FileUploadField
@@ -466,67 +342,65 @@ export default function RICSubmissionFlow({
                           fileName={currentStageData.pptFileName || ''}
                           fileUrl={currentStageData.pptFileUrl || ''}
                           onSelect={async (file) => {
-                            try {
-                              const result = await processFile(file);
-                              updateStageField('pptFileName', result.name);
-                              updateStageField('pptFileUrl', result.url);
-                            } catch (err: any) {
-                              showAlert({ message: err, type: 'error' });
-                            }
+                            try { const r = await processFile(file); updateField('pptFileName', r.name); updateField('pptFileUrl', r.url); }
+                            catch (err: any) { showAlert({ message: err, type: 'error' }); }
                           }}
-                          onClear={() => {
-                            updateStageField('pptFileName', '');
-                            updateStageField('pptFileUrl', '');
-                          }}
+                          onClear={() => { updateField('pptFileName', ''); updateField('pptFileUrl', ''); }}
                           id="ric-ppt-file"
                         />
-                      </>
+                      </div>
                     )}
+
+                    {!submittedStages.has(activeStage - 1) && (
+                      <div className="flex justify-end pt-4 border-t border-white/5">
+                        <button
+                          onClick={handleSubmit}
+                          disabled={isSubmitting}
+                          className="px-8 py-3.5 bg-[#FFD700] text-black font-sans font-black text-xs tracking-widest uppercase rounded-xl flex items-center justify-center gap-2 shadow-[0_0_20px_rgba(255,215,0,0.25)] hover:scale-101 transition-all disabled:opacity-50 cursor-pointer"
+                        >
+                          {isSubmitting ? (
+                            <><Clock className="w-4 h-4 animate-spin" /><span>{t('SUBMITTING...', 'MENGUMPULKAN...')}</span></>
+                          ) : (
+                            <><Send className="w-4 h-4" /><span>{t(RIC_STAGES[activeStage - 1]?.submitLabelEn || 'SUBMIT', RIC_STAGES[activeStage - 1]?.submitLabelId || 'KUMPULKAN')}</span></>
+                          )}
+                        </button>
+                      </div>
+                    )}
+                  </>
+                )}
+
+                {getStageStatus(activeStage - 1) === 'past-submitted' && (
+                  <div className="p-4 bg-emerald-950/20 border border-emerald-500/20 rounded-xl text-center space-y-1">
+                    <CheckCircle2 className="w-6 h-6 text-emerald-400 mx-auto" />
+                    <p className="text-xs font-sans font-bold text-emerald-400">
+                      {t('You have submitted this stage!', 'Anda telah mengumpulkan tahap ini!')}
+                    </p>
+                    <p className="text-[10px] font-mono text-zinc-500">
+                      {t('Wait for the next stage to open.', 'Tunggu tahap berikutnya dibuka.')}
+                    </p>
                   </div>
                 )}
 
-                {(currentStageData.status === 'pending' || currentStageData.status === 'locked' || currentStageData.status === 'accepted') && activeStage === 2 && safeSub.stages.every(s => s.status === 'accepted') && (
-                  <div className="p-4 bg-gradient-to-br from-emerald-950/30 to-amber-950/20 border border-emerald-500/20 rounded-2xl text-center space-y-2">
-                    <Trophy className="w-8 h-8 text-[#FFD700] mx-auto" />
-                    <p className="text-sm font-sans font-black text-white uppercase tracking-wider">
-                      {t('ALL STAGES COMPLETE!', 'SEMUA TAHAP SELESAI!')}
+                {getStageStatus(activeStage - 1) === 'future' && (
+                  <div className="p-6 text-center space-y-2">
+                    <Lock className="w-8 h-8 text-zinc-600 mx-auto" />
+                    <p className="text-sm font-sans font-bold text-zinc-400">
+                      {t('This stage is not yet available.', 'Tahap ini belum tersedia.')}
                     </p>
-                    <p className="text-[11px] font-mono text-zinc-400">
-                      {t(
-                        'You have successfully completed the Research Innovation Challenge. The jury will review your full submission and announce the results soon.',
-                        'Anda telah berhasil menyelesaikan Research Innovation Challenge. Juri akan meninjau seluruh pengumpulan Anda dan mengumumkan hasilnya segera.'
-                      )}
+                    <p className="text-[10px] font-mono text-zinc-600">
+                      {t('Please complete the previous stage first.', 'Silakan selesaikan tahap sebelumnya terlebih dahulu.')}
                     </p>
                   </div>
                 )}
 
-                {currentStageData.status !== 'accepted' && currentStageData.status !== 'rejected' && currentStageData.status !== 'locked' && (
-                  <div className="flex justify-end pt-4 border-t border-white/5">
-                    <button
-                      onClick={handleSubmitStage}
-                      disabled={isSubmitting}
-                      className="px-8 py-3.5 bg-[#FFD700] text-black font-sans font-black text-xs tracking-widest uppercase rounded-xl flex items-center justify-center gap-2 shadow-[0_0_20px_rgba(255,215,0,0.25)] hover:scale-101 transition-all disabled:opacity-50 cursor-pointer"
-                    >
-                      {isSubmitting ? (
-                        <>
-                          <Clock className="w-4 h-4 animate-spin" />
-                          <span>{t('SUBMITTING...', 'MENGUMPULKAN...')}</span>
-                        </>
-                      ) : (
-                        <>
-                          <Send className="w-4 h-4" />
-                          <span>
-                            {currentStageData.status === 'review'
-                              ? t('RESUBMIT', 'KUMPULKAN ULANG')
-                              : t(RIC_STAGES[activeStage]?.submitLabelEn || 'SUBMIT', RIC_STAGES[activeStage]?.submitLabelId || 'KUMPULKAN')}
-                          </span>
-                        </>
-                      )}
-                    </button>
+                {getStageStatus(activeStage - 1) === 'past-missing' && (
+                  <div className="p-6 text-center space-y-2">
+                    <p className="text-sm font-sans font-bold text-zinc-500">
+                      {t('This stage was not submitted.', 'Tahap ini tidak dikumpulkan.')}
+                    </p>
                   </div>
                 )}
               </div>
-
             </motion.div>
           </div>
         </div>

@@ -77,6 +77,31 @@ export const syncRICToSheet = async (submission: RICSubmission, stageIndex?: num
   }
 };
 
+export const setActiveStageOnSheet = async (stage: number): Promise<boolean> => {
+  const url = getRICScriptUrl();
+  if (!url) return false;
+  try {
+    const postUrl = url.includes('?') ? url : url + '?';
+    await fetch(postUrl, {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: { 'Content-Type': 'text/plain' },
+      body: JSON.stringify({ id: '__config__', activeStage: stage, action: 'submit' }),
+    });
+    return true;
+  } catch (err) {
+    console.error('Error setting active stage:', err);
+    return false;
+  }
+};
+
+export const fetchActiveStage = async (): Promise<number> => {
+  const result = await fetchRICSubmissions();
+  if (!result) return 1;
+  const configRow = (result as any[]).find((r: any) => r.id === '__config__');
+  return configRow ? parseInt(configRow.activeStage) || 1 : 1;
+};
+
 const jsonpFetchRIC = (url: string, email: string): Promise<RICSubmission[] | null> => {
   return new Promise((resolve) => {
     const callbackName = 'ric_jsonp_' + Math.round(100000 * Math.random());
