@@ -8,7 +8,7 @@ import { motion, AnimatePresence } from 'motion/react';
 import { useLanguage } from './LanguageContext';
 import { useAlert } from './AlertModal';
 import { COMPETITION_DIVISIONS } from '../data';
-import { Registration, RICSubmission } from '../types';
+import { Registration } from '../types';
 import RICAdminPanel from './RICAdminPanel';
 import * as XLSX from 'xlsx';
 import { 
@@ -23,17 +23,13 @@ interface AdminDashboardProps {
   registrations: Registration[];
   onUpdateRegistrations: (newRegs: Registration[]) => void;
   onBackToHome: () => void;
-  ricSubmissions: RICSubmission[];
-  onUpdateRICSubmissions: (subs: RICSubmission[], stageIdx?: number, changedSubId?: string) => void;
 }
 
 export default function AdminDashboard({
   currentUser,
   registrations,
   onUpdateRegistrations,
-  onBackToHome,
-  ricSubmissions,
-  onUpdateRICSubmissions
+  onBackToHome
 }: AdminDashboardProps) {
   const { t } = useLanguage();
   const { showAlert, showConfirm } = useAlert();
@@ -513,10 +509,7 @@ function doPost(e) {
       )}
 
       {activeTab === 'ric' && (
-        <RICAdminPanel
-          submissions={ricSubmissions}
-          onUpdateSubmissions={onUpdateRICSubmissions}
-        />
+        <RICAdminPanel />
       )}
 
     </div>

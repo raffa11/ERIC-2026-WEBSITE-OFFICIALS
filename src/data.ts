@@ -620,6 +620,6 @@ export const RIC_STAGES = [
   }
 ];
 
-export const RIC_GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxmUXPbTfsO5Sdv-1xsj5MFiBl9iA12dkHGeETy1XEfr1VY_1VZ92xlgaf3qrP2dWvaRQ/exec';
+export const RIC_GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzLGKzKglwMxynvUKFEoxlck78K-_VgIrT1UHWvCGyn4_FHyCiaviM0fPff6ZIF9E6sxg/exec';
 
 export const RIC_LS_KEY = 'eric_ric_submissions';

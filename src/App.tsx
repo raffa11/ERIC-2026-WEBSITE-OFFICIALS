@@ -26,7 +26,7 @@ import Footer from './components/Footer';
 import LoginModal from './components/LoginModal';
 import RegistrationModal from './components/RegistrationModal';
 
-import { Registration, RICSubmission, ADMIN_EMAILS } from './types';
+import { Registration } from './types';
 import { 
   dbFetchRegistrations, 
   dbUpsertRegistration, 
@@ -34,10 +34,6 @@ import {
   getSupabaseAuth
 } from './lib/supabase';
 import RICSubmissionFlow from './components/RICSubmissionFlow';
-import RICAdminPanel from './components/RICAdminPanel';
-import { ricUpsertLocal, ricFetchAllLocal } from './lib/ricStorage';
-import { syncRICToSheet } from './lib/ricSheet';
-import { RIC_DIVISION_IDS } from './types';
 
 function AppContent() {
   const { showAlert } = useAlert();
@@ -57,7 +53,6 @@ function AppContent() {
 
   // RIC Submission states
   const [isRICOpen, setIsRICOpen] = useState(false);
-  const [ricSubmissions, setRicSubmissions] = useState<RICSubmission[]>([]);
   const [activeRICReg, setActiveRICReg] = useState<{ id: string; teamName: string; divisionId: string } | null>(null);
 
   // Load state on mount
@@ -105,13 +100,7 @@ function AppContent() {
         console.error('Failed to load registrations:', err);
       }
 
-      // 4. Load RIC submissions from localStorage
-      try {
-        const ricData = await ricFetchAllLocal();
-        setRicSubmissions(ricData);
-      } catch (err) {
-        console.error('Failed to load RIC submissions:', err);
-      }
+
     };
     init();
   }, []);
@@ -200,28 +189,6 @@ function AppContent() {
     }
   };
 
-  // RIC Submission handler
-  const handleRICSubmissionSave = async (submission: RICSubmission) => {
-    setRicSubmissions(prev => {
-      const exists = prev.findIndex(s => s.id === submission.id);
-      if (exists >= 0) {
-        const updated = [...prev];
-        updated[exists] = submission;
-        return updated;
-      }
-      return [...prev, submission];
-    });
-
-    // Persist to localStorage + sync to sheet
-    try {
-      await ricUpsertLocal(submission);
-      const ok = await syncRICToSheet(submission);
-      if (!ok) console.warn('RIC sync to sheet returned false');
-    } catch (err) {
-      console.error('Failed to save RIC submission:', err);
-    }
-  };
-
   const handleOpenRIC = (reg: { id: string; teamName: string; divisionId: string }) => {
     setActiveRICReg(reg);
     setIsRICOpen(true);
@@ -230,34 +197,6 @@ function AppContent() {
   const handleCloseRIC = () => {
     setIsRICOpen(false);
     setActiveRICReg(null);
-  };
-
-  // RIC Admin update handler
-  const handleRICAdminUpdate = async (subs: RICSubmission[], stageIdx?: number, changedSubId?: string) => {
-    setRicSubmissions(subs);
-    for (const sub of subs) {
-      try {
-        await ricUpsertLocal(sub);
-      } catch (err) {
-        console.error('Failed to persist RIC locally:', err);
-      }
-    }
-    if (changedSubId && stageIdx !== undefined) {
-      const changed = subs.find(s => s.id === changedSubId);
-      if (changed) {
-        const ok = await syncRICToSheet(changed, stageIdx);
-        if (!ok) console.warn('RIC admin sync to sheet returned false for', changed.id);
-      }
-    } else {
-      for (const sub of subs) {
-        try {
-          const ok = await syncRICToSheet(sub);
-          if (!ok) console.warn('RIC sync to sheet returned false for', sub.id);
-        } catch (err) {
-          console.error('Failed to sync RIC update:', err);
-        }
-      }
-    }
   };
 
     // Division selection from cards
@@ -294,8 +233,6 @@ function AppContent() {
             registrations={registrations}
             onUpdateRegistrations={handleUpdateRegistrations}
             onBackToHome={() => setCurrentView('landing')}
-            ricSubmissions={ricSubmissions}
-            onUpdateRICSubmissions={handleRICAdminUpdate}
           />
         ) : (
           <>
@@ -365,12 +302,10 @@ function AppContent() {
           <RICSubmissionFlow
             isOpen={isRICOpen}
             onClose={handleCloseRIC}
-            submission={ricSubmissions.find(s => s.registrationId === activeRICReg.id) || null}
             registrationId={activeRICReg.id}
             teamName={activeRICReg.teamName}
             leaderEmail={currentUser?.email || ''}
             divisionId={activeRICReg.divisionId}
-            onSave={handleRICSubmissionSave}
           />
         )}
 
