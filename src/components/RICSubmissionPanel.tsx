@@ -372,13 +372,27 @@ function useFileState(
   const persist = (name: string, url: string) => {
     setFileName(name);
     setFileUrl(url);
+    const newRic = { ...ric, [nameMap[stageKey]]: name, [urlMap[stageKey]]: url };
+
+    // Determine parent stage key for status
+    const parentStage = stageKey === 'stage3Ppt' ? 'stage3' : stageKey;
+    const statusField = `${parentStage}Status` as keyof RicSubmission;
+
+    // Auto-submit when all file uploads for a stage are complete
+    const stageKeyBase = stageKey.replace('Ppt', '');
+    const allUploaded = stageKeyBase === 'stage1'
+      ? !!newRic.abstractUrl
+      : stageKeyBase === 'stage2'
+        ? false // video link is manual — user clicks SUBMIT
+        : !!(newRic.posterUrl && newRic.pptUrl);
+
+    if (allUploaded && (newRic[statusField] as string) !== 'submitted') {
+      newRic[statusField] = 'submitted';
+    }
+
     const updated: Registration = {
       ...registration,
-      ric: {
-        ...ric,
-        [nameMap[stageKey]]: name,
-        [urlMap[stageKey]]: url,
-      },
+      ric: newRic,
     };
     onUpdate(updated);
     syncToGoogleSheet(updated).catch(() => {});

@@ -619,6 +619,12 @@ function doPost(e) {
                                 <span className="truncate">{t('FILE UPLOADED', 'FILE TERKIRIM')}</span>
                               </div>
                             )}
+                            {s.extra && s.extra !== '-' && (
+                              <div className="text-[9px] font-mono text-zinc-400 truncate flex items-center gap-1">
+                                <FileText className="w-3 h-3 shrink-0" />
+                                <span className="truncate">{t('PPT UPLOADED', 'PPT TERKIRIM')}</span>
+                              </div>
+                            )}
                             {s.video && (
                               <a href={s.video} target="_blank" rel="noopener noreferrer" className="text-[9px] font-mono text-[#4D90FE] flex items-center gap-1 hover:underline">
                                 <Eye className="w-3 h-3" /> {t('VIEW VIDEO', 'LIHAT VIDEO')}
