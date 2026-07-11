@@ -40,21 +40,21 @@ const LS_KEY = 'eric_live_registrations';
 
 function stripImages(reg: Registration): Registration {
   const clone = structuredClone(reg);
-  clone.leader.idCardUrl = clone.leader.idCardUrl?.startsWith('data:') ? '[stripped]' : (clone.leader.idCardUrl || '');
-  clone.leader.twibbonUrl = clone.leader.twibbonUrl?.startsWith('data:') ? '[stripped]' : (clone.leader.twibbonUrl || '');
+  clone.leader.idCardUrl = clone.leader.idCardUrl?.startsWith('data:') ? '' : (clone.leader.idCardUrl || '');
+  clone.leader.twibbonUrl = clone.leader.twibbonUrl?.startsWith('data:') ? '' : (clone.leader.twibbonUrl || '');
   clone.members = clone.members.map(m => ({
     ...m,
-    idCardUrl: m.idCardUrl?.startsWith('data:') ? '[stripped]' : (m.idCardUrl || ''),
-    twibbonUrl: m.twibbonUrl?.startsWith('data:') ? '[stripped]' : (m.twibbonUrl || ''),
+    idCardUrl: m.idCardUrl?.startsWith('data:') ? '' : (m.idCardUrl || ''),
+    twibbonUrl: m.twibbonUrl?.startsWith('data:') ? '' : (m.twibbonUrl || ''),
   }));
-  clone.lecturerIdCardUrl = clone.lecturerIdCardUrl?.startsWith('data:') ? '[stripped]' : (clone.lecturerIdCardUrl || '');
-  clone.lecturerTwibbonUrl = clone.lecturerTwibbonUrl?.startsWith('data:') ? '[stripped]' : (clone.lecturerTwibbonUrl || '');
-  clone.paymentProofUrl = clone.paymentProofUrl?.startsWith('data:') ? '[stripped]' : (clone.paymentProofUrl || '');
+  clone.lecturerIdCardUrl = clone.lecturerIdCardUrl?.startsWith('data:') ? '' : (clone.lecturerIdCardUrl || '');
+  clone.lecturerTwibbonUrl = clone.lecturerTwibbonUrl?.startsWith('data:') ? '' : (clone.lecturerTwibbonUrl || '');
+  clone.paymentProofUrl = clone.paymentProofUrl?.startsWith('data:') ? '' : (clone.paymentProofUrl || '');
   if (clone.ric) {
-    clone.ric.abstractUrl = clone.ric.abstractUrl?.startsWith('data:') ? '[stripped]' : (clone.ric.abstractUrl || '');
-    clone.ric.proposalUrl = clone.ric.proposalUrl?.startsWith('data:') ? '[stripped]' : (clone.ric.proposalUrl || '');
-    clone.ric.posterUrl = clone.ric.posterUrl?.startsWith('data:') ? '[stripped]' : (clone.ric.posterUrl || '');
-    clone.ric.pptUrl = clone.ric.pptUrl?.startsWith('data:') ? '[stripped]' : (clone.ric.pptUrl || '');
+    clone.ric.abstractUrl = clone.ric.abstractUrl?.startsWith('data:') ? '' : (clone.ric.abstractUrl || '');
+    clone.ric.proposalUrl = clone.ric.proposalUrl?.startsWith('data:') ? '' : (clone.ric.proposalUrl || '');
+    clone.ric.posterUrl = clone.ric.posterUrl?.startsWith('data:') ? '' : (clone.ric.posterUrl || '');
+    clone.ric.pptUrl = clone.ric.pptUrl?.startsWith('data:') ? '' : (clone.ric.pptUrl || '');
   }
   return clone;
 }
@@ -62,9 +62,7 @@ function stripImages(reg: Registration): Registration {
 function safeGetItem(): Registration[] {
   try {
     const raw = localStorage.getItem(LS_KEY);
-    const result = raw ? JSON.parse(raw) : [];
-    console.log('[safeGetItem] key exists:', !!raw, 'result count:', result.length);
-    return result;
+    return raw ? JSON.parse(raw) : [];
   } catch (err) {
     console.error('[safeGetItem] ERROR reading localStorage:', err);
     return [];
@@ -75,7 +73,6 @@ function safeSetItem(list: Registration[]): void {
   try {
     const stripped = list.map(stripImages);
     const json = JSON.stringify(stripped);
-    console.log('[safeSetItem] saving count:', list.length, 'json size:', json.length, 'bytes');
     localStorage.setItem(LS_KEY, json);
   } catch (err) {
     console.warn('[safeSetItem] FAILED to save to localStorage:', err, 'list count:', list.length);

@@ -308,7 +308,7 @@ export default function RegistrationModal({
     onSetFilename: (name: string) => void,
     onSetUrl: (url: string) => void
   ) => {
-    if (file.size > 5 * 1024 * 1024) {
+    if (file.size > 20 * 1024 * 1024) {
       showAlert({ message: t('File size must be under 5MB!', 'Ukuran file harus di bawah 5MB!'), type: 'error' });
       return;
     }

@@ -105,7 +105,6 @@ export const syncToGoogleSheet = async (reg: Registration): Promise<boolean> => 
       body: JSON.stringify(payload),
     });
 
-    console.log('Registration successfully sent to Google Sheet sync webhook.');
     return true;
   } catch (error) {
     console.error('Error syncing to Google Sheet:', error);
@@ -166,7 +165,6 @@ const jsonpFetchAll = (url: string): Promise<Registration[] | null> => {
     const callbackName = 'jsonp_callback_' + Math.round(100000 * Math.random());
     const script = document.createElement('script');
     const fullUrl = `${url}?action=getRegistrations&callback=${callbackName}`;
-    console.log('[jsonpFetchAll] loading:', fullUrl);
     script.src = fullUrl;
 
     const timeoutId = setTimeout(() => {
@@ -182,7 +180,6 @@ const jsonpFetchAll = (url: string): Promise<Registration[] | null> => {
     };
 
     (window as any)[callbackName] = (data: any) => {
-      console.log('[jsonpFetchAll] GOT DATA:', Array.isArray(data) ? data.length + ' rows' : 'not an array', data);
       cleanup();
       resolve(Array.isArray(data) ? (data as Registration[]) : null);
     };

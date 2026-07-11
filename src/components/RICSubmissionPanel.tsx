@@ -3,15 +3,14 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { useState, useRef } from 'react';
-import { motion, AnimatePresence } from 'motion/react';
+import { useState } from 'react';
 import { useLanguage } from './LanguageContext';
 import { useAlert } from './AlertModal';
 import { Registration, RicSubmission } from '../types';
 import { syncToGoogleSheet } from '../lib/googleSheet';
 import {
-  Upload, Check, Lock, FileText, Video, Image,
-  AlertCircle, ExternalLink, X, Link as LinkIcon
+  Upload, Check, Lock, FileText, Video,
+  ExternalLink, Link as LinkIcon
 } from 'lucide-react';
 
 const RIC_DIVISION_ID = 'research-innovation';
@@ -41,8 +40,8 @@ const STAGES: StageConfig[] = [
     acceptedFormat: '.pdf',
     uploadLabel: 'Upload Abstract (PDF)',
     uploadLabelID: 'Unggah Abstrak (PDF)',
-    description: 'Submit your research abstract in PDF format (max 5MB).',
-    descriptionID: 'Kumpulkan abstrak penelitian Anda dalam format PDF (maks 5MB).'
+    description: 'Submit your research abstract in PDF format (max 20MB).',
+    descriptionID: 'Kumpulkan abstrak penelitian Anda dalam format PDF (maks 20MB).'
   },
   {
     key: 'stage2',
@@ -85,8 +84,8 @@ function processFileUpload(
   onSetUrl: (url: string) => void,
   showAlert: (msg: { message: string; type: string }) => void
 ) {
-  if (file.size > 5 * 1024 * 1024) {
-    showAlert({ message: 'File size must be under 5MB! / Ukuran file harus di bawah 5MB!', type: 'error' });
+  if (file.size > 20 * 1024 * 1024) {
+    showAlert({ message: 'File size must be under 20MB! / Ukuran file harus di bawah 20MB!', type: 'error' });
     return;
   }
   onSetFilename(file.name);

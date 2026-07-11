@@ -542,8 +542,6 @@ function doPost(e) {
 
         {(() => {
           const ricRegs = (ricSheetData || registrations).filter(r => r.divisionId === 'research-innovation');
-          const lsData = (() => { try { const r = localStorage.getItem('eric_live_registrations'); return r ? JSON.parse(r) : []; } catch { return []; } })();
-          console.log('[ADMIN RIC] registrations count:', (ricSheetData || registrations).length, 'ricRegs count:', ricRegs.length, 'ricRegs:', ricRegs.map(r => ({ team: r.teamName, ric: r.ric })), 'localStorage count:', lsData.length, 'ls ric:', lsData.filter(r => r.divisionId === 'research-innovation').length, 'fromSheet:', !!ricSheetData);
           if (isLoadingRic) {
             return <div className="p-10 text-center text-zinc-500 text-sm font-mono">Loading RIC data from Google Sheets...</div>;
           }

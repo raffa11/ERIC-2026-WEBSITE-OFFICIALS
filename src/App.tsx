@@ -93,7 +93,6 @@ function AppContent() {
       try {
         const data = await dbFetchRegistrations(userEmail);
         const filtered = data.filter((r: any) => r && r.id && r.leader && r.leader.email && !r.id.toString().startsWith('seed-'));
-        console.log('[INIT] userEmail:', userEmail, 'data count:', data.length, 'filtered count:', filtered.length, 'sample:', filtered.length > 0 ? { id: filtered[0].id, divisionId: filtered[0].divisionId, ric: !!filtered[0].ric, ricStatus: filtered[0].ric?.stage1Status } : 'empty');
         setRegistrations(filtered);
       } catch (err) {
         console.error('Failed to load registrations:', err);
@@ -161,7 +160,6 @@ function AppContent() {
       showAlert({ message: 'Registrasi tersimpan, gagal menyinkronkan ke penyimpanan lokal: ' + err, type: 'warning' });
     }
 
-    console.log('[REG SUCCESS] currentUser:', currentUser?.email, 'RIC?', newReg.divisionId === 'research-innovation', 'ric:', newReg.ric);
     // Data is already correct in React state + localStorage.
     // Do NOT call refreshRegistrations here — it races with the React state update
     // and can overwrite with stale Sheets data (GAS hasn't processed syncToGoogleSheet yet).
