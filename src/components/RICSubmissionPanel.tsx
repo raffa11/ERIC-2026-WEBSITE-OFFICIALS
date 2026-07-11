@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { useLanguage } from './LanguageContext';
 import { useAlert } from './AlertModal';
@@ -118,7 +118,7 @@ export default function RICSubmissionPanel({ registration, onUpdate }: RICSubmis
   const stage3Files = useFileState('stage3', ric, registration, onUpdate, showAlert);
 
   // Auto-sync existing RIC data to sheet on mount (backfill for new GAS columns)
-  React.useEffect(() => {
+  useEffect(() => {
     if (ric.abstractUrl || ric.proposalUrl || ric.posterUrl || ric.pptUrl || ric.videoLink) {
       syncToGoogleSheet(registration).catch(() => {});
     }
