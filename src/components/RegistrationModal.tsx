@@ -532,7 +532,7 @@ export default function RegistrationModal({
       paymentProofName: paymentProofName || undefined,
       paymentProofUrl: paymentProofUrl || undefined,
       ric: selectedDivision === 'research-innovation' ? {
-        stage1Status: 'open',
+        stage1Status: 'locked',
         stage2Status: 'locked',
         stage3Status: 'locked',
       } : undefined

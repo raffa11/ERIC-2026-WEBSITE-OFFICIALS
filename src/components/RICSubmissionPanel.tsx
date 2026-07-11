@@ -25,6 +25,9 @@ interface StageConfig {
   uploadLabel: string;
   uploadLabelID: string;
   hasVideoLink?: boolean;
+  hasPptUpload?: boolean;
+  uploadLabel2?: string;
+  uploadLabel2ID?: string;
   description: string;
   descriptionID: string;
 }
@@ -58,12 +61,15 @@ const STAGES: StageConfig[] = [
     label: 'Digital Poster & PPT',
     labelID: 'Poster Digital & PPT',
     statusField: 'stage3Status',
-    acceptedFormat: '.pdf',
-    uploadLabel: 'Upload Poster (PDF)',
-    uploadLabelID: 'Unggah Poster (PDF)',
+    acceptedFormat: '.pdf,.pptx,.ppt',
+    uploadLabel: 'Upload Digital Poster (PDF)',
+    uploadLabelID: 'Unggah Poster Digital (PDF)',
     hasVideoLink: false,
-    description: 'Submit your digital poster and presentation slides in PDF format.',
-    descriptionID: 'Kumpulkan poster digital dan slide presentasi dalam format PDF.'
+    hasPptUpload: true,
+    uploadLabel2: 'Upload PPT (PDF/PPTX)',
+    uploadLabel2ID: 'Unggah PPT (PDF/PPTX)',
+    description: 'Submit your digital poster PDF and presentation slides.',
+    descriptionID: 'Kumpulkan poster digital PDF dan slide presentasi.'
   }
 ];
 
@@ -108,7 +114,7 @@ export default function RICSubmissionPanel({ registration, onUpdate }: RICSubmis
   if (!isRIC) return null;
 
   const ric = registration.ric || {
-    stage1Status: 'open' as const,
+    stage1Status: 'locked' as const,
     stage2Status: 'locked' as const,
     stage3Status: 'locked' as const,
   };
@@ -116,15 +122,18 @@ export default function RICSubmissionPanel({ registration, onUpdate }: RICSubmis
   const stage1Files = useFileState('stage1', ric, registration, onUpdate, showAlert);
   const stage2Files = useFileState('stage2', ric, registration, onUpdate, showAlert);
   const stage3Files = useFileState('stage3', ric, registration, onUpdate, showAlert);
+  const stage3PptFiles = useFileState('stage3Ppt', ric, registration, onUpdate, showAlert);
 
   const fileStateForStage = (key: 'stage1' | 'stage2' | 'stage3') =>
     key === 'stage1' ? stage1Files : key === 'stage2' ? stage2Files : stage3Files;
 
+  const pptFileState = stage3PptFiles;
+
   const nameMap: Record<string, keyof RicSubmission> = {
-    stage1: 'abstractName', stage2: 'proposalName', stage3: 'posterName',
+    stage1: 'abstractName', stage2: 'proposalName', stage3: 'posterName', stage3Ppt: 'pptName',
   };
   const urlMap: Record<string, keyof RicSubmission> = {
-    stage1: 'abstractUrl', stage2: 'proposalUrl', stage3: 'posterUrl',
+    stage1: 'abstractUrl', stage2: 'proposalUrl', stage3: 'posterUrl', stage3Ppt: 'pptUrl',
   };
 
   const handleSubmitStage = async (stageKey: 'stage1' | 'stage2' | 'stage3') => {
@@ -138,6 +147,10 @@ export default function RICSubmissionPanel({ registration, onUpdate }: RICSubmis
           ...ric,
           [nameMap[stageKey]]: fs.fileName || ric[nameMap[stageKey]],
           [urlMap[stageKey]]: fs.fileUrl || ric[urlMap[stageKey]],
+          ...(stageKey === 'stage3' ? {
+            pptName: pptFileState.fileName || ric.pptName || '',
+            pptUrl: pptFileState.fileUrl || ric.pptUrl || '',
+          } : {}),
           [statusField]: 'submitted',
           ...(stageKey === 'stage2' ? { videoLink: videoLink } : {}),
         },
@@ -152,7 +165,19 @@ export default function RICSubmissionPanel({ registration, onUpdate }: RICSubmis
     }
   };
 
-  const renderStage = (stage: StageConfig, fileState: FileState) => {
+  const renderFileAction = (url: string, name: string) => {
+    if (!url) return null;
+    return url.startsWith('data:') ? (
+      <a href={url} download={name}
+        className="ml-auto text-[#FFD700] hover:text-white font-mono text-[10px] uppercase font-bold flex items-center gap-1">
+        <ExternalLink className="w-3 h-3" /> {t('VIEW', 'LIHAT')}
+      </a>
+    ) : (
+      <span className="ml-auto text-[10px] font-mono text-zinc-500">[ {t('SAVED', 'TERSIMPAN')} ]</span>
+    );
+  };
+
+  const renderStage = (stage: StageConfig, fileState: FileState, pptFileState?: FileState) => {
     const status = ric[stage.statusField];
     const cfg = STATUS_CONFIG[status];
     const isOpen = status === 'open';
@@ -198,6 +223,18 @@ export default function RICSubmissionPanel({ registration, onUpdate }: RICSubmis
               accept={stage.acceptedFormat}
             />
 
+            {stage.hasPptUpload && pptFileState && (
+              <FileUploadField
+                label={t(stage.uploadLabel2 || '', stage.uploadLabel2ID || '')}
+                fileName={pptFileState.fileName}
+                fileUrl={pptFileState.fileUrl}
+                onSelect={(file) => pptFileState.onFileSelect(file)}
+                onClear={pptFileState.onClear}
+                id={`ric-${stage.key}-ppt-input`}
+                accept={stage.acceptedFormat}
+              />
+            )}
+
             {stage.hasVideoLink && (
               <div className="space-y-1">
                 <label className="text-[9px] font-mono text-zinc-400 uppercase tracking-widest block">
@@ -221,7 +258,7 @@ export default function RICSubmissionPanel({ registration, onUpdate }: RICSubmis
             <button
               type="button"
               onClick={() => handleSubmitStage(stage.key)}
-              disabled={submittingStage === stage.key || !fileState.fileUrl || (stage.hasVideoLink && !videoLink)}
+              disabled={submittingStage === stage.key || !fileState.fileUrl || (stage.hasVideoLink && !videoLink) || (stage.hasPptUpload && (!pptFileState || !pptFileState.fileUrl))}
               className="w-full py-3 bg-[#FFD700] text-black font-sans font-black text-xs tracking-widest uppercase rounded-xl hover:scale-[1.01] transition-all cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
             >
               {submittingStage === stage.key ? (
@@ -239,20 +276,19 @@ export default function RICSubmissionPanel({ registration, onUpdate }: RICSubmis
           </div>
         )}
 
-        {isSubmitted && fileState.fileUrl && (
-          <div className="flex items-center gap-2 text-xs">
-            <Check className="w-4 h-4 text-green-400 shrink-0" />
-            <span className="font-mono text-zinc-400 truncate">{fileState.fileName || 'File uploaded'}</span>
-            {fileState.fileUrl.startsWith('data:') ? (
-              <a
-                href={fileState.fileUrl}
-                download={fileState.fileName}
-                className="ml-auto text-[#FFD700] hover:text-white font-mono text-[10px] uppercase font-bold flex items-center gap-1"
-              >
-                <ExternalLink className="w-3 h-3" /> {t('VIEW', 'LIHAT')}
-              </a>
-            ) : (
-              <span className="ml-auto text-[10px] font-mono text-zinc-500">[FILE SAVED]</span>
+        {isSubmitted && (
+          <div className="space-y-2">
+            <div className="flex items-center gap-2 text-xs">
+              <Check className="w-4 h-4 text-green-400 shrink-0" />
+              <span className="font-mono text-zinc-400 truncate">{fileState.fileName || t('File uploaded', 'File terunggah')}</span>
+              {renderFileAction(fileState.fileUrl, fileState.fileName)}
+            </div>
+            {stage.hasPptUpload && (
+              <div className="flex items-center gap-2 text-xs">
+                <Check className="w-4 h-4 text-green-400 shrink-0" />
+                <span className="font-mono text-zinc-400 truncate">{pptFileState?.fileName || t('PPT uploaded', 'PPT terunggah')}</span>
+                {renderFileAction(pptFileState?.fileUrl || '', pptFileState?.fileName || '')}
+              </div>
             )}
             {stage.hasVideoLink && registration.ric?.videoLink && (
               <a
@@ -292,7 +328,11 @@ export default function RICSubmissionPanel({ registration, onUpdate }: RICSubmis
         </div>
       </div>
 
-      {STAGES.map((stage) => renderStage(stage, getFileStateForStage(stage.key, stage1Files, stage2Files, stage3Files)))}
+      {STAGES.map((stage) => renderStage(
+        stage,
+        getFileStateForStage(stage.key, stage1Files, stage2Files, stage3Files),
+        stage.key === 'stage3' ? stage3PptFiles : undefined
+      ))}
     </div>
   );
 }
@@ -317,11 +357,13 @@ function useFileState(
     stage1: 'abstractName',
     stage2: 'proposalName',
     stage3: 'posterName',
+    stage3Ppt: 'pptName',
   };
   const urlMap: Record<string, keyof RicSubmission> = {
     stage1: 'abstractUrl',
     stage2: 'proposalUrl',
     stage3: 'posterUrl',
+    stage3Ppt: 'pptUrl',
   };
 
   const [fileName, setFileName] = useState<string>((ric[nameMap[stageKey]] as string) || '');
