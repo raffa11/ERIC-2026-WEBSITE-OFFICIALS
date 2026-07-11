@@ -83,13 +83,62 @@ function safeSetItem(list: Registration[]): void {
 }
 
 /**
- * Reconstruct nested ric object from flat Google Sheets fields.
- * Only overrides ric if sheet actually has RIC data (ricStage1Status present).
- * Otherwise preserves existing ric from localStorage.
+ * Convert flat Google Sheets row into a proper nested Registration object.
  */
-export function reconstructRic(data: any): Registration {
+export function flatToRegistration(data: any): Registration {
+  const reg: any = {
+    id: data.id || '',
+    divisionId: data.divisionId || '',
+    subCategory: data.subCategory || '',
+    level: data.level || '',
+    teamName: data.teamName || '',
+    university: data.leaderInstitution || '',
+    leader: {
+      name: data.leaderName || '',
+      email: data.leaderEmail || '',
+      whatsapp: data.leaderWhatsApp || '',
+      institution: data.leaderInstitution || '',
+      address: data.leaderAddress || '',
+      congenitalDisease: data.leaderCongenitalDisease || '',
+      idCardUrl: data.leaderIdCardUrl || '',
+      twibbonUrl: data.leaderTwibbonUrl || '',
+    },
+    members: [],
+    paymentMethod: data.paymentMethod || '',
+    paymentStatus: data.paymentStatus || 'UNPAID',
+    amount: data.amount || 'IDR 250,000',
+    refCode: data.refCode || '',
+    paymentProofUrl: data.paymentProofUrl || '',
+  };
+
+  // Members
+  for (let i = 1; i <= 2; i++) {
+    const name = data[`m${i}Name`];
+    if (name && name !== '-') {
+      reg.members.push({
+        id: `m${i}_${reg.id}`,
+        name: name,
+        whatsapp: data[`m${i}WhatsApp`] || '',
+        congenitalDisease: data[`m${i}CongenitalDisease`] || '',
+        idCardUrl: data[`m${i}IdCardUrl`] || '',
+        twibbonUrl: data[`m${i}TwibbonUrl`] || '',
+      });
+    }
+  }
+
+  // Lecturer
+  if (data.lecturerName && data.lecturerName !== '-') {
+    reg.lecturerName = data.lecturerName;
+    reg.lecturerEmail = data.lecturerEmail || '';
+    reg.lecturerWhatsapp = data.lecturerWhatsApp || '';
+    reg.lecturerCongenitalDisease = data.lecturerCongenitalDisease || '';
+    reg.lecturerIdCardUrl = data.lecturerIdCardUrl || '';
+    reg.lecturerTwibbonUrl = data.lecturerTwibbonUrl || '';
+  }
+
+  // RIC
   if (data.divisionId === 'research-innovation' && data.ricStage1Status) {
-    (data as any).ric = {
+    reg.ric = {
       stage1Status: data.ricStage1Status || 'locked',
       stage2Status: data.ricStage2Status || 'locked',
       stage3Status: data.ricStage3Status || 'locked',
@@ -103,17 +152,18 @@ export function reconstructRic(data: any): Registration {
       pptName: data.ricPptName || '',
       pptUrl: data.ricPptUrl || '',
     };
-    delete data.ricStage1Status;
-    delete data.ricStage2Status;
-    delete data.ricStage3Status;
-    delete data.ricAbstractName; delete data.ricAbstractUrl;
-    delete data.ricProposalName; delete data.ricProposalUrl;
-    delete data.ricVideoLink;
-    delete data.ricPosterName; delete data.ricPosterUrl;
-    delete data.ricPptName; delete data.ricPptUrl;
   }
 
-  return data as Registration;
+  return reg as Registration;
+}
+
+/**
+ * Reconstruct nested ric object from flat Google Sheets fields.
+ * Only overrides ric if sheet actually has RIC data (ricStage1Status present).
+ * Otherwise preserves existing ric from localStorage.
+ */
+export function reconstructRic(data: any): Registration {
+  return flatToRegistration(data);
 }
 
 /**
