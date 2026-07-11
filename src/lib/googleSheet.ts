@@ -156,6 +156,50 @@ const jsonpFetch = (url: string, email: string): Promise<Registration[] | null> 
   });
 };
 
+/**
+ * Fetch ALL registrations (admin). Calls GAS without email filter.
+ * Requires GAS doGet to support `action=getRegistrations` without `email` param.
+ */
+const jsonpFetchAll = (url: string): Promise<Registration[] | null> => {
+  return new Promise((resolve) => {
+    const callbackName = 'jsonp_callback_' + Math.round(100000 * Math.random());
+    const script = document.createElement('script');
+    script.src = `${url}?action=getRegistrations&callback=${callbackName}`;
+
+    const timeoutId = setTimeout(() => {
+      cleanup();
+      console.warn('JSONP request timed out for Google Sheets.');
+      resolve(null);
+    }, 15000);
+
+    const cleanup = () => {
+      clearTimeout(timeoutId);
+      if (script.parentNode) script.parentNode.removeChild(script);
+      delete (window as any)[callbackName];
+    };
+
+    (window as any)[callbackName] = (data: any) => {
+      cleanup();
+      resolve(Array.isArray(data) ? (data as Registration[]) : null);
+    };
+
+    script.onerror = () => { cleanup(); resolve(null); };
+    document.body.appendChild(script);
+  });
+};
+
+export const fetchAllRegistrations = async (): Promise<Registration[] | null> => {
+  const url = getGoogleScriptUrl();
+  if (!url) return null;
+  const maxAttempts = 3;
+  for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+    const result = await jsonpFetchAll(url);
+    if (result !== null) return result;
+    if (attempt < maxAttempts) await new Promise(r => setTimeout(r, attempt * 2000));
+  }
+  return null;
+};
+
 export const fetchUserRegistrations = async (email: string): Promise<Registration[] | null> => {
   const url = getGoogleScriptUrl();
   if (!url) return null;

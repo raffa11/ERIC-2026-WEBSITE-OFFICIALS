@@ -87,7 +87,7 @@ function safeSetItem(list: Registration[]): void {
  * Only overrides ric if sheet actually has RIC data (ricStage1Status present).
  * Otherwise preserves existing ric from localStorage.
  */
-function reconstructRic(data: any): Registration {
+export function reconstructRic(data: any): Registration {
   if (data.divisionId === 'research-innovation' && data.ricStage1Status) {
     (data as any).ric = {
       stage1Status: data.ricStage1Status || 'locked',

@@ -17,7 +17,8 @@ import {
   CreditCard, Users, Globe, ExternalLink,
   FileText, Lock, Check, Eye, Unlock
 } from 'lucide-react';
-import { getGoogleScriptUrl, setGoogleScriptUrl, syncToGoogleSheet } from '../lib/googleSheet';
+import { getGoogleScriptUrl, setGoogleScriptUrl, syncToGoogleSheet, fetchAllRegistrations } from '../lib/googleSheet';
+import { reconstructRic } from '../lib/supabase';
 
 interface AdminDashboardProps {
   currentUser: { name: string; email: string; method: string } | null;
@@ -36,6 +37,22 @@ export default function AdminDashboard({
   const { showAlert, showConfirm } = useAlert();
 
   const [activeTab, setActiveTab] = useState<'registrations' | 'ric'>('registrations');
+  const [ricSheetData, setRicSheetData] = useState<Registration[] | null>(null);
+  const [isLoadingRic, setIsLoadingRic] = useState(false);
+
+  // Fetch ALL registrations from Google Sheets when RIC tab is active
+  React.useEffect(() => {
+    if (activeTab === 'ric') {
+      setIsLoadingRic(true);
+      fetchAllRegistrations().then((data) => {
+        if (data) {
+          const reconstructed = data.map(reconstructRic);
+          setRicSheetData(reconstructed);
+        }
+        setIsLoadingRic(false);
+      }).catch(() => setIsLoadingRic(false));
+    }
+  }, [activeTab]);
 
   // Google Sheets integration state
   const [googleScriptUrl, setGoogleScriptUrlState] = useState(getGoogleScriptUrl());
@@ -524,9 +541,12 @@ function doPost(e) {
         </div>
 
         {(() => {
-          const ricRegs = registrations.filter(r => r.divisionId === 'research-innovation');
+          const ricRegs = (ricSheetData || registrations).filter(r => r.divisionId === 'research-innovation');
           const lsData = (() => { try { const r = localStorage.getItem('eric_live_registrations'); return r ? JSON.parse(r) : []; } catch { return []; } })();
-          console.log('[ADMIN RIC] registrations count:', registrations.length, 'ricRegs count:', ricRegs.length, 'ricRegs:', ricRegs.map(r => ({ team: r.teamName, ric: r.ric })), 'localStorage count:', lsData.length, 'ls ric:', lsData.filter(r => r.divisionId === 'research-innovation').length);
+          console.log('[ADMIN RIC] registrations count:', (ricSheetData || registrations).length, 'ricRegs count:', ricRegs.length, 'ricRegs:', ricRegs.map(r => ({ team: r.teamName, ric: r.ric })), 'localStorage count:', lsData.length, 'ls ric:', lsData.filter(r => r.divisionId === 'research-innovation').length, 'fromSheet:', !!ricSheetData);
+          if (isLoadingRic) {
+            return <div className="p-10 text-center text-zinc-500 text-sm font-mono">Loading RIC data from Google Sheets...</div>;
+          }
           if (ricRegs.length === 0) {
             return (
               <div className="p-10 bg-zinc-950 border border-dashed border-white/10 rounded-3xl text-center space-y-3">
@@ -546,8 +566,13 @@ function doPost(e) {
                     ...reg,
                     ric: { ...ric, [statusField]: action === 'open' ? 'open' : 'locked' },
                   };
-                  const newRegs = registrations.map(r => r.id === reg.id ? updated : r);
+                  const srcRegs = ricSheetData || registrations;
+                  const newRegs = srcRegs.map(r => r.id === reg.id ? updated : r);
                   onUpdateRegistrations(newRegs);
+                  // Also update local ricSheetData state for immediate UI feedback
+                  if (ricSheetData) {
+                    setRicSheetData(newRegs);
+                  }
                   await syncToGoogleSheet(updated);
                 };
                 const stageInfo = [
