@@ -77,9 +77,11 @@ function safeSetItem(list: Registration[]): void {
 
 /**
  * Reconstruct nested ric object from flat Google Sheets fields.
+ * Only overrides ric if sheet actually has RIC data (ricStage1Status present).
+ * Otherwise preserves existing ric from localStorage.
  */
 function reconstructRic(data: any): Registration {
-  if (data.divisionId === 'research-innovation' || data.ricStage1Status) {
+  if (data.divisionId === 'research-innovation' && data.ricStage1Status) {
     (data as any).ric = {
       stage1Status: data.ricStage1Status || 'locked',
       stage2Status: data.ricStage2Status || 'locked',
@@ -103,6 +105,7 @@ function reconstructRic(data: any): Registration {
     delete data.ricPosterName; delete data.ricPosterUrl;
     delete data.ricPptName; delete data.ricPptUrl;
   }
+
   return data as Registration;
 }
 
@@ -136,7 +139,13 @@ export async function dbFetchRegistrations(
       for (const sReg of sheetRegs) {
         const reconstructed = reconstructRic(sReg);
         const idx = merged.findIndex(r => r.id === reconstructed.id);
-        if (idx >= 0) merged[idx] = reconstructed;
+        if (idx >= 0) {
+          // Preserve local ric field if sheet data doesn't have it
+          if (!reconstructed.ric && merged[idx].ric) {
+            reconstructed.ric = merged[idx].ric;
+          }
+          merged[idx] = reconstructed;
+        }
         else merged.push(reconstructed);
       }
       safeSetItem(merged);
