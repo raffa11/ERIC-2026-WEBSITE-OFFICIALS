@@ -62,16 +62,23 @@ function stripImages(reg: Registration): Registration {
 function safeGetItem(): Registration[] {
   try {
     const raw = localStorage.getItem(LS_KEY);
-    return raw ? JSON.parse(raw) : [];
-  } catch { return []; }
+    const result = raw ? JSON.parse(raw) : [];
+    console.log('[safeGetItem] key exists:', !!raw, 'result count:', result.length);
+    return result;
+  } catch (err) {
+    console.error('[safeGetItem] ERROR reading localStorage:', err);
+    return [];
+  }
 }
 
 function safeSetItem(list: Registration[]): void {
   try {
     const stripped = list.map(stripImages);
-    localStorage.setItem(LS_KEY, JSON.stringify(stripped));
+    const json = JSON.stringify(stripped);
+    console.log('[safeSetItem] saving count:', list.length, 'json size:', json.length, 'bytes');
+    localStorage.setItem(LS_KEY, json);
   } catch (err) {
-    console.warn('localStorage quota exceeded. Registrations not cached locally.', err);
+    console.warn('[safeSetItem] FAILED to save to localStorage:', err, 'list count:', list.length);
   }
 }
 
