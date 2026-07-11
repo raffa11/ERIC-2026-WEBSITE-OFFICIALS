@@ -160,8 +160,10 @@ function AppContent() {
       showAlert({ message: 'Registrasi tersimpan, gagal menyinkronkan ke penyimpanan lokal: ' + err, type: 'warning' });
     }
 
-    // Silently refresh from server in the background to pick up any server-side data
-    refreshRegistrations(currentUser?.email).catch(() => {});
+    console.log('[REG SUCCESS] currentUser:', currentUser?.email, 'RIC?', newReg.divisionId === 'research-innovation', 'ric:', newReg.ric);
+    // Data is already correct in React state + localStorage.
+    // Do NOT call refreshRegistrations here — it races with the React state update
+    // and can overwrite with stale Sheets data (GAS hasn't processed syncToGoogleSheet yet).
   };
 
   // Update registrations list directly (e.g., from edit or delete)
