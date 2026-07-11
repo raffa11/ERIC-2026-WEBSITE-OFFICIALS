@@ -124,14 +124,27 @@ export default function RICSubmissionPanel({ registration, onUpdate }: RICSubmis
     }
   }, []);
 
+  const fileStateForStage = (key: 'stage1' | 'stage2' | 'stage3') =>
+    key === 'stage1' ? stage1Files : key === 'stage2' ? stage2Files : stage3Files;
+
+  const nameMap: Record<string, keyof RicSubmission> = {
+    stage1: 'abstractName', stage2: 'proposalName', stage3: 'posterName',
+  };
+  const urlMap: Record<string, keyof RicSubmission> = {
+    stage1: 'abstractUrl', stage2: 'proposalUrl', stage3: 'posterUrl',
+  };
+
   const handleSubmitStage = async (stageKey: 'stage1' | 'stage2' | 'stage3') => {
     setSubmittingStage(stageKey);
     try {
       const statusField = `${stageKey}Status` as keyof RicSubmission;
+      const fs = fileStateForStage(stageKey);
       const updated: Registration = {
         ...registration,
         ric: {
           ...ric,
+          [nameMap[stageKey]]: fs.fileName || ric[nameMap[stageKey]],
+          [urlMap[stageKey]]: fs.fileUrl || ric[urlMap[stageKey]],
           [statusField]: 'submitted',
           ...(stageKey === 'stage2' ? { videoLink: videoLink } : {}),
         },
@@ -333,7 +346,7 @@ function useFileState(
       },
     };
     onUpdate(updated);
-    // Sheet sync happens only in handleSubmitStage, not here — avoids duplicate rows
+    syncToGoogleSheet(updated).catch(() => {});
   };
 
   return {
