@@ -108,7 +108,7 @@ export default function RICSubmissionPanel({ registration, onUpdate }: RICSubmis
   if (!isRIC) return null;
 
   const ric = registration.ric || {
-    stage1Status: 'locked' as const,
+    stage1Status: 'open' as const,
     stage2Status: 'locked' as const,
     stage3Status: 'locked' as const,
   };
