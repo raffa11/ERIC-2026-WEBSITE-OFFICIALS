@@ -525,7 +525,8 @@ function doPost(e) {
 
         {(() => {
           const ricRegs = registrations.filter(r => r.divisionId === 'research-innovation');
-          console.log('[ADMIN RIC] registrations count:', registrations.length, 'ricRegs count:', ricRegs.length, 'ricRegs:', ricRegs.map(r => ({ team: r.teamName, ric: r.ric })));
+          const lsData = (() => { try { const r = localStorage.getItem('eric_live_registrations'); return r ? JSON.parse(r) : []; } catch { return []; } })();
+          console.log('[ADMIN RIC] registrations count:', registrations.length, 'ricRegs count:', ricRegs.length, 'ricRegs:', ricRegs.map(r => ({ team: r.teamName, ric: r.ric })), 'localStorage count:', lsData.length, 'ls ric:', lsData.filter(r => r.divisionId === 'research-innovation').length);
           if (ricRegs.length === 0) {
             return (
               <div className="p-10 bg-zinc-950 border border-dashed border-white/10 rounded-3xl text-center space-y-3">
