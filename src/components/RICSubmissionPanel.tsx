@@ -332,9 +332,8 @@ function useFileState(
         [urlMap[stageKey]]: url,
       },
     };
-    console.log('[RIC] persist called for stage', stageKey, 'name:', name, 'registration ric?', !!registration.ric);
     onUpdate(updated);
-    syncToGoogleSheet(updated).catch(() => {});
+    // Sheet sync happens only in handleSubmitStage, not here — avoids duplicate rows
   };
 
   return {
