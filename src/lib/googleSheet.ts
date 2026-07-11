@@ -6,10 +6,11 @@
 import { Registration } from '../types';
 
 export const getGoogleScriptUrl = (): string => {
-  let storedUrl = localStorage.getItem('eric_google_script_url');
-  const newUrl = 'https://script.google.com/macros/s/AKfycbyJ0zwu_uto5GiK5soWwFlEQv-TngwFHSiGwTmKdrS-oTVPC-Pn7GDsIAAGIy1HRWXP/exec';
-
-  if (storedUrl) return storedUrl;
+  const newUrl = 'https://script.google.com/macros/s/AKfycbxxqH-GHITKS8LqdXaHsc55l0sNqgYUGxcSnIoP71BaLWIPaFGDHNuYzKPEUzWxDCTy/exec';
+  const storedUrl = localStorage.getItem('eric_google_script_url');
+  if (storedUrl && storedUrl !== newUrl) {
+    localStorage.removeItem('eric_google_script_url');
+  }
   const metaEnv = (import.meta as any).env || {};
   return metaEnv.VITE_GOOGLE_SCRIPT_URL || newUrl;
 };
