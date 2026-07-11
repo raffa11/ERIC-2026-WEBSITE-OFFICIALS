@@ -165,11 +165,13 @@ const jsonpFetchAll = (url: string): Promise<Registration[] | null> => {
   return new Promise((resolve) => {
     const callbackName = 'jsonp_callback_' + Math.round(100000 * Math.random());
     const script = document.createElement('script');
-    script.src = `${url}?action=getRegistrations&callback=${callbackName}`;
+    const fullUrl = `${url}?action=getRegistrations&callback=${callbackName}`;
+    console.log('[jsonpFetchAll] loading:', fullUrl);
+    script.src = fullUrl;
 
     const timeoutId = setTimeout(() => {
       cleanup();
-      console.warn('JSONP request timed out for Google Sheets.');
+      console.warn('[jsonpFetchAll] TIMEOUT after 15s');
       resolve(null);
     }, 15000);
 
@@ -180,11 +182,16 @@ const jsonpFetchAll = (url: string): Promise<Registration[] | null> => {
     };
 
     (window as any)[callbackName] = (data: any) => {
+      console.log('[jsonpFetchAll] GOT DATA:', Array.isArray(data) ? data.length + ' rows' : 'not an array', data);
       cleanup();
       resolve(Array.isArray(data) ? (data as Registration[]) : null);
     };
 
-    script.onerror = () => { cleanup(); resolve(null); };
+    script.onerror = (ev) => {
+      console.error('[jsonpFetchAll] SCRIPT LOAD ERROR:', ev);
+      cleanup();
+      resolve(null);
+    };
     document.body.appendChild(script);
   });
 };
