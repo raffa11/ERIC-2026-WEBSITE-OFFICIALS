@@ -83,6 +83,21 @@ export interface Member {
   congenitalDisease?: string;
 }
 
+export interface RicSubmission {
+  stage1Status: 'locked' | 'open' | 'submitted';
+  stage2Status: 'locked' | 'open' | 'submitted';
+  stage3Status: 'locked' | 'open' | 'submitted';
+  abstractName?: string;
+  abstractUrl?: string;
+  proposalName?: string;
+  proposalUrl?: string;
+  videoLink?: string;
+  posterName?: string;
+  posterUrl?: string;
+  pptName?: string;
+  pptUrl?: string;
+}
+
 export interface Registration {
   id: string;
   divisionId: string;
@@ -116,6 +131,7 @@ export interface Registration {
   lecturerCongenitalDisease?: string;
   paymentProofName?: string;
   paymentProofUrl?: string;
+  ric?: RicSubmission;
 }
 
 // Centralized List of Administrator Emails

@@ -10,6 +10,7 @@ import { COMPETITION_DIVISIONS, MAIN_WHATSAPP_GROUP } from '../data';
 import { Registration } from '../types';
 import { Trophy, X, MessageCircle, CheckCircle, Download } from 'lucide-react';
 import { generateRegistrationPDF } from '../lib/generatePDF';
+import RICSubmissionPanel from './RICSubmissionPanel';
 
 interface MyRegistrationsModalProps {
   isOpen: boolean;
@@ -91,11 +92,16 @@ export default function MyRegistrationsModal({
                 </button>
               </div>
             ) : (
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-h-[400px] overflow-y-auto pr-1">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-h-[500px] overflow-y-auto pr-1">
                 {myRegistrations.map((reg) => {
                   const divObj = COMPETITION_DIVISIONS.find(d => d.id === reg.divisionId);
+                  const isRIC = reg.divisionId === 'research-innovation';
+                  const handleRicUpdate = (updated: Registration) => {
+                    const newRegs = registrations.map(r => r.id === updated.id ? updated : r);
+                    onUpdateRegistrations(newRegs);
+                  };
                   return (
-                    <div key={reg.id} className="p-5 bg-zinc-950 border border-white/5 rounded-2xl space-y-4 relative overflow-hidden group">
+                    <div key={reg.id} className={`p-5 bg-zinc-950 border border-white/5 rounded-2xl space-y-4 relative overflow-hidden group ${isRIC ? 'sm:col-span-2' : ''}`}>
                       <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-[#FFD700] to-[#0047AB]" />
                       
                       <div className="flex items-center gap-2">
@@ -150,6 +156,12 @@ export default function MyRegistrationsModal({
                         <span>WHATSAPP GROUP — ALL PARTICIPANTS</span>
                       </a>
 
+                      {isRIC && (
+                        <RICSubmissionPanel
+                          registration={reg}
+                          onUpdate={handleRicUpdate}
+                        />
+                      )}
 
                     </div>
                   );

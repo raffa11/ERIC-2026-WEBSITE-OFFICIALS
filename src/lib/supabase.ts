@@ -50,6 +50,12 @@ function stripImages(reg: Registration): Registration {
   clone.lecturerIdCardUrl = clone.lecturerIdCardUrl?.startsWith('data:') ? '[stripped]' : (clone.lecturerIdCardUrl || '');
   clone.lecturerTwibbonUrl = clone.lecturerTwibbonUrl?.startsWith('data:') ? '[stripped]' : (clone.lecturerTwibbonUrl || '');
   clone.paymentProofUrl = clone.paymentProofUrl?.startsWith('data:') ? '[stripped]' : (clone.paymentProofUrl || '');
+  if (clone.ric) {
+    clone.ric.abstractUrl = clone.ric.abstractUrl?.startsWith('data:') ? '[stripped]' : (clone.ric.abstractUrl || '');
+    clone.ric.proposalUrl = clone.ric.proposalUrl?.startsWith('data:') ? '[stripped]' : (clone.ric.proposalUrl || '');
+    clone.ric.posterUrl = clone.ric.posterUrl?.startsWith('data:') ? '[stripped]' : (clone.ric.posterUrl || '');
+    clone.ric.pptUrl = clone.ric.pptUrl?.startsWith('data:') ? '[stripped]' : (clone.ric.pptUrl || '');
+  }
   return clone;
 }
 
@@ -67,6 +73,37 @@ function safeSetItem(list: Registration[]): void {
   } catch (err) {
     console.warn('localStorage quota exceeded. Registrations not cached locally.', err);
   }
+}
+
+/**
+ * Reconstruct nested ric object from flat Google Sheets fields.
+ */
+function reconstructRic(data: any): Registration {
+  if (data.divisionId === 'research-innovation' || data.ricStage1Status) {
+    (data as any).ric = {
+      stage1Status: data.ricStage1Status || 'locked',
+      stage2Status: data.ricStage2Status || 'locked',
+      stage3Status: data.ricStage3Status || 'locked',
+      abstractName: data.ricAbstractName || '',
+      abstractUrl: data.ricAbstractUrl || '',
+      proposalName: data.ricProposalName || '',
+      proposalUrl: data.ricProposalUrl || '',
+      videoLink: data.ricVideoLink || '',
+      posterName: data.ricPosterName || '',
+      posterUrl: data.ricPosterUrl || '',
+      pptName: data.ricPptName || '',
+      pptUrl: data.ricPptUrl || '',
+    };
+    delete data.ricStage1Status;
+    delete data.ricStage2Status;
+    delete data.ricStage3Status;
+    delete data.ricAbstractName; delete data.ricAbstractUrl;
+    delete data.ricProposalName; delete data.ricProposalUrl;
+    delete data.ricVideoLink;
+    delete data.ricPosterName; delete data.ricPosterUrl;
+    delete data.ricPptName; delete data.ricPptUrl;
+  }
+  return data as Registration;
 }
 
 /**
@@ -97,9 +134,10 @@ export async function dbFetchRegistrations(
     if (sheetRegs && sheetRegs.length > 0) {
       const merged = [...localRegs];
       for (const sReg of sheetRegs) {
-        const idx = merged.findIndex(r => r.id === sReg.id);
-        if (idx >= 0) merged[idx] = sReg;
-        else merged.push(sReg);
+        const reconstructed = reconstructRic(sReg);
+        const idx = merged.findIndex(r => r.id === reconstructed.id);
+        if (idx >= 0) merged[idx] = reconstructed;
+        else merged.push(reconstructed);
       }
       safeSetItem(merged);
       if (onBackgroundUpdate) onBackgroundUpdate(merged);

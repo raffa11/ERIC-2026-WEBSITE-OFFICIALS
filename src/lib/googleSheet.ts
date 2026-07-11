@@ -78,7 +78,21 @@ export const syncToGoogleSheet = async (reg: Registration): Promise<boolean> => 
       amount: reg.amount || 'IDR 250,000',
       refCode: reg.refCode,
       paymentProofName: reg.paymentProofName || '',
-      paymentProofUrl: reg.paymentProofUrl || ''
+      paymentProofUrl: reg.paymentProofUrl || '',
+
+      // RIC Submission Fields (prefix RIC_)
+      ricStage1Status: reg.ric?.stage1Status || '-',
+      ricStage2Status: reg.ric?.stage2Status || '-',
+      ricStage3Status: reg.ric?.stage3Status || '-',
+      ricAbstractName: reg.ric?.abstractName || '',
+      ricAbstractUrl: reg.ric?.abstractUrl || '',
+      ricProposalName: reg.ric?.proposalName || '',
+      ricProposalUrl: reg.ric?.proposalUrl || '',
+      ricVideoLink: reg.ric?.videoLink || '',
+      ricPosterName: reg.ric?.posterName || '',
+      ricPosterUrl: reg.ric?.posterUrl || '',
+      ricPptName: reg.ric?.pptName || '',
+      ricPptUrl: reg.ric?.pptUrl || ''
     };
 
     await fetch(url, {

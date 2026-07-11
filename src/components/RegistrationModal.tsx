@@ -530,7 +530,12 @@ export default function RegistrationModal({
       lecturerTwibbonUrl: divisionObj.hasLecturer ? lecturerTwibbonUrl : undefined,
       lecturerCongenitalDisease: divisionObj.hasLecturer ? lecturerCongenitalDisease : undefined,
       paymentProofName: paymentProofName || undefined,
-      paymentProofUrl: paymentProofUrl || undefined
+      paymentProofUrl: paymentProofUrl || undefined,
+      ric: selectedDivision === 'research-innovation' ? {
+        stage1Status: 'open',
+        stage2Status: 'locked',
+        stage3Status: 'locked',
+      } : undefined
     };
 
     // Asynchronously synchronize registration data to Google Sheet

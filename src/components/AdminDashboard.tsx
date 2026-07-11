@@ -14,9 +14,10 @@ import * as XLSX from 'xlsx';
 import { 
   Trophy, Terminal, Download, 
   FileSpreadsheet, Database, ArrowLeft, X,
-  CreditCard, Users, Globe, ExternalLink
+  CreditCard, Users, Globe, ExternalLink,
+  FileText, Lock, Check, Eye, Unlock
 } from 'lucide-react';
-import { getGoogleScriptUrl, setGoogleScriptUrl } from '../lib/googleSheet';
+import { getGoogleScriptUrl, setGoogleScriptUrl, syncToGoogleSheet } from '../lib/googleSheet';
 
 interface AdminDashboardProps {
   currentUser: { name: string; email: string; method: string } | null;
@@ -34,7 +35,7 @@ export default function AdminDashboard({
   const { t } = useLanguage();
   const { showAlert, showConfirm } = useAlert();
 
-  const [activeTab, setActiveTab] = useState<'registrations'>('registrations');
+  const [activeTab, setActiveTab] = useState<'registrations' | 'ric'>('registrations');
 
   // Google Sheets integration state
   const [googleScriptUrl, setGoogleScriptUrlState] = useState(getGoogleScriptUrl());
@@ -178,6 +179,12 @@ export default function AdminDashboard({
           className={`px-5 py-2 text-xs font-mono font-black uppercase rounded-xl transition-all cursor-pointer ${activeTab === 'registrations' ? 'bg-[#FFD700] text-black shadow-[0_0_15px_rgba(255,215,0,0.2)]' : 'text-zinc-400 hover:text-white'}`}
         >
           REGISTRATIONS
+        </button>
+        <button
+          onClick={() => setActiveTab('ric')}
+          className={`px-5 py-2 text-xs font-mono font-black uppercase rounded-xl transition-all cursor-pointer ${activeTab === 'ric' ? 'bg-[#C5A059] text-black shadow-[0_0_15px_rgba(197,160,89,0.2)]' : 'text-zinc-400 hover:text-white'}`}
+        >
+          RIC SUBMISSIONS
         </button>
 
       </div>
@@ -500,6 +507,125 @@ function doPost(e) {
       </AnimatePresence>
 
 
+      </>      
+      )}
+
+      {activeTab === 'ric' && (<>
+        <div className="space-y-2">
+          <span className="text-[10px] font-mono text-[#C5A059] tracking-[0.25em] uppercase font-black flex items-center gap-2">
+            <FileText className="w-4 h-4" /> RIC SUBMISSION TRACKER
+          </span>
+          <h2 className="text-3xl md:text-5xl font-sans font-black tracking-tight text-white uppercase leading-none">
+            RESEARCH INNOVATION CHALLENGE
+          </h2>
+          <p className="text-zinc-500 font-mono text-xs uppercase max-w-2xl leading-relaxed">
+            {t('Manage RIC submission stages: open stages for selected teams and monitor upload progress.', 'Kelola tahap pengumpulan RIC: buka tahap untuk tim terpilih dan pantau progres upload.')}
+          </p>
+        </div>
+
+        {(() => {
+          const ricRegs = registrations.filter(r => r.divisionId === 'research-innovation');
+          if (ricRegs.length === 0) {
+            return (
+              <div className="p-10 bg-zinc-950 border border-dashed border-white/10 rounded-3xl text-center space-y-3">
+                <FileText className="w-10 h-10 text-zinc-600 mx-auto" />
+                <p className="text-sm font-sans font-black text-zinc-500 uppercase">{t('No RIC registrations yet.', 'Belum ada pendaftaran RIC.')}</p>
+              </div>
+            );
+          }
+
+          return (
+            <div className="space-y-4">
+              {ricRegs.map((reg) => {
+                const ric = reg.ric || { stage1Status: 'locked', stage2Status: 'locked', stage3Status: 'locked' };
+                const handleStageAction = async (stage: 'stage1' | 'stage2' | 'stage3', action: 'open' | 'lock') => {
+                  const statusField = `${stage}Status` as 'stage1Status' | 'stage2Status' | 'stage3Status';
+                  const updated: Registration = {
+                    ...reg,
+                    ric: { ...ric, [statusField]: action === 'open' ? 'open' : 'locked' },
+                  };
+                  const newRegs = registrations.map(r => r.id === reg.id ? updated : r);
+                  onUpdateRegistrations(newRegs);
+                  await syncToGoogleSheet(updated);
+                };
+                const stageInfo = [
+                  { key: 'stage1' as const, label: 'Stage 1 — Abstract', status: ric.stage1Status, file: ric.abstractUrl },
+                  { key: 'stage2' as const, label: 'Stage 2 — Proposal + Video', status: ric.stage2Status, file: ric.proposalUrl, video: ric.videoLink },
+                  { key: 'stage3' as const, label: 'Stage 3 — Poster + PPT', status: ric.stage3Status, file: ric.posterUrl, extra: ric.pptUrl },
+                ];
+                return (
+                  <div key={reg.id} className="p-5 bg-zinc-950 border border-white/5 rounded-2xl space-y-4">
+                    <div className="flex items-center justify-between border-b border-white/5 pb-3">
+                      <div>
+                        <h4 className="font-sans font-black text-white uppercase tracking-tight">{reg.teamName}</h4>
+                        <p className="text-[10px] font-mono text-zinc-500">REF: {reg.refCode} | {reg.leader.name} | {reg.leader.institution}</p>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        {reg.ric?.stage1Status === 'submitted' && <span className="text-[9px] font-mono text-green-400 font-bold">HAS SUBMISSION</span>}
+                      </div>
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                      {stageInfo.map((s) => {
+                        const statusColors: Record<string, string> = {
+                          locked: 'border-zinc-800 text-zinc-500',
+                          open: 'border-[#FFD700]/30 text-[#FFD700]',
+                          submitted: 'border-green-500/30 text-green-400',
+                        };
+                        const icons: Record<string, React.ReactNode> = {
+                          locked: <Lock className="w-3.5 h-3.5" />,
+                          open: <Unlock className="w-3.5 h-3.5" />,
+                          submitted: <Check className="w-3.5 h-3.5" />,
+                        };
+                        const isLocked = s.status === 'locked';
+                        const isSubmitted = s.status === 'submitted';
+                        return (
+                          <div key={s.key} className={`p-3 bg-zinc-900/40 border rounded-xl space-y-2 ${statusColors[s.status] || 'border-zinc-800'}`}>
+                            <div className="flex items-center justify-between">
+                              <span className="text-[9px] font-mono uppercase font-bold">{s.label}</span>
+                              <span className={`text-[9px] font-mono font-black uppercase flex items-center gap-1 ${statusColors[s.status] || 'text-zinc-500'}`}>
+                                {icons[s.status] || null} {s.status.toUpperCase()}
+                              </span>
+                            </div>
+                            {s.file && s.file !== '-' && (
+                              <div className="text-[9px] font-mono text-zinc-400 truncate flex items-center gap-1">
+                                <FileText className="w-3 h-3 shrink-0" />
+                                <span className="truncate">{t('FILE UPLOADED', 'FILE TERKIRIM')}</span>
+                              </div>
+                            )}
+                            {s.video && (
+                              <a href={s.video} target="_blank" rel="noopener noreferrer" className="text-[9px] font-mono text-[#4D90FE] flex items-center gap-1 hover:underline">
+                                <Eye className="w-3 h-3" /> {t('VIEW VIDEO', 'LIHAT VIDEO')}
+                              </a>
+                            )}
+                            <div className="flex gap-1.5 pt-1">
+                              {isLocked && (
+                                <button onClick={() => handleStageAction(s.key, 'open')}
+                                  className="flex-1 py-1.5 bg-[#C5A059]/10 border border-[#C5A059]/30 text-[9px] font-mono text-[#C5A059] font-bold rounded-lg hover:bg-[#C5A059]/20 cursor-pointer uppercase">
+                                  {t('OPEN', 'BUKA')}
+                                </button>
+                              )}
+                              {!isLocked && !isSubmitted && (
+                                <button onClick={() => handleStageAction(s.key, 'lock')}
+                                  className="flex-1 py-1.5 bg-zinc-800 border border-zinc-700 text-[9px] font-mono text-zinc-400 font-bold rounded-lg hover:bg-zinc-700 cursor-pointer uppercase">
+                                  {t('LOCK', 'KUNCI')}
+                                </button>
+                              )}
+                              {isSubmitted && (
+                                <span className="flex-1 py-1.5 text-center text-[9px] font-mono text-green-400/60 font-bold uppercase border border-green-500/10 rounded-lg">
+                                  {t('COMPLETED', 'SELESAI')}
+                                </span>
+                              )}
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          );
+        })()}
       </>      
       )}
 
