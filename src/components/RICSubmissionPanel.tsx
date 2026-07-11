@@ -117,6 +117,13 @@ export default function RICSubmissionPanel({ registration, onUpdate }: RICSubmis
   const stage2Files = useFileState('stage2', ric, registration, onUpdate, showAlert);
   const stage3Files = useFileState('stage3', ric, registration, onUpdate, showAlert);
 
+  // Auto-sync existing RIC data to sheet on mount (backfill for new GAS columns)
+  React.useEffect(() => {
+    if (ric.abstractUrl || ric.proposalUrl || ric.posterUrl || ric.pptUrl || ric.videoLink) {
+      syncToGoogleSheet(registration).catch(() => {});
+    }
+  }, []);
+
   const handleSubmitStage = async (stageKey: 'stage1' | 'stage2' | 'stage3') => {
     setSubmittingStage(stageKey);
     try {
