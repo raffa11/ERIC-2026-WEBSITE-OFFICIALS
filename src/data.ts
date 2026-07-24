@@ -115,7 +115,7 @@ export const COMPETITION_DIVISIONS: Division[] = [
     maxMembers: 1,
     hasSubCategory: false,
     hasLevels: true,
-    levels: ['University Student'],
+    levels: ['University Student', 'Vocational School Student'],
     hasLecturer: true,
     price: 'Rp. 280,000',
     priceUSD: '$26.00',
