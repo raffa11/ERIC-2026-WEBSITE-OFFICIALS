@@ -132,11 +132,15 @@ export default function Divisions({ onSelectDivision }: DivisionsProps) {
                     <div className="absolute top-0 right-0 w-16 h-16 bg-white/2 group-hover:bg-[#FFD700]/5 transition-colors duration-300 [clip-path:polygon(100%_0,0_0,100%_100%)] pointer-events-none" />
                   )}
 
-                  {/* Coming Soon Ribbon */}
+                  {/* Coming Soon / Canceled Ribbon */}
                   {division.comingSoon && (
                     <div className="absolute top-6 right-6 z-20">
-                      <span className="bg-[#FFD700]/10 border border-[#FFD700]/30 text-[#FFD700] text-[9px] font-mono font-bold uppercase tracking-widest px-3 py-1 rounded-full">
-                        {t('Coming Soon', 'Segera Hadir')}
+                      <span className={`text-[9px] font-mono font-bold uppercase tracking-widest px-3 py-1 rounded-full ${
+                        division.canceled
+                          ? 'bg-red-500/10 border border-red-500/30 text-red-400'
+                          : 'bg-[#FFD700]/10 border border-[#FFD700]/30 text-[#FFD700]'
+                      }`}>
+                        {division.canceled ? t('Canceled', 'Dibatalkan') : t('Coming Soon', 'Segera Hadir')}
                       </span>
                     </div>
                   )}
