@@ -53,6 +53,7 @@ export default function Divisions({ onSelectDivision }: DivisionsProps) {
                 { href: "https://drive.google.com/drive/folders/10w9yn_Tvfa7Kw7fEdQgRgHy6ARn04N_r?usp=drive_link", icon: "BookOpen", label: "Guidebook", labelId: "Buku Panduan" },
                 { href: "https://drive.google.com/drive/folders/1RPDtOuZvIp4wUPghS5LrQXQCm9JYpciU", icon: "Calendar", label: "Event Schedule", labelId: "Jadwal Acara" },
                 { href: "https://drive.google.com/drive/folders/1aM7UBB4gHVja5UdD079kXtcBJ3001mTt", icon: "Mail", label: "Official Letters", labelId: "Surat Resmi" },
+                { href: "https://www.twibbonize.com/internationaleric2026", icon: "Image", label: "Twibbon", labelId: "Twibbon" },
               ].map((link) => {
                 const IconComp = LucideIcons[link.icon as keyof typeof LucideIcons] as React.ComponentType<{ className?: string }> | undefined;
                 return (
@@ -65,12 +66,13 @@ export default function Divisions({ onSelectDivision }: DivisionsProps) {
             </div>
           )}
           {!isTouchDevice && (
-            <div className="grid grid-cols-4 gap-4 max-w-4xl select-none">
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4 max-w-5xl select-none">
               {[
                 { href: "https://drive.google.com/drive/folders/1co00vzy633xZzgyBG0G4dvWEtvsHenXt", icon: "FileText", label: "All Information", labelId: "Semua Informasi", badge: "INFO" },
                 { href: "https://drive.google.com/drive/folders/10w9yn_Tvfa7Kw7fEdQgRgHy6ARn04N_r?usp=drive_link", icon: "BookOpen", label: "Guidebook", labelId: "Buku Panduan", badge: "GUIDE" },
                 { href: "https://drive.google.com/drive/folders/1RPDtOuZvIp4wUPghS5LrQXQCm9JYpciU", icon: "Calendar", label: "Event Schedule", labelId: "Jadwal Acara", badge: "SCHEDULE" },
                 { href: "https://drive.google.com/drive/folders/1aM7UBB4gHVja5UdD079kXtcBJ3001mTt", icon: "Mail", label: "Official Letters", labelId: "Surat Resmi", badge: "LETTERS" },
+                { href: "https://www.twibbonize.com/internationaleric2026", icon: "Image", label: "Twibbon", labelId: "Twibbon", badge: "TWIBBON" },
               ].map((link) => {
                 const IconComp = LucideIcons[link.icon as keyof typeof LucideIcons] as React.ComponentType<{ className?: string }> | undefined;
                 return (
