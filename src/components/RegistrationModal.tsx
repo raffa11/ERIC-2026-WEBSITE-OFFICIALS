@@ -78,6 +78,14 @@ export default function RegistrationModal({
   const { t } = useLanguage();
   const { showAlert, showConfirm } = useAlert();
 
+  // Divisions that are still open for registration (closed/canceled/coming-soon are blocked)
+  const openDivisions = COMPETITION_DIVISIONS.filter(d => !d.comingSoon && !d.closed && !d.canceled);
+  const isDivisionBlocked = (id: string) => {
+    const d = COMPETITION_DIVISIONS.find(x => x.id === id);
+    return !d || d.comingSoon || d.closed || d.canceled;
+  };
+  const resolveOpenDivision = (id: string) => isDivisionBlocked(id) ? (openDivisions[0]?.id || id) : id;
+
   // Wizard Multi-stage Form State
   const [wizardStep, setWizardStep] = useState(1);
   const [selectedDivision, setSelectedDivision] = useState(initialDivisionId);
@@ -138,7 +146,9 @@ export default function RegistrationModal({
     if (!isOpen) return;
     setSuccessPopup(null);
 
-    const draft = loadDraft(initialDivisionId);
+    // Redirect to an open division if the requested one is closed
+    const effectiveDivision = resolveOpenDivision(initialDivisionId);
+    const draft = loadDraft(effectiveDivision);
     if (draft) {
       setSelectedDivision(draft.selectedDivision);
       setWizardStep(draft.wizardStep);
@@ -173,7 +183,7 @@ export default function RegistrationModal({
       setPaymentProofUrl(draft.paymentProofUrl);
 
     } else {
-      setSelectedDivision(initialDivisionId);
+      setSelectedDivision(effectiveDivision);
       setWizardStep(1);
       setTeamName('');
       setLeaderName(currentUser?.name || '');
@@ -201,7 +211,7 @@ export default function RegistrationModal({
       setPaymentProofName('');
       setPaymentProofUrl('');
 
-      const divObjForMembers = COMPETITION_DIVISIONS.find(d => d.id === initialDivisionId);
+      const divObjForMembers = COMPETITION_DIVISIONS.find(d => d.id === effectiveDivision);
       const baseMembers: Member[] = [];
       const memberCount = divObjForMembers?.maxMembers ?? 1;
       for (let i = 0; i < memberCount; i++) {
@@ -420,6 +430,16 @@ export default function RegistrationModal({
   const handleWizardSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (isProcessingPayment) return;
+
+    // Hard-block closed/canceled/coming-soon divisions at submission time
+    if (isDivisionBlocked(selectedDivision)) {
+      showAlert({ message: t(
+        'This division is closed for registration.',
+        'Pendaftaran divisi ini telah ditutup.'
+      ), type: 'error' });
+      return;
+    }
+
     if (wizardStep < 4) {
       if (wizardStep === 1 && !selectedDivision) return;
       if (wizardStep === 2) {
@@ -785,7 +805,7 @@ export default function RegistrationModal({
                             onChange={(e) => setSelectedDivision(e.target.value)}
                             className="w-full bg-zinc-900 border border-white/5 focus:border-[#FFD700] rounded-xl px-4 py-3 text-xs text-white focus:outline-none"
                           >
-                            {COMPETITION_DIVISIONS.map((div) => (
+                            {openDivisions.map((div) => (
                               <option key={div.id} value={div.id} className="bg-zinc-950 text-white">
                                 {div.title}
                               </option>

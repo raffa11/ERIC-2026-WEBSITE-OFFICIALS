@@ -27,6 +27,7 @@ import LoginModal from './components/LoginModal';
 import RegistrationModal from './components/RegistrationModal';
 
 import { Registration } from './types';
+import { COMPETITION_DIVISIONS } from './data';
 import { 
   dbFetchRegistrations, 
   dbUpsertRegistration, 
@@ -190,6 +191,13 @@ function AppContent() {
 
     // Division selection from cards
     const handleSelectDivision = (divisionId: string) => {
+      // Hard-block closed, canceled, or coming-soon divisions
+      const division = COMPETITION_DIVISIONS.find(d => d.id === divisionId);
+      if (!division || division.comingSoon || division.closed || division.canceled) {
+        showAlert({ message: 'This division is closed for registration.', type: 'warning' });
+        return;
+      }
+
       // If not logged in, prompt them to login first to maintain a clean authorized roster flow
       if (!currentUser) {
         showAlert({ message: 'Please sign in first to register for a competition division.', type: 'warning' });
