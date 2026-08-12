@@ -60,6 +60,172 @@
   animation: scroll 40s linear infinite;
 }
 
+/* ============================================================
+   ROBOT HUD / MECHA TELEMETRY THEME — visual layer only
+   ============================================================ */
+
+/* Gold selection */
+::selection {
+  background: rgba(255, 215, 0, 0.9);
+  color: #050505;
+}
+::-moz-selection {
+  background: rgba(255, 215, 0, 0.9);
+  color: #050505;
+}
+
+/* Focus rings in gold for keyboard users */
+:focus-visible {
+  outline: 1.5px solid rgba(255, 215, 0, 0.7);
+  outline-offset: 2px;
+}
+
+/* Blueprint tech grid (fine gold + coarse royal-blue) */
+.tech-grid {
+  background-image:
+    linear-gradient(rgba(255, 215, 0, 0.022) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 215, 0, 0.022) 1px, transparent 1px),
+    linear-gradient(rgba(0, 71, 171, 0.02) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 71, 171, 0.02) 1px, transparent 1px);
+  background-size: 44px 44px, 44px 44px, 220px 220px, 220px 220px;
+}
+
+/* CRT scanline overlay */
+.scanlines {
+  position: relative;
+}
+.scanlines::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
+  background: repeating-linear-gradient(
+    to bottom,
+    transparent 0px,
+    transparent 3px,
+    rgba(255, 255, 255, 0.014) 3px,
+    rgba(255, 255, 255, 0.014) 4px
+  );
+}
+
+/* 4-corner HUD brackets (drawn via background gradients — overlay element only) */
+.hud-frame {
+  background-image:
+    linear-gradient(rgba(255, 215, 0, 0.7), rgba(255, 215, 0, 0.7)),
+    linear-gradient(rgba(255, 215, 0, 0.7), rgba(255, 215, 0, 0.7)),
+    linear-gradient(rgba(255, 215, 0, 0.7), rgba(255, 215, 0, 0.7)),
+    linear-gradient(rgba(255, 215, 0, 0.7), rgba(255, 215, 0, 0.7)),
+    linear-gradient(rgba(255, 215, 0, 0.7), rgba(255, 215, 0, 0.7)),
+    linear-gradient(rgba(255, 215, 0, 0.7), rgba(255, 215, 0, 0.7)),
+    linear-gradient(rgba(255, 215, 0, 0.7), rgba(255, 215, 0, 0.7)),
+    linear-gradient(rgba(255, 215, 0, 0.7), rgba(255, 215, 0, 0.7));
+  background-repeat: no-repeat;
+  background-size: 22px 1.5px, 1.5px 22px, 22px 1.5px, 1.5px 22px, 22px 1.5px, 1.5px 22px, 22px 1.5px, 1.5px 22px;
+  background-position:
+    8px 8px, 8px 8px,
+    calc(100% - 30px) 8px, calc(100% - 8px) 8px,
+    8px calc(100% - 8px), 8px calc(100% - 30px),
+    calc(100% - 30px) calc(100% - 8px), calc(100% - 8px) calc(100% - 30px);
+}
+
+/* Radar sweep (rotating conic beam) */
+@keyframes radar-sweep {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+.radar-sweep {
+  position: absolute;
+  inset: -30%;
+  border-radius: 50%;
+  background: conic-gradient(
+    from 0deg,
+    rgba(0, 255, 136, 0.14),
+    rgba(0, 255, 136, 0.02) 55deg,
+    transparent 90deg,
+    transparent 360deg
+  );
+  animation: radar-sweep 6s linear infinite;
+  pointer-events: none;
+}
+.radar-ring {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 1px solid rgba(0, 255, 136, 0.15);
+  box-shadow: inset 0 0 30px rgba(0, 255, 136, 0.05);
+  pointer-events: none;
+}
+.radar-ring::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 4px;
+  height: 4px;
+  margin: -2px 0 0 -2px;
+  border-radius: 50%;
+  background: rgba(0, 255, 136, 0.8);
+  box-shadow: 0 0 8px rgba(0, 255, 136, 0.9);
+}
+
+/* Vertical scanning beam */
+@keyframes scan-beam {
+  0% { top: -5%; opacity: 0; }
+  8% { opacity: 1; }
+  92% { opacity: 1; }
+  100% { top: 105%; opacity: 0; }
+}
+.scan-beam {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, rgba(255, 215, 0, 0.5), transparent);
+  box-shadow: 0 0 18px rgba(255, 215, 0, 0.3), 0 0 40px rgba(255, 215, 0, 0.15);
+  animation: scan-beam 8s linear infinite;
+  pointer-events: none;
+}
+
+/* RGB glitch flicker */
+@keyframes glitch-rgb {
+  0%, 100% { text-shadow: 0 0 transparent; }
+  18% { text-shadow: 2px 0 rgba(255, 0, 60, 0.35), -2px 0 rgba(0, 210, 255, 0.35); }
+  36% { text-shadow: -1px 0 rgba(255, 0, 60, 0.25), 1px 0 rgba(0, 210, 255, 0.25); }
+  54% { text-shadow: 1px 0 rgba(255, 0, 60, 0.15), -1px 0 rgba(0, 210, 255, 0.15); }
+}
+.animate-glitch {
+  animation: glitch-rgb 5s ease-in-out infinite;
+}
+
+/* Terminal blinking cursor */
+@keyframes blink-cursor {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+.blink-cursor {
+  animation: blink-cursor 1.1s steps(1) infinite;
+}
+
+/* Horizontal telemetry ticker */
+@keyframes ticker-x {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+.animate-ticker {
+  animation: ticker-x 32s linear infinite;
+}
+
+/* Film grain overlay */
+.grain {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  pointer-events: none;
+  opacity: 0.045;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='120' height='120' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
 html {
   background-color: #050505;
   scroll-behavior: smooth;
@@ -106,7 +272,7 @@ body {
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
   }
-  .animate-ping, .animate-pulse, .animate-spin-slow, .animate-glow {
+  .animate-ping, .animate-pulse, .animate-spin-slow, .animate-glow, .animate-glitch, .animate-ticker, .radar-sweep, .scan-beam, .blink-cursor {
     animation: none !important;
   }
 }

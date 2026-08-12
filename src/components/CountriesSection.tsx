@@ -30,7 +30,7 @@ export default function CountriesSection() {
   }, []);
 
   return (
-    <section className="relative py-10 md:py-14 bg-[#050505] border-b border-white/[0.03] select-none overflow-hidden">
+    <section className="relative py-10 md:py-14 bg-[#050505] border-b border-white/[0.03] select-none overflow-hidden tech-grid">
       <div className="max-w-7xl mx-auto px-6">
         <div className="text-center mb-6">
           <span className="text-[9px] font-mono text-zinc-600 tracking-[0.3em] uppercase">

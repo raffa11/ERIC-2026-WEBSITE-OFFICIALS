@@ -23,7 +23,7 @@ export default function EventJourney() {
   ];
 
   return (
-    <section id="journey-section" className="relative py-28 bg-[#050505] border-t border-white/5 overflow-hidden">
+    <section id="journey-section" className="relative py-28 bg-[#050505] border-t border-white/5 overflow-hidden tech-grid scanlines">
       {/* Laser glare from right edge */}
       <div className="absolute right-[-10%] top-[20%] w-[400px] h-[400px] rounded-full bg-[#FFD700]/5 blur-[120px] pointer-events-none" />
 

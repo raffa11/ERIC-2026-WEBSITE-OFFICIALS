@@ -7,7 +7,7 @@ import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { useLanguage } from './LanguageContext';
 import EricLogo from './EricLogo';
-import { Menu, X, Globe, Trophy, LogIn, LogOut, User, Shield } from 'lucide-react';
+import { Menu, X, Globe, Trophy, LogIn, LogOut, User, Shield, Link2 } from 'lucide-react';
 import { ADMIN_EMAILS } from '../types';
 import { SUPPORTED_BY } from '../data';
 
@@ -105,6 +105,18 @@ export default function Navbar({
                 </button>
               ))}
             </div>
+
+            {/* Linktree quick access */}
+            <a
+              id="nav-btn-linktree"
+              href="https://linktr.ee/eric2026"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-1.5 bg-zinc-900 hover:bg-zinc-800 text-[#FFD700] font-mono text-[10px] font-bold uppercase px-4 py-2 rounded-full border border-white/10 hover:border-[#FFD700]/40 transition-all cursor-pointer"
+            >
+              <Link2 className="w-3.5 h-3.5" />
+              <span>{t('LINKTREE', 'LINKTREE')}</span>
+            </a>
 
             {/* Premium Language Toggler Toggle */}
             <div className="flex items-center gap-1.5 bg-zinc-900 border border-white/5 p-1 rounded-md select-none">
@@ -270,6 +282,21 @@ export default function Navbar({
                   {link.label}
                 </motion.button>
               ))}
+
+              {/* Linktree quick access */}
+              <motion.a
+                id="mobile-nav-linktree"
+                href="https://linktr.ee/eric2026"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center justify-center gap-3 text-[#FFD700] font-mono text-sm font-black uppercase tracking-wider py-3 px-4 rounded-xl bg-zinc-900 border border-[#FFD700]/20 hover:border-[#FFD700]/50 transition-colors"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.25 }}
+              >
+                <Link2 className="w-5 h-5" />
+                <span>{t('ALL LINKS — LINKTREE', 'SEMUA LINK — LINKTREE')}</span>
+              </motion.a>
 
               {/* Mobile Profile or Login buttons */}
               {currentUser ? (

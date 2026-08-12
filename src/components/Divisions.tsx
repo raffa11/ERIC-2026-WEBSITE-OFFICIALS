@@ -19,7 +19,7 @@ export default function Divisions({ onSelectDivision }: DivisionsProps) {
   );
 
   return (
-    <section id="divisions-section" className="relative py-16 md:py-28 bg-[#050505] border-t border-white/5">
+    <section id="divisions-section" className="relative py-16 md:py-28 bg-[#050505] border-t border-white/5 tech-grid">
       {!isTouchDevice && (
         <>
           <div className="absolute right-[5%] top-[-5%] w-[450px] h-[450px] bg-[#FFD700]/5 rounded-full blur-[110px] pointer-events-none" />
@@ -95,16 +95,24 @@ export default function Divisions({ onSelectDivision }: DivisionsProps) {
           {COMPETITION_DIVISIONS.map((division, idx) => {
             const resolvedIconName = (division.icon as keyof typeof LucideIcons) || 'Cpu';
             const IconComponent = (LucideIcons[resolvedIconName] as React.ComponentType<{ className?: string }>) || LucideIcons.Cpu;
+            const isUnavailable = !!division.canceled || !!division.closed;
+            const canRegister = !division.comingSoon && !isUnavailable;
+            const remaining = typeof division.capacity === 'number' && typeof division.registered === 'number'
+              ? Math.max(division.capacity - division.registered, 0)
+              : 0;
+            const hasQuota = typeof division.capacity === 'number' && typeof division.registered === 'number';
+            const quotaPct = hasQuota && division.capacity > 0 ? Math.round((remaining / division.capacity) * 100) : 0;
+            const quotaColor = remaining <= 0 ? 'bg-red-500' : quotaPct <= 10 ? 'bg-[#FFD700]' : quotaPct <= 30 ? 'bg-[#C5A059]' : 'bg-[#00FF88]';
 
             return (
               <div
                 id={`division-card-${division.id}`}
                 key={division.id}
-                onClick={() => { if (!division.comingSoon) onSelectDivision(division.id); }}
-                className={`relative select-none ${division.comingSoon ? 'cursor-default opacity-60' : 'cursor-pointer'} ${isTouchDevice ? '' : 'group'}`}
+                onClick={() => { if (canRegister) onSelectDivision(division.id); }}
+                className={`relative select-none ${canRegister ? 'cursor-pointer' : 'cursor-default opacity-60'} ${isTouchDevice ? '' : 'group'}`}
               >
                 {/* Hover glow shadow — desktop only */}
-                {!isTouchDevice && !division.comingSoon && (
+                {!isTouchDevice && canRegister && (
                   <div
                     className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 blur-[30px] transition-all duration-500 pointer-events-none"
                     style={{ backgroundColor: division.glowColor }}
@@ -112,7 +120,7 @@ export default function Divisions({ onSelectDivision }: DivisionsProps) {
                 )}
 
                 {/* Top accent bar — desktop hover only */}
-                {!isTouchDevice && !division.comingSoon && (
+                {!isTouchDevice && canRegister && (
                   <div
                     className="absolute top-0 left-[10%] right-[10%] h-[2px] rounded-full opacity-0 group-hover:opacity-100 transition-all duration-500 z-10 pointer-events-none"
                     style={{ backgroundColor: '#FFD700', boxShadow: '0 0 12px rgba(255, 215, 0, 0.6)' }}
@@ -121,16 +129,23 @@ export default function Divisions({ onSelectDivision }: DivisionsProps) {
 
                 {/* Main Card */}
                 <div
-                  className={`relative overflow-hidden bg-zinc-900 border ${isTouchDevice ? 'border-white/10' : 'border-white/5 group-hover:border-[#FFD700]/40 group-hover:shadow-[0_20px_50px_rgba(0,0,0,0.8)] group-hover:-translate-y-2 group-hover:scale-[1.02]'} p-5 sm:p-8 min-h-[360px] md:min-h-[400px] rounded-2xl flex flex-col justify-between shadow-[0_15px_35px_rgba(0,0,0,0.6)] transition-all duration-300 ease-out`}
+                  className={`relative overflow-hidden bg-zinc-900 border ${isTouchDevice ? 'border-white/10' : canRegister ? 'border-white/5 group-hover:border-[#FFD700]/40 group-hover:shadow-[0_20px_50px_rgba(0,0,0,0.8)] group-hover:-translate-y-2 group-hover:scale-[1.02]' : 'border-white/5'} p-5 sm:p-8 h-full min-h-[420px] md:min-h-[470px] rounded-2xl flex flex-col justify-between shadow-[0_15px_35px_rgba(0,0,0,0.6)] transition-all duration-300 ease-out`}
                   style={{
                     WebkitBackfaceVisibility: 'hidden',
                     backfaceVisibility: 'hidden',
                   }}
                 >
                   {/* Corner notch — desktop only */}
-                  {!isTouchDevice && !division.comingSoon && (
+                  {!isTouchDevice && canRegister && (
                     <div className="absolute top-0 right-0 w-16 h-16 bg-white/2 group-hover:bg-[#FFD700]/5 transition-colors duration-300 [clip-path:polygon(100%_0,0_0,100%_100%)] pointer-events-none" />
                   )}
+
+                  {/* HUD corner brackets */}
+                  <div
+                    className={`hud-frame absolute inset-2 pointer-events-none z-10 transition-opacity duration-300 ${
+                      canRegister ? 'opacity-25 group-hover:opacity-90' : 'opacity-15'
+                    }`}
+                  />
 
                   {/* Coming Soon / Canceled / Closed Ribbon */}
                   {division.comingSoon && (
@@ -162,12 +177,42 @@ export default function Divisions({ onSelectDivision }: DivisionsProps) {
                       </span>
                     </div>
 
-                    <h3 className={`text-2xl font-sans font-black uppercase leading-none tracking-tight ${isTouchDevice ? 'text-white' : 'text-white group-hover:text-[#FFD700] transition-colors duration-300'}`}>
+                    <h3 className={`text-2xl font-sans font-black uppercase leading-none tracking-tight ${isTouchDevice ? 'text-white' : canRegister ? 'text-white group-hover:text-[#FFD700] transition-colors duration-300' : 'text-white'}`}>
                       {division.title}
                     </h3>
                     <p className="text-zinc-400 text-xs mt-4 leading-relaxed line-clamp-4">
                       {t(division.description, division.indonesianDescription)}
                     </p>
+
+                    {/* Category chips — shown upfront on the arena card */}
+                    {(division.hasSubCategory || division.hasLevels) && (
+                      <div className="mt-4 space-y-2">
+                        {division.hasSubCategory && division.subCategories && division.subCategories.length > 0 && (
+                          <div className="flex flex-wrap items-center gap-1.5">
+                            <span className="text-[8px] font-mono text-zinc-500 uppercase tracking-widest font-bold mr-0.5">
+                              {t('CATEGORY', 'KATEGORI')}:
+                            </span>
+                            {division.subCategories.map((sub, i) => (
+                              <span key={sub} className="px-2 py-0.5 rounded-md bg-[#0047AB]/15 border border-[#0047AB]/30 text-[8px] font-mono text-[#6EA8FF] uppercase tracking-wider font-bold">
+                                {t(sub, division.indonesianSubCategories?.[i] ?? sub)}
+                              </span>
+                            ))}
+                          </div>
+                        )}
+                        {division.hasLevels && division.levels && division.levels.length > 0 && (
+                          <div className="flex flex-wrap items-center gap-1.5">
+                            <span className="text-[8px] font-mono text-zinc-500 uppercase tracking-widest font-bold mr-0.5">
+                              {t('LEVEL', 'TINGKAT')}:
+                            </span>
+                            {division.levels.map((lvl, i) => (
+                              <span key={lvl} className="px-2 py-0.5 rounded-md bg-[#C5A059]/10 border border-[#C5A059]/25 text-[8px] font-mono text-[#E8C87E] uppercase tracking-wider font-bold">
+                                {t(lvl, division.indonesianLevels?.[i] ?? lvl)}
+                              </span>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    )}
                   </div>
 
                   {/* Bottom spec section */}
@@ -187,6 +232,32 @@ export default function Divisions({ onSelectDivision }: DivisionsProps) {
                           <div
                             className="h-full bg-gradient-to-r from-[#0047AB] via-[#FFD700] to-[#FFE44D]"
                             style={{ width: division.intensityScore + '%' }}
+                          />
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Live quota per competition */}
+                    {hasQuota && (
+                      <div className="space-y-1.5">
+                        <div className="flex justify-between items-center text-[9px] font-mono">
+                          <span className="flex items-center gap-1.5 text-zinc-400 font-bold uppercase tracking-wider">
+                            <span className="relative flex h-1.5 w-1.5">
+                              <span className={`animate-ping absolute inline-flex h-full w-full rounded-full opacity-60 ${remaining > 0 ? 'bg-[#00FF88]' : 'bg-red-500'}`} />
+                              <span className={`relative inline-flex rounded-full h-1.5 w-1.5 ${remaining > 0 ? 'bg-[#00FF88]' : 'bg-red-500'}`} />
+                            </span>
+                            {t('LIVE QUOTA', 'KUOTA LIVE')}
+                          </span>
+                          <span className={`font-bold uppercase ${remaining > 0 ? 'text-white' : 'text-red-400'}`}>
+                            {remaining > 0
+                              ? `${remaining} / ${division.capacity} ${t('LEFT', 'TERSISA')}`
+                              : t('FULL', 'PENUH')}
+                          </span>
+                        </div>
+                        <div className="h-1 w-full bg-zinc-900 rounded-full overflow-hidden">
+                          <div
+                            className={`h-full rounded-full transition-all duration-500 ${quotaColor}`}
+                            style={{ width: quotaPct + '%' }}
                           />
                         </div>
                       </div>

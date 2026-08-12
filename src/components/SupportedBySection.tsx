@@ -7,7 +7,7 @@ export default function SupportedBySection() {
   const [imgErrors, setImgErrors] = useState<Record<string, boolean>>({});
 
   return (
-    <section className="relative py-12 md:py-16 bg-[#0A0A0A] border-t border-b border-white/[0.03] select-none">
+    <section className="relative py-12 md:py-16 bg-[#0A0A0A] border-t border-b border-white/[0.03] select-none tech-grid">
       <div className="max-w-7xl mx-auto px-6">
         <div className="text-center mb-10">
           <span className="text-[9px] font-mono text-zinc-600 tracking-[0.3em] uppercase">

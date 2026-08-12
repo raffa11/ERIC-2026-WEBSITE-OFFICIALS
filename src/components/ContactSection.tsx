@@ -5,10 +5,26 @@
 
 import { motion } from 'motion/react';
 import { useLanguage } from './LanguageContext';
-import { Mail, MessageCircle, Instagram, Globe, MapPin, Building, ShieldAlert, Link2 } from 'lucide-react';
+import { Mail, MessageCircle, Instagram, Globe, MapPin, Building, ShieldAlert, Link2, FileText } from 'lucide-react';
 
 export default function ContactSection() {
   const { t } = useLanguage();
+
+  const correspondence = {
+    number: '0851-7413-4340',
+    person: 'Renata',
+    waLink: 'https://wa.me/6285174134340',
+    letters: [
+      { en: 'Invitation Letter', id: 'Surat Undangan' },
+      { en: 'Participant Certificate', id: 'Surat Keterangan Peserta' },
+      { en: 'Delegation Certificate', id: 'Surat Keterangan Delegasi' },
+      { en: 'Recommendation Letter', id: 'Surat Rekomendasi' },
+      { en: 'Competition Participation Permit', id: 'Surat Izin Mengikuti Perlombaan' },
+      { en: 'Dispensation Request Letter', id: 'Surat Permohonan Dispensasi' },
+      { en: 'Cover Letter', id: 'Surat Pengantar' },
+      { en: 'Other Administrative Purposes', id: 'Surat Keperluan Administrasi Lainnya' }
+    ]
+  };
 
   const organizerDetails = {
     program: 'Electronics Engineering Education Program',
@@ -78,7 +94,7 @@ export default function ContactSection() {
   ];
 
   return (
-    <section id="contact-section" className="relative py-28 bg-[#0D0D0D] border-t border-white/5 overflow-hidden">
+    <section id="contact-section" className="relative py-28 bg-[#0D0D0D] border-t border-white/5 overflow-hidden tech-grid">
       {/* Light highlights */}
       <div className="absolute left-[10%] bottom-[-10%] w-[450px] h-[450px] rounded-full bg-[#0047AB]/5 blur-[120px] pointer-events-none" />
 
@@ -148,6 +164,62 @@ export default function ContactSection() {
                 </div>
               </div>
 
+            </div>
+
+            {/* Official Correspondence */}
+            <div className="bg-zinc-950 border border-white/5 rounded-3xl p-8 relative overflow-hidden shadow-[0_20px_45px_rgba(0,0,0,0.8)]">
+              <div className="absolute -right-10 -top-10 w-40 h-40 rounded-full bg-[#FFD700]/5 blur-[60px] pointer-events-none" />
+
+              <div className="flex items-center gap-3 mb-6 border-b border-white/5 pb-4">
+                <FileText className="w-5 h-5 text-[#FFD700]" />
+                <span className="font-mono text-xs text-zinc-400 uppercase tracking-widest font-black">
+                  {t('OFFICIAL CORRESPONDENCE', 'PERSURATAN RESMI')}
+                </span>
+              </div>
+
+              <p className="text-zinc-400 text-xs font-mono uppercase leading-relaxed mb-5">
+                {t(
+                  'For official correspondence, please contact our official number:',
+                  'Untuk keperluan persuratan, silakan hubungi nomor resmi kami:'
+                )}
+              </p>
+
+              <a
+                id="contact-correspondence-phone"
+                href={correspondence.waLink}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center justify-between gap-3 p-4 bg-[#25D366]/5 border border-[#25D366]/20 rounded-2xl hover:border-[#25D366]/50 hover:bg-[#25D366]/10 transition-all duration-300 mb-6"
+              >
+                <span className="flex items-center gap-2.5">
+                  <MessageCircle className="w-4 h-4 text-[#25D366] shrink-0" />
+                  <span className="font-mono text-sm text-white font-black tracking-wide">
+                    {correspondence.number}
+                  </span>
+                </span>
+                <span className="text-[9px] font-mono text-[#25D366] uppercase font-black tracking-widest">
+                  ({correspondence.person}) ↗
+                </span>
+              </a>
+
+              <div className="text-[9px] font-mono text-zinc-500 uppercase tracking-widest font-bold mb-3">
+                {t('AVAILABLE LETTER TYPES', 'JENIS SURAT YANG TERSEDIA')}
+              </div>
+              <ul className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                {correspondence.letters.map((letter, i) => (
+                  <li
+                    key={letter.en}
+                    className="flex items-start gap-2 px-3 py-2 bg-white/[0.02] border border-white/5 rounded-lg"
+                  >
+                    <span className="font-mono text-[8px] text-[#FFD700] font-black mt-0.5 shrink-0">
+                      0{i + 1}
+                    </span>
+                    <span className="text-[10px] font-mono text-zinc-300 uppercase leading-snug">
+                      {t(letter.en, letter.id)}
+                    </span>
+                  </li>
+                ))}
+              </ul>
             </div>
 
           </div>

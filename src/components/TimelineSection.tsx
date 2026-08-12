@@ -15,7 +15,7 @@ export default function TimelineSection() {
   const activeEvent = TIMELINE_EVENTS[activeIdx];
 
   return (
-    <section id="timeline-section" className="relative py-24 bg-[#0D0D0D] border-t border-white/5 overflow-hidden">
+    <section id="timeline-section" className="relative py-24 bg-[#0D0D0D] border-t border-white/5 overflow-hidden tech-grid scanlines">
       {/* Background glow node */}
       <div className="absolute left-[30%] bottom-[-10%] w-[350px] h-[350px] rounded-full bg-[#0047AB]/5 blur-[120px] pointer-events-none" />
 

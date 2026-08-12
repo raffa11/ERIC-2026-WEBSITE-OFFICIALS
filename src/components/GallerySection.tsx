@@ -26,7 +26,7 @@ export default function GallerySection() {
     : GALLERY_ITEMS.filter((item) => item.category.toLowerCase().includes(filter.toLowerCase()) || filter.toLowerCase().includes(item.category.toLowerCase()));
 
   return (
-    <section id="gallery-section" className="relative py-24 bg-[#050505] border-t border-white/5 overflow-hidden">
+    <section id="gallery-section" className="relative py-24 bg-[#050505] border-t border-white/5 overflow-hidden tech-grid">
       {/* Light highlights */}
       <div className="absolute right-[5%] bottom-[30%] w-[400px] h-[400px] rounded-full bg-[#FFE44D]/5 blur-[140px] pointer-events-none" />
 

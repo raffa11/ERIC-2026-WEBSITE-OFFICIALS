@@ -10,7 +10,7 @@ export default function SponsorsSection() {
   const [imgErrors, setImgErrors] = useState<Record<string, boolean>>({});
 
   return (
-    <section id="sponsors-section" className="relative py-24 bg-[#0D0D0D] border-t border-white/5 select-none overflow-hidden">
+    <section id="sponsors-section" className="relative py-24 bg-[#0D0D0D] border-t border-white/5 select-none overflow-hidden tech-grid">
       <div className="absolute right-[-10%] bottom-[10%] w-[350px] h-[350px] bg-[#FFD700]/5 rounded-full blur-[120px] pointer-events-none" />
 
       <div className="max-w-7xl mx-auto px-6 relative z-10">

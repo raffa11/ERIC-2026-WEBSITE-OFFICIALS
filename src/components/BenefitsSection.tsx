@@ -49,7 +49,7 @@ export default function BenefitsSection() {
   const { t } = useLanguage();
 
   return (
-    <section className="relative py-28 bg-[#0D0D0D] border-t border-white/5 overflow-hidden">
+    <section className="relative py-28 bg-[#0D0D0D] border-t border-white/5 overflow-hidden tech-grid">
       <div className="absolute left-[-10%] bottom-[10%] w-[450px] h-[450px] rounded-full bg-[#FFD700]/5 blur-[120px] pointer-events-none" />
       <div className="absolute right-[-5%] top-[5%] w-[350px] h-[350px] rounded-full bg-[#0047AB]/5 blur-[100px] pointer-events-none" />
 

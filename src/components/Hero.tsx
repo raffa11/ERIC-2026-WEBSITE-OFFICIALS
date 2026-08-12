@@ -26,6 +26,9 @@ export default function Hero() {
       {/* Real-time Dynamic Cybernetic Canvas Network Background */}
       <NetworkBackground />
 
+      {/* Scanning telemetry beam */}
+      <div className="scan-beam z-[1]" />
+
       {/* Extreme ambient laser light flares in corners */}
       <div className="absolute top-1/4 left-1/4 w-[500px] h-[500px] bg-gradient-to-tr from-[#0047AB]/10 to-transparent blur-[140px] pointer-events-none" />
       <div className="absolute bottom-1/4 right-1/4 w-[450px] h-[450px] bg-gradient-to-b from-[#FFD700]/5 to-transparent blur-[130px] pointer-events-none" />
@@ -86,7 +89,10 @@ export default function Hero() {
           </div>
 
           {/* MIDDLE: Enormous Luxury Typographic Core & CTAs */}
-          <div className="lg:col-span-9 text-left">
+          <div className="lg:col-span-9 text-left relative">
+
+            {/* HUD corner frame */}
+            <div className="hud-frame absolute inset-0 opacity-50 pointer-events-none" />
 
             {/* Tagline label */}
             <motion.div
@@ -118,7 +124,7 @@ export default function Hero() {
                 initial={{ y: 40, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
                 transition={{ delay: 0.25, duration: 0.7 }}
-                className="text-transparent bg-clip-text bg-gradient-to-r from-[#FFD700] via-[#FFE44D] to-[#0047AB] text-4xl sm:text-6xl md:text-8xl font-black block mt-1"
+                className="text-transparent bg-clip-text bg-gradient-to-r from-[#FFD700] via-[#FFE44D] to-[#0047AB] text-4xl sm:text-6xl md:text-8xl font-black block mt-1 animate-glitch"
               >
                 {t('BUILD THE FUTURE', 'BUILD THE FUTURE')}
               </motion.div>
@@ -171,9 +177,9 @@ export default function Hero() {
         </div>
       </div>
 
-      {/* BOTTOM CONTROL DECK: Scroll button */}
+      {/* BOTTOM CONTROL DECK: Telemetry ticker + Scroll button */}
       <div className="max-w-7xl mx-auto px-6 w-full mt-8 relative z-10 select-none border-t border-white/5 pt-8">
-        <div className="flex justify-center items-center">
+        <div className="flex justify-center items-center mb-5">
           <button
             id="hero-scroll-btn"
             onClick={() => handleScrollTo('#about-section')}
@@ -182,6 +188,25 @@ export default function Hero() {
             <span>{t('SCROLL TO LAUNCH', 'GULIR KE BAWAH')}</span>
             <ArrowDown className="w-3.5 h-3.5" />
           </button>
+        </div>
+
+        {/* Live telemetry readout strip */}
+        <div className="relative overflow-hidden border border-white/5 bg-black/60 rounded-lg py-1.5">
+          <div className="animate-ticker whitespace-nowrap font-mono text-[8.5px] text-zinc-500 uppercase tracking-[0.25em]">
+            <span className="text-[#00FF88]">●</span> SYS.STATUS ONLINE&nbsp;&nbsp;&nbsp;//
+            <span className="text-[#FFD700]">●</span> ARENA.LOCKED&nbsp;&nbsp;&nbsp;//
+            <span className="text-[#00FF88]">●</span> UPLINK.STABLE&nbsp;&nbsp;&nbsp;//
+            <span className="text-[#FFD700]">●</span> PRIZE.POOL 62M+&nbsp;&nbsp;&nbsp;//
+            <span className="text-[#00FF88]">●</span> REGISTRATION.OPEN&nbsp;&nbsp;&nbsp;//
+            <span className="text-[#FFD700]">●</span> {t('ROBOTS.DEPLOYING', 'ROBOT.BERSIAP')}&nbsp;&nbsp;&nbsp;//
+            <span className="text-[#00FF88]">●</span> SYS.STATUS ONLINE&nbsp;&nbsp;&nbsp;//
+            <span className="text-[#FFD700]">●</span> ARENA.LOCKED&nbsp;&nbsp;&nbsp;//
+            <span className="text-[#00FF88]">●</span> UPLINK.STABLE&nbsp;&nbsp;&nbsp;//
+            <span className="text-[#FFD700]">●</span> PRIZE.POOL 62M+&nbsp;&nbsp;&nbsp;//
+            <span className="text-[#00FF88]">●</span> REGISTRATION.OPEN&nbsp;&nbsp;&nbsp;//
+            <span className="text-[#FFD700]">●</span> {t('ROBOTS.DEPLOYING', 'ROBOT.BERSIAP')}&nbsp;&nbsp;&nbsp;//
+            <span className="blink-cursor inline-block w-1.5 h-2.5 bg-[#00FF88] align-middle ml-1" />
+          </div>
         </div>
       </div>
 

@@ -19,7 +19,7 @@ export default function AboutEric() {
   ] as const;
 
   return (
-    <section id="about-section" className="relative py-28 bg-[#0D0D0D] border-t border-white/5 overflow-hidden">
+    <section id="about-section" className="relative py-28 bg-[#0D0D0D] border-t border-white/5 overflow-hidden tech-grid scanlines">
       {/* Light highlights */}
       <div className="absolute left-[-15%] top-[-10%] w-[450px] h-[450px] rounded-full bg-[#0047AB]/5 blur-[120px] pointer-events-none" />
 

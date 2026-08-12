@@ -23,8 +23,12 @@ export interface Division {
   maxMembers: number; // maximum number of team members allowed (beyond leader)
   hasSubCategory?: boolean;
   subCategories?: string[];
+  indonesianSubCategories?: string[];
   hasLevels?: boolean;
   levels?: string[];
+  indonesianLevels?: string[];
+  capacity?: number; // total registration quota slots
+  registered?: number; // current filled quota slots
   hasLecturer?: boolean;
   comingSoon?: boolean;
   canceled?: boolean;
