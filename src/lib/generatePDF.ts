@@ -2,7 +2,7 @@ import { jsPDF } from 'jspdf';
 import { Registration } from '../types';
 import { COMPETITION_DIVISIONS } from '../data';
 
-export function generateRegistrationPDF(reg: Registration) {
+export function buildRegistrationPdf(reg: Registration): jsPDF {
   const doc = new jsPDF('portrait', 'mm', 'a4');
   const pw = 210;
   const ph = 297;
@@ -298,9 +298,18 @@ export function generateRegistrationPDF(reg: Registration) {
   const idShort = reg.id.length > 12 ? reg.id.slice(-12) : reg.id;
   doc.text(`ERIC 2026 // ${new Date().toISOString().slice(0, 10)} // ID: ${idShort}`, pw / 2, cursor, { align: 'center' });
 
-  // ══════════════════════════════════════════
-  //  SAVE
-  // ══════════════════════════════════════════
-  const safeName = reg.teamName.replace(/[^a-zA-Z0-9]/g, '_');
-  doc.save(`ERIC_2026_Ticket_${safeName}.pdf`);
+  return doc;
+}
+
+export function registrationPdfSafeName(reg: Registration) {
+  return reg.teamName.replace(/[^a-zA-Z0-9]/g, '_');
+}
+
+export function generateRegistrationPDF(reg: Registration) {
+  const doc = buildRegistrationPdf(reg);
+  doc.save(`ERIC_2026_Ticket_${registrationPdfSafeName(reg)}.pdf`);
+}
+
+export function registrationToPdfBase64(reg: Registration): string {
+  return buildRegistrationPdf(reg).output('datauristring');
 }

@@ -137,6 +137,8 @@ export interface Registration {
   lecturerCongenitalDisease?: string;
   paymentProofName?: string;
   paymentProofUrl?: string;
+  ticketEmailStatus?: string;
+  ticketEmailDate?: string;
   ric?: RicSubmission;
 }
 

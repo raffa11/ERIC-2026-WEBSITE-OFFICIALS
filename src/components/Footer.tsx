@@ -25,7 +25,7 @@ export default function Footer() {
   return (
     <footer id="footer-root" className="relative bg-[#050505] border-t border-white/5 pt-20 pb-8 overflow-hidden select-none tech-grid">
       
-      <div className="absolute top-[20%] left-1/2 -translate-x-1/2 w-[500px] h-[300px] rounded-full bg-[#0047AB]/5 blur-[120px] pointer-events-none" />
+      <div className="absolute top-[20%] left-1/2 -translate-x-1/2 w-[500px] h-[300px] rounded-full bg-[#0047AB]/5 blur-[120px] pointer-events-none hidden sm:block" />
 
       <div className="max-w-7xl mx-auto px-6 relative z-10">
         

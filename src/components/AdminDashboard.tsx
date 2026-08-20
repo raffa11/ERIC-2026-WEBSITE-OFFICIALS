@@ -8,17 +8,21 @@ import { motion, AnimatePresence } from 'motion/react';
 import { useLanguage } from './LanguageContext';
 import { useAlert } from './AlertModal';
 import { COMPETITION_DIVISIONS } from '../data';
-import { Registration } from '../types';
+import { Registration, ADMIN_EMAILS } from '../types';
 
 import * as XLSX from 'xlsx';
 import { 
   Trophy, Terminal, Download, 
   FileSpreadsheet, Database, ArrowLeft, X,
   CreditCard, Users, Globe, ExternalLink,
-  FileText, Lock, Check, Eye, Unlock
+  FileText, Lock, Check, Eye, Unlock,
+  Ticket, Mail, Send, Search, RefreshCw, KeyRound, ShieldCheck
 } from 'lucide-react';
 import { getGoogleScriptUrl, setGoogleScriptUrl, syncToGoogleSheet, fetchAllRegistrations } from '../lib/googleSheet';
 import { reconstructRic } from '../lib/supabase';
+import { generateRegistrationPDF, registrationPdfSafeName } from '../lib/generatePDF';
+import { sendTicketEmail, getSendTicketSecret, setSendTicketSecret, normalizeRegistration } from '../lib/ticketRescue';
+import gasScriptRaw from '../../google-apps-script.js?raw';
 
 interface AdminDashboardProps {
   currentUser: { name: string; email: string; method: string } | null;
@@ -36,9 +40,22 @@ export default function AdminDashboard({
   const { t } = useLanguage();
   const { showAlert, showConfirm } = useAlert();
 
-  const [activeTab, setActiveTab] = useState<'registrations' | 'ric'>('registrations');
+  const [activeTab, setActiveTab] = useState<'registrations' | 'ric' | 'tickets'>('registrations');
   const [ricSheetData, setRicSheetData] = useState<Registration[] | null>(null);
   const [isLoadingRic, setIsLoadingRic] = useState(false);
+
+  // PDF TICKET RESCUE state
+  const [ticketData, setTicketData] = useState<Registration[] | null>(null);
+  const [isLoadingTickets, setIsLoadingTickets] = useState(false);
+  const [ticketSearch, setTicketSearch] = useState('');
+  const [ticketDivision, setTicketDivision] = useState('all');
+  const [ticketSendModal, setTicketSendModal] = useState<Registration | null>(null);
+  const [selectedTicketReg, setSelectedTicketReg] = useState<Registration | null>(null);
+  const [sendToEmail, setSendToEmail] = useState('');
+  const [sendSubject, setSendSubject] = useState('');
+  const [sendBody, setSendBody] = useState('');
+  const [sendSecret, setSendSecret] = useState(getSendTicketSecret());
+  const [isSending, setIsSending] = useState(false);
 
   // Fetch ALL registrations from Google Sheets when RIC tab is active
   React.useEffect(() => {
@@ -53,6 +70,29 @@ export default function AdminDashboard({
       }).catch(() => setIsLoadingRic(false));
     }
   }, [activeTab]);
+
+  // Fetch ALL registrations from Google Sheets when PDF TICKETS tab is active
+  React.useEffect(() => {
+    if (activeTab === 'tickets') {
+      setIsLoadingTickets(true);
+      fetchAllRegistrations().then((data) => {
+        if (data) {
+          const normalized = data
+            .map(normalizeRegistration)
+            .filter((r): r is Registration => !!r);
+          setTicketData(normalized);
+        } else {
+          setTicketData([]);
+        }
+        setIsLoadingTickets(false);
+      }).catch(() => {
+        setTicketData([]);
+        setIsLoadingTickets(false);
+      });
+    }
+  }, [activeTab]);
+
+  const isAdmin = !!currentUser && ADMIN_EMAILS.map(e => e.toLowerCase().trim()).includes(currentUser.email.toLowerCase().trim());
 
   // Google Sheets integration state
   const [googleScriptUrl, setGoogleScriptUrlState] = useState(getGoogleScriptUrl());
@@ -156,6 +196,82 @@ export default function AdminDashboard({
     XLSX.writeFile(wb, `ERIC_2026_Live_Registrations_${new Date().toISOString().slice(0, 10)}.xlsx`);
   };
 
+  // ─── PDF TICKET RESCUE LOGIC ─────────────────────────────
+  const refreshTickets = () => {
+    setIsLoadingTickets(true);
+    fetchAllRegistrations().then((data) => {
+      if (data) {
+        const normalized = data
+          .map(normalizeRegistration)
+          .filter((r): r is Registration => !!r);
+        setTicketData(normalized);
+      } else {
+        setTicketData([]);
+      }
+      setIsLoadingTickets(false);
+    }).catch(() => {
+      setTicketData([]);
+      setIsLoadingTickets(false);
+    });
+  };
+
+  const filteredTickets = (ticketData || []).filter((r) => {
+    const q = String(ticketSearch || '').toLowerCase().trim();
+    const matchQ = !q ||
+      String(r.teamName || '').toLowerCase().includes(q) ||
+      String(r.refCode || '').toLowerCase().includes(q) ||
+      String(r.leader?.email || '').toLowerCase().includes(q) ||
+      String(r.leader?.name || '').toLowerCase().includes(q);
+    const matchDiv = ticketDivision === 'all' || String(r.divisionId) === ticketDivision;
+    return matchQ && matchDiv;
+  });
+
+  const handleDownloadTicket = (reg: Registration) => {
+    try {
+      generateRegistrationPDF(reg);
+      showAlert({
+        message: `Tiket ${reg.teamName} (${reg.refCode}) berhasil di-generate dan diunduh.`,
+        type: 'success',
+      });
+    } catch (err) {
+      showAlert({ message: 'Gagal generate PDF: ' + err, type: 'error' });
+    }
+  };
+
+  const openSendModal = (reg: Registration) => {
+    setSendToEmail(reg.leader?.email || '');
+    setSendSubject(`ERIC 2026 — Tiket Peserta ${reg.teamName} (${reg.refCode})`);
+    setSendBody(
+      `Halo ${reg.leader?.name || 'Peserta'},\n\n` +
+      `Terlampir tiket registrasi ERIC 2026 untuk tim ${reg.teamName} (kode: ${reg.refCode}).\n\n` +
+      `Salam,\nPanitia ERIC 2026`
+    );
+    setTicketSendModal(reg);
+  };
+
+  const handleSendTicket = async () => {
+    if (!ticketSendModal) return;
+    setIsSending(true);
+    const res = await sendTicketEmail({
+      reg: ticketSendModal,
+      toEmail: sendToEmail,
+      subject: sendSubject || undefined,
+      body: sendBody || undefined,
+      secret: sendSecret,
+    });
+    setIsSending(false);
+    showAlert({ message: res.message, type: res.ok ? 'success' : 'error' });
+    if (res.ok) {
+      setTicketSendModal(null);
+      refreshTickets();
+    }
+  };
+
+  const ticketDivisionCounts = (ticketData || []).reduce((acc, r) => {
+    acc[r.divisionId] = (acc[r.divisionId] || 0) + 1;
+    return acc;
+  }, {} as Record<string, number>);
+
   return (
     <div className="pt-28 pb-20 px-6 max-w-7xl mx-auto space-y-8 select-none">
       
@@ -202,6 +318,13 @@ export default function AdminDashboard({
           className={`px-5 py-2 text-xs font-mono font-black uppercase rounded-xl transition-all cursor-pointer ${activeTab === 'ric' ? 'bg-[#C5A059] text-black shadow-[0_0_15px_rgba(197,160,89,0.2)]' : 'text-zinc-400 hover:text-white'}`}
         >
           RIC SUBMISSIONS
+        </button>
+        <button
+          onClick={() => setActiveTab('tickets')}
+          className={`px-5 py-2 text-xs font-mono font-black uppercase rounded-xl transition-all cursor-pointer flex items-center gap-1.5 ${activeTab === 'tickets' ? 'bg-[#FF3B30] text-white shadow-[0_0_15px_rgba(255,59,48,0.25)]' : 'text-zinc-400 hover:text-white'}`}
+        >
+          <Ticket className="w-3.5 h-3.5" />
+          PDF TICKETS
         </button>
 
       </div>
@@ -399,90 +522,9 @@ export default function AdminDashboard({
                     <span className="text-[9px] font-mono text-zinc-500 uppercase font-bold">Code.gs Script</span>
                     <button
                       onClick={() => {
-                        navigator.clipboard.writeText(`/**
- * GOOGLE APPS SCRIPT FOR GOOGLE SHEET SYNCHRONIZATION
- */
-const SPREADSHEET_ID = "12ouLbtyguh2VWYX0_DQlJUU_KCCEZ4qQBtH0RL2UFP8";
-
-function getOrCreateFolder(name) {
-  const folders = DriveApp.getFoldersByName(name);
-  return folders.hasNext() ? folders.next() : DriveApp.createFolder(name);
-}
-
-function uploadBase64File(base64Data, filename, folder) {
-  if (!base64Data || !base64Data.startsWith("data:")) return "-";
-  try {
-    const parts = base64Data.split(",");
-    const mimeMatch = parts[0].match(/:(.*?);/);
-    const mimeType = mimeMatch ? mimeMatch[1] : "application/octet-stream";
-    const decoded = Utilities.base64Decode(parts[1]);
-    const blob = Utilities.newBlob(decoded, mimeType, filename);
-    const file = folder.createFile(blob);
-    file.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW);
-    return file.getUrl();
-  } catch (err) {
-    return "Upload Error: " + err.toString();
-  }
-}
-
-function doPost(e) {
-  try {
-    const data = JSON.parse(e.postData.contents);
-    const ss = SpreadsheetApp.openById(SPREADSHEET_ID);
-    const sheet = ss.getActiveSheet();
-    
-    const idFolder = getOrCreateFolder("ERIC_ID_Cards");
-    const twibbonFolder = getOrCreateFolder("ERIC_Twibbons");
-    const proofFolder = getOrCreateFolder("ERIC_Payment_Proofs");
-    
-    const leaderIdUrl = uploadBase64File(data.leaderIdCardUrl, "LEADER_ID_" + data.teamName + "_" + (data.leaderIdCardName || "id_card"), idFolder);
-    const leaderTwibbonUrl = uploadBase64File(data.leaderTwibbonUrl, "LEADER_TWIBBON_" + data.teamName + "_" + (data.leaderTwibbonName || "twibbon"), twibbonFolder);
-    
-    const m1IdUrl = uploadBase64File(data.m1IdCardUrl, "MEMBER1_ID_" + data.teamName + "_" + (data.m1IdCardName || "id_card"), idFolder);
-    const m1TwibbonUrl = uploadBase64File(data.m1TwibbonUrl, "MEMBER1_TWIBBON_" + data.teamName + "_" + (data.m1TwibbonName || "twibbon"), twibbonFolder);
-    
-    const m2IdUrl = uploadBase64File(data.m2IdCardUrl, "MEMBER2_ID_" + data.teamName + "_" + (data.m2IdCardName || "id_card"), idFolder);
-    const m2TwibbonUrl = uploadBase64File(data.m2TwibbonUrl, "MEMBER2_TWIBBON_" + data.teamName + "_" + (data.m2TwibbonName || "twibbon"), twibbonFolder);
-    
-    const lecturerIdUrl = uploadBase64File(data.lecturerIdCardUrl, "LECTURER_ID_" + data.teamName + "_" + (data.lecturerIdCardName || "id_card"), idFolder);
-    const lecturerTwibbonUrl = uploadBase64File(data.lecturerTwibbonUrl, "LECTURER_TWIBBON_" + data.teamName + "_" + (data.lecturerTwibbonName || "twibbon"), twibbonFolder);
-    
-    const payProofUrl = uploadBase64File(data.paymentProofUrl, "PAY_PROOF_" + data.teamName + "_" + (data.paymentProofName || "proof"), proofFolder);
-    
-    const headers = [
-      "ID", "Timestamp", "Division", "Sub Category", "Level", "Team Name",
-      "Leader Name", "Leader Email", "Leader WhatsApp", "Leader Institution", "Leader Address", "Leader Congenital Disease",
-      "Leader ID Card", "Leader Twibbon",
-      "Member 1 Name", "Member 1 WhatsApp", "Member 1 Disease", "Member 1 ID Card", "Member 1 Twibbon",
-      "Member 2 Name", "Member 2 WhatsApp", "Member 2 Disease", "Member 2 ID Card", "Member 2 Twibbon",
-      "Lecturer Name", "Lecturer Email", "Lecturer WhatsApp", "Lecturer Disease", "Lecturer ID Card", "Lecturer Twibbon",
-      "Payment Method", "Payment Status", "Amount Paid", "Payment Proof", "Ref Code"
-    ];
-    
-    if (sheet.getLastRow() === 0) {
-      sheet.appendRow(headers);
-      const headerRange = sheet.getRange(1, 1, 1, headers.length);
-      headerRange.setFontWeight("bold");
-      headerRange.setBackground("#FFD700");
-      headerRange.setFontColor("#000000");
-    }
-    
-    const row = [
-      data.id, new Date().toLocaleString(), data.divisionId, data.subCategory || "-", data.level || "-", data.teamName,
-      data.leaderName, data.leaderEmail, data.leaderWhatsApp, data.leaderInstitution, data.leaderAddress || "-", data.leaderCongenitalDisease || "-",
-      leaderIdUrl, leaderTwibbonUrl,
-      data.m1Name || "-", data.m1WhatsApp || "-", data.m1CongenitalDisease || "-", m1IdUrl, m1TwibbonUrl,
-      data.m2Name || "-", data.m2WhatsApp || "-", data.m2CongenitalDisease || "-", m2IdUrl, m2TwibbonUrl,
-      data.lecturerName || "-", data.lecturerEmail || "-", data.lecturerWhatsApp || "-", data.lecturerCongenitalDisease || "-", lecturerIdUrl, lecturerTwibbonUrl,
-      data.paymentMethod, data.paymentStatus, data.amount || "IDR 250,000", payProofUrl, data.refCode
-    ];
-    
-    sheet.appendRow(row);
-    return ContentService.createTextOutput(JSON.stringify({ status: "success", id: data.id })).setMimeType(ContentService.MimeType.JSON);
-  } catch (err) {
-    return ContentService.createTextOutput(JSON.stringify({ status: "error", message: err.toString() })).setMimeType(ContentService.MimeType.JSON);
-  }
-}`);
+                        navigator.clipboard.writeText(gasScriptRaw);
+                        setCopiedText('COPIED!');
+                        setTimeout(() => setCopiedText(''), 2000);
                         setCopiedText('COPIED!');
                         setTimeout(() => setCopiedText(''), 2000);
                       }}
@@ -494,18 +536,11 @@ function doPost(e) {
                   <pre className="p-4 bg-zinc-950 border border-white/5 rounded-2xl text-[10.5px] font-mono text-zinc-400 overflow-x-auto max-h-[180px] custom-scrollbar select-all">
 {`const SPREADSHEET_ID = "12ouLbtyguh2VWYX0_DQlJUU_KCCEZ4qQBtH0RL2UFP8";
 
-function getOrCreateFolder(name) {
-  const folders = DriveApp.getFoldersByName(name);
-  return folders.hasNext() ? folders.next() : DriveApp.createFolder(name);
-}
-
 function doPost(e) {
-  try {
-    const data = JSON.parse(e.postData.contents);
-    const idFolder = getOrCreateFolder("ERIC_ID_Cards");
-    const twibbonFolder = getOrCreateFolder("ERIC_Twibbons");
-    const proofFolder = getOrCreateFolder("ERIC_Payment_Proofs");
-    // ... complete script is copied via clipboard button above ...`}
+  const data = JSON.parse(e.postData.contents);
+  // action = "sync" | "sendTicket" | "deleteRegistration"
+  // ... full Code.gs (incl. handleSendTicket) is in google-apps-script.js
+  //     and copied via the button above. Re-deploy after every change.`}
                   </pre>
                 </div>
               </div>
@@ -657,6 +692,272 @@ function doPost(e) {
             </div>
           );
         })()}
+      </>      
+      )}
+
+      {activeTab === 'tickets' && (<>
+        <div className="space-y-2">
+          <span className="text-[10px] font-mono text-[#FF3B30] tracking-[0.25em] uppercase font-black flex items-center gap-2">
+            <Ticket className="w-4 h-4" /> PDF TICKET RESCUE
+          </span>
+          <h2 className="text-3xl md:text-5xl font-sans font-black tracking-tight text-white uppercase leading-none">
+            TICKET <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#FF3B30] to-[#FF9F0A]">REGENERATOR</span>
+          </h2>
+          <p className="text-zinc-500 font-mono text-xs uppercase max-w-2xl leading-relaxed">
+            {t('Regenerate registration tickets for any participant and deliver them directly via email when the participant cannot download their PDF.', 'Generate ulang tiket registrasi peserta mana pun dan kirim langsung via email saat peserta tidak bisa mengunduh PDF-nya.')}
+          </p>
+        </div>
+
+        {!isAdmin && (
+          <div className="p-6 bg-zinc-950 border border-[#FF3B30]/30 rounded-3xl flex items-center gap-4">
+            <ShieldCheck className="w-8 h-8 text-[#FF3B30] shrink-0" />
+            <div>
+              <h4 className="font-sans font-black text-white uppercase tracking-wider text-sm">ACCESS DENIED</h4>
+              <p className="text-[10px] font-mono text-zinc-400 uppercase mt-1">
+                Hanya administrator resmi (email terdaftar di ADMIN_EMAILS) yang dapat mengakses modul pengiriman tiket.
+              </p>
+            </div>
+          </div>
+        )}
+
+        {isAdmin && (<>
+        {/* Controls: search + division filter + refresh */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+          <div className="flex items-center gap-2 bg-zinc-950 border border-white/5 rounded-xl px-3 py-2.5 md:col-span-1">
+            <Search className="w-4 h-4 text-zinc-500 shrink-0" />
+            <input
+              type="text"
+              name="ticket-search"
+              placeholder="Cari tim / ref code / email / nama..."
+              value={ticketSearch}
+              onChange={(e) => setTicketSearch(e.target.value)}
+              className="w-full bg-transparent text-xs text-white placeholder-zinc-600 focus:outline-none font-mono"
+            />
+          </div>
+          <select
+            value={ticketDivision}
+            onChange={(e) => setTicketDivision(e.target.value)}
+            className="bg-zinc-950 border border-white/5 rounded-xl px-3 py-2.5 text-xs text-white focus:outline-none focus:border-[#FF3B30]/30 font-mono cursor-pointer"
+          >
+            <option value="all">ALL DIVISIONS ({ticketData?.length || 0})</option>
+            {COMPETITION_DIVISIONS.map((d) => (
+              <option key={d.id} value={d.id}>
+                {d.title.toUpperCase()} ({ticketDivisionCounts[d.id] || 0})
+              </option>
+            ))}
+          </select>
+          <button
+            onClick={refreshTickets}
+            className="flex items-center justify-center gap-2 px-4 py-2.5 bg-zinc-900 hover:bg-zinc-800 border border-white/5 text-zinc-300 hover:text-white font-mono text-[10px] font-bold uppercase rounded-xl transition-all cursor-pointer"
+          >
+            <RefreshCw className={`w-3.5 h-3.5 ${isLoadingTickets ? 'animate-spin' : ''}`} />
+            REFRESH DATA
+          </button>
+        </div>
+
+        {/* Config: send secret */}
+        <div className="p-4 bg-zinc-950 border border-white/5 rounded-2xl flex flex-col sm:flex-row sm:items-center gap-3">
+          <div className="flex items-center gap-2 text-[10px] font-mono text-zinc-400 uppercase shrink-0">
+            <KeyRound className="w-4 h-4 text-[#FF3B30]" />
+            ADMIN SEND SECRET
+          </div>
+          <input
+            type="text"
+            name="admin-send-secret"
+            value={sendSecret}
+            onChange={(e) => {
+              setSendSecret(e.target.value);
+              setSendTicketSecret(e.target.value);
+            }}
+            placeholder="Secret token (harus sama dengan GAS script)"
+            className="flex-1 min-w-0 bg-zinc-900 border border-white/5 focus:border-[#FF3B30]/40 rounded-xl px-3 py-2 text-[11px] font-mono text-white placeholder-zinc-600 focus:outline-none"
+          />
+          <p className="text-[8.5px] font-mono text-zinc-600 uppercase leading-relaxed">
+            Wajib sama persis dengan const SECRET di handleSendTicket (google-apps-script.js). Default: ERIC2026_TICKET_RESCUE
+          </p>
+        </div>
+
+        {/* List */}
+        {isLoadingTickets && !ticketData ? (
+          <div className="p-10 text-center text-zinc-500 text-sm font-mono">Loading all registrations from Google Sheets...</div>
+        ) : !ticketData || filteredTickets.length === 0 ? (
+          <div className="p-10 bg-zinc-950 border border-dashed border-white/10 rounded-3xl text-center space-y-3">
+            <Ticket className="w-10 h-10 text-zinc-600 mx-auto" />
+            <p className="text-sm font-sans font-black text-zinc-500 uppercase">
+              {ticketData ? 'No participants match the filter.' : 'No registrations loaded.'}
+            </p>
+            <p className="text-[10px] font-mono text-zinc-600 uppercase">
+              {ticketData ? 'Coba ubah kata kunci pencarian atau filter divisi.' : 'Pastikan Google Apps Script URL aktif & data tersedia di sheet.'}
+            </p>
+          </div>
+        ) : (
+          <div className="space-y-3">
+            {filteredTickets.map((reg, i) => {
+              const divObj = COMPETITION_DIVISIONS.find(d => d.id === reg.divisionId);
+              const isOpen = selectedTicketReg?.id === reg.id;
+              const logStatus = reg.ticketEmailStatus || '';
+              return (
+                <div key={`${reg.id || reg.refCode || 'row'}-${i}`} className={`bg-zinc-950 border rounded-2xl transition-all ${logStatus === 'SENT' ? 'border-[#00FF88]/25' : 'border-white/5'}`}>
+                  <div
+                    onClick={() => setSelectedTicketReg(isOpen ? null : reg)}
+                    className="p-4 flex flex-col md:flex-row md:items-center gap-3 cursor-pointer"
+                  >
+                    <div className="flex items-center gap-3 flex-1 min-w-0">
+                      <div className={`w-9 h-9 rounded-xl border flex items-center justify-center shrink-0 ${logStatus === 'SENT' ? 'bg-[#00FF88]/10 border-[#00FF88]/30' : 'bg-[#FF3B30]/10 border-[#FF3B30]/20'}`}>
+                        <Ticket className={`w-4 h-4 ${logStatus === 'SENT' ? 'text-[#00FF88]' : 'text-[#FF3B30]'}`} />
+                      </div>
+                      <div className="min-w-0">
+                        <h4 className="font-sans font-black text-white uppercase tracking-tight truncate">{reg.teamName}</h4>
+                        <p className="text-[9px] font-mono text-zinc-500 truncate">
+                          REF: <span className="text-[#C5A059] font-bold">{reg.refCode}</span> | {divObj?.title || reg.divisionId} | {reg.leader?.name || '-'} | {reg.leader?.email || '-'}
+                        </p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2 shrink-0 flex-wrap">
+                      {logStatus === 'SENT' && (
+                        <span className="text-[8px] font-mono text-[#00FF88] font-black uppercase px-2 py-1 border border-[#00FF88]/30 bg-[#00FF88]/5 rounded-lg whitespace-nowrap">
+                          ✓ EMAIL SENT {reg.ticketEmailDate ? '· ' + reg.ticketEmailDate : ''}
+                        </span>
+                      )}
+                      <button
+                        onClick={(e) => { e.stopPropagation(); handleDownloadTicket(reg); }}
+                        className="px-3 py-1.5 bg-[#FFD700]/10 border border-[#FFD700]/20 hover:bg-[#FFD700]/20 rounded-lg text-[9px] font-mono text-[#FFD700] font-bold uppercase transition-all cursor-pointer flex items-center gap-1.5"
+                      >
+                        <Download className="w-3 h-3" /> PDF
+                      </button>
+                      <button
+                        onClick={(e) => { e.stopPropagation(); openSendModal(reg); }}
+                        className="px-3 py-1.5 bg-[#FF3B30]/10 border border-[#FF3B30]/25 hover:bg-[#FF3B30]/20 rounded-lg text-[9px] font-mono text-[#FF3B30] font-bold uppercase transition-all cursor-pointer flex items-center gap-1.5"
+                      >
+                        <Mail className="w-3 h-3" /> EMAIL
+                      </button>
+                    </div>
+                  </div>
+
+                  {isOpen && (
+                    <div className="px-4 pb-4 pt-1 border-t border-white/5 grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-1.5 text-[10px] font-mono">
+                      <div className="sm:col-span-2 text-[8px] font-mono text-zinc-600 uppercase tracking-widest pb-1 pt-2">ROSTER DATA PREVIEW — {registrationPdfSafeName(reg)}</div>
+                      <div className="text-zinc-500">PAYMENT: <span className={`font-bold ${reg.paymentStatus === 'PAID' ? 'text-[#00FF88]' : 'text-amber-400'}`}>{reg.paymentStatus}</span> · {reg.paymentMethod}</div>
+                      <div className="text-zinc-500">AMOUNT: <span className="text-white font-bold">{reg.amount || divObj?.price || '-'}</span></div>
+                      <div className="text-zinc-500">LEADER: <span className="text-white font-bold">{reg.leader?.name}</span></div>
+                      <div className="text-zinc-500">WA: <span className="text-white font-bold">{reg.leader?.whatsapp || '-'}</span></div>
+                      <div className="text-zinc-500">INSTITUTION: <span className="text-white font-bold">{reg.leader?.institution || '-'}</span></div>
+                      <div className="text-zinc-500">MEMBERS: <span className="text-white font-bold">{(reg.members || []).map(m => m.name).filter(Boolean).join(', ') || '-'}</span></div>
+                      {reg.subCategory && <div className="text-zinc-500">SUB: <span className="text-white font-bold">{reg.subCategory}</span></div>}
+                      {reg.level && <div className="text-zinc-500">LEVEL: <span className="text-white font-bold">{reg.level}</span></div>}
+                      {reg.lecturerName && <div className="text-zinc-500">ADVISOR: <span className="text-white font-bold">{reg.lecturerName}</span></div>}
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        )}
+
+        {/* SEND VIA EMAIL MODAL */}
+        <AnimatePresence>
+          {ticketSendModal && (
+            <motion.div
+              key="send-ticket-modal"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/95 backdrop-blur-md overflow-y-auto"
+            >
+              <div className="absolute inset-0 cursor-default" onClick={() => !isSending && setTicketSendModal(null)} />
+              <div className="bg-[#0C0C0C] border border-white/10 rounded-3xl p-6 md:p-8 max-w-xl w-full relative z-10 overflow-hidden shadow-[0_30px_70px_rgba(0,0,0,0.95)]">
+                <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-[#FF3B30] to-[#FF9F0A]" />
+                <div className="flex justify-between items-center border-b border-white/5 pb-4">
+                  <div className="space-y-0.5">
+                    <span className="text-[9px] font-mono text-[#FF3B30] uppercase tracking-widest block font-black">
+                      EMAIL DELIVERY // PDF ATTACHMENT
+                    </span>
+                    <h4 className="text-lg font-sans font-black text-white uppercase tracking-tight">
+                      SEND TICKET VIA EMAIL
+                    </h4>
+                  </div>
+                  <button
+                    onClick={() => setTicketSendModal(null)}
+                    disabled={isSending}
+                    className="p-1.5 bg-zinc-900 border border-white/5 text-zinc-400 hover:text-white rounded-lg cursor-pointer disabled:opacity-40"
+                  >
+                    <X className="w-4 h-4" />
+                  </button>
+                </div>
+
+                <div className="py-4 space-y-4">
+                  <div className="p-3 bg-zinc-950 border border-white/5 rounded-xl text-[10px] font-mono space-y-1">
+                    <div className="text-zinc-400">RECIPIENT TEAM: <span className="text-white font-black">{ticketSendModal.teamName}</span></div>
+                    <div className="text-zinc-400">REF CODE: <span className="text-[#C5A059] font-black">{ticketSendModal.refCode}</span></div>
+                    <div className="text-zinc-400">ATTACHMENT: <span className="text-[#FF3B30] font-bold">{registrationPdfSafeName(ticketSendModal)}</span></div>
+                  </div>
+
+                  <div className="space-y-1">
+                    <label className="text-[9px] font-mono text-zinc-400 uppercase tracking-widest block">EMAIL TUJUAN *</label>
+                    <input
+                      type="email"
+                      name="send-to-email"
+                      required
+                      value={sendToEmail}
+                      onChange={(e) => setSendToEmail(e.target.value)}
+                      className="w-full bg-zinc-900 border border-white/5 focus:border-[#FF3B30]/40 rounded-xl px-3 py-2.5 text-xs text-white focus:outline-none"
+                    />
+                  </div>
+
+                  <div className="space-y-1">
+                    <label className="text-[9px] font-mono text-zinc-400 uppercase tracking-widest block">SUBJEK</label>
+                    <input
+                      type="text"
+                      name="send-subject"
+                      value={sendSubject}
+                      onChange={(e) => setSendSubject(e.target.value)}
+                      className="w-full bg-zinc-900 border border-white/5 focus:border-[#FF3B30]/40 rounded-xl px-3 py-2.5 text-xs text-white focus:outline-none"
+                    />
+                  </div>
+
+                  <div className="space-y-1">
+                    <label className="text-[9px] font-mono text-zinc-400 uppercase tracking-widest block">PESAN (OPSIONAL)</label>
+                    <textarea
+                      name="send-body"
+                      rows={4}
+                      value={sendBody}
+                      onChange={(e) => setSendBody(e.target.value)}
+                      className="w-full bg-zinc-900 border border-white/5 focus:border-[#FF3B30]/40 rounded-xl px-3 py-2.5 text-xs text-white focus:outline-none resize-none"
+                    />
+                  </div>
+
+                  <div className="flex items-center gap-2 text-[9px] font-mono text-zinc-500">
+                    <ShieldCheck className="w-3.5 h-3.5 text-[#00FF88]" />
+                    PDF di-generate dari data registrasi peserta & dikirim via Google Apps Script (MailApp). Status tercatat di kolom Ticket Email Status pada sheet.
+                  </div>
+                </div>
+
+                <div className="pt-4 flex justify-end gap-3 border-t border-white/5">
+                  <button
+                    onClick={() => setTicketSendModal(null)}
+                    disabled={isSending}
+                    className="px-5 py-2.5 bg-zinc-900 border border-white/5 hover:border-white/10 text-xs font-mono text-zinc-400 hover:text-white rounded-xl transition-all cursor-pointer disabled:opacity-40"
+                  >
+                    BATAL
+                  </button>
+                  <button
+                    onClick={handleSendTicket}
+                    disabled={isSending || !sendToEmail.trim()}
+                    className={`px-6 py-2.5 bg-gradient-to-r from-[#FF3B30] to-[#FF9F0A] text-black font-sans font-black text-xs tracking-wider uppercase rounded-xl hover:scale-101 transition-transform cursor-pointer disabled:opacity-40 flex items-center gap-2`}
+                  >
+                    {isSending ? (
+                      <RefreshCw className="w-4 h-4 animate-spin" />
+                    ) : (
+                      <Send className="w-4 h-4" />
+                    )}
+                    {isSending ? 'MENGIRIM...' : 'KIRIM EMAIL'}
+                  </button>
+                </div>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+        </>)}
       </>      
       )}
 

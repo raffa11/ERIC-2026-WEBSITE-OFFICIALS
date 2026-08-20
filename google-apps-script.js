@@ -12,10 +12,20 @@
 * 8. Copy the Web App URL and paste it in Admin Dashboard.
 * 
 * FEATURES:
-* - Each competition division gets its own sheet tab
-* - doPost: write new registrations to the correct division tab
-* - doGet: read registrations back from sheets (action=getRegistrations&email=...)
-*/
+ * - Each competition division gets its own sheet tab
+ * - doPost: write new registrations to the correct division tab
+ * - doPost action=sendTicket: kirim PDF tiket peserta ke email via MailApp + log status di sheet
+ * - doGet: read registrations back from sheets (action=getRegistrations, optional &email=... untuk filter; tanpa email = semua baris / admin)
+ * - doGet: action=debugHeaders — return daftar header asli tiap sheet divisi (untuk verifikasi mapping kolom)
+ * 
+ * PDF TICKET RESCUE (SEND TICKET VIA EMAIL):
+ * - Admin Dashboard generate PDF dari data peserta, POST base64 ke web app ini
+ *   dengan action="sendTicket", token rahasia, refCode, toEmail, subject, body, pdfBase64.
+ * - Jika token cocok, PDF dikirim via MailApp dan kolom "Ticket Email Status"/"Ticket Email Date"
+ *   di baris peserta di-update menjadi SENT.
+ * - DEFAULT SECRET: "ERIC2026_TICKET_RESCUE" — ganti di const SECRET (handleSendTicket)
+ *   DAN di Admin Dashboard (field ADMIN SEND SECRET) agar sama persis.
+ */
 
 const SPREADSHEET_ID = "12ouLbtyguh2VWYX0_DQlJUU_KCCEZ4qQBtH0RL2UFP8";
 
@@ -46,7 +56,8 @@ function getOrCreateDivisionSheet(divisionId) {
         "Member 1 Name", "Member 1 WhatsApp", "Member 1 Disease", "Member 1 ID Card", "Member 1 Twibbon",
         "Member 2 Name", "Member 2 WhatsApp", "Member 2 Disease", "Member 2 ID Card", "Member 2 Twibbon",
         "Lecturer Name", "Lecturer Email", "Lecturer WhatsApp", "Lecturer Disease", "Lecturer ID Card", "Lecturer Twibbon",
-        "Payment Method", "Payment Status", "Amount Paid", "Ref Code", "Payment Proof"
+        "Payment Method", "Payment Status", "Amount Paid", "Ref Code", "Payment Proof",
+        "Ticket Email Status", "Ticket Email Date"
     ];
 
     let sheet = ss.getSheetByName(sheetName);
@@ -60,6 +71,7 @@ function getOrCreateDivisionSheet(divisionId) {
             sheet.getRange(1, newCol).setBackground("#FFD700");
             sheet.getRange(1, newCol).setFontColor("#000000");
         }
+        ensureTicketLogColumns(sheet);
         return sheet;
     }
 
@@ -76,6 +88,14 @@ function getOrCreateDivisionSheet(divisionId) {
 function doPost(e) {
     try {
         const data = JSON.parse(e.postData.contents);
+
+        // PDF TICKET RESCUE: kirim tiket via email (admin action)
+        if (data.action === "sendTicket") {
+            const result = handleSendTicket(data);
+            return ContentService.createTextOutput(JSON.stringify(result))
+                .setMimeType(ContentService.MimeType.JSON);
+        }
+
         const sheet = getOrCreateDivisionSheet(data.divisionId);
 
         let uploadsFolder;
@@ -141,110 +161,299 @@ function doPost(e) {
     }
 }
 
+/**
+ * PDF TICKET RESCUE — pastikan kolom log tiket ada di sheet.
+ */
+function ensureTicketLogColumns(sheet) {
+    const existingHeaders = sheet.getRange(1, 1, 1, sheet.getLastColumn()).getValues()[0];
+    const newCols = [
+        ["Ticket Email Status", "#FFD700", "#000000"],
+        ["Ticket Email Date", "#FFD700", "#000000"]
+    ];
+    newCols.forEach(function (def) {
+        const name = def[0];
+        if (!existingHeaders.includes(name)) {
+            const col = existingHeaders.length + 1;
+            sheet.getRange(1, col).setValue(name);
+            sheet.getRange(1, col).setFontWeight("bold");
+            sheet.getRange(1, col).setBackground(def[1]);
+            sheet.getRange(1, col).setFontColor(def[2]);
+            existingHeaders.push(name);
+        }
+    });
+}
+
+/**
+ * PDF TICKET RESCUE — kirim PDF tiket ke email peserta via MailApp.
+ * Dipanggil dari doPost dengan data.action === "sendTicket".
+ */
+function handleSendTicket(data) {
+    const SECRET = "ERIC2026_TICKET_RESCUE";
+    if (data.token !== SECRET) {
+        return { status: "error", message: "Invalid admin token." };
+    }
+    if (!data.pdfBase64 || !data.toEmail) {
+        return { status: "error", message: "Missing pdf attachment or recipient email." };
+    }
+
+    const parts = String(data.pdfBase64).split(",");
+    if (parts.length < 2) {
+        return { status: "error", message: "Invalid pdf base64 payload." };
+    }
+
+    const decoded = Utilities.base64Decode(parts[1]);
+    const blob = Utilities.newBlob(decoded, "application/pdf", data.pdfName || "ERIC_2026_Ticket.pdf");
+
+    MailApp.sendEmail({
+        to: data.toEmail,
+        subject: data.subject || "ERIC 2026 — Registration Ticket",
+        body: data.body || "Terlampir tiket registrasi ERIC 2026.",
+        attachments: [blob]
+    });
+
+    let logNote = "";
+    try {
+        const updated = updateTicketLog(data.refCode, "SENT", new Date().toLocaleString());
+        if (updated === 0) logNote = " (ref code not found in sheets)";
+    } catch (err) {
+        logNote = " (log write error: " + err.toString() + ")";
+    }
+
+    return { status: "success", message: "Email sent to " + data.toEmail + logNote };
+}
+
+/**
+ * PDF TICKET RESCUE — catat status pengiriman tiket ke kolom
+ * "Ticket Email Status" & "Ticket Email Date" pada baris peserta (by Ref Code).
+ */
+function updateTicketLog(refCode, status, dateStr) {
+    if (!refCode) return 0;
+    const ss = SpreadsheetApp.openById(SPREADSHEET_ID);
+    let updated = 0;
+    const allSheets = ss.getSheets();
+
+    for (let s = 0; s < allSheets.length; s++) {
+        const sheet = allSheets[s];
+        const sheetName = sheet.getName();
+        if (!Object.values(DIVISION_MAP).includes(sheetName)) continue;
+        if (sheet.getLastRow() <= 1) continue;
+
+        ensureTicketLogColumns(sheet);
+        const headers = sheet.getRange(1, 1, 1, sheet.getLastColumn()).getValues()[0];
+        const refCol = headers.indexOf("Ref Code") + 1;
+        const statusCol = headers.indexOf("Ticket Email Status") + 1;
+        const dateCol = headers.indexOf("Ticket Email Date") + 1;
+        if (!refCol || !statusCol || !dateCol) continue;
+
+        const data = sheet.getDataRange().getValues();
+        for (let i = 1; i < data.length; i++) {
+            if (String(data[i][refCol - 1]).trim() === String(refCode).trim()) {
+                sheet.getRange(i + 1, statusCol).setValue(status);
+                sheet.getRange(i + 1, dateCol).setValue(dateStr);
+                updated++;
+            }
+        }
+    }
+    return updated;
+}
+
+/**
+ * BANTUAN OTORISASI — jalankan SEKALI dari editor Apps Script:
+ * dropdown fungsi di toolbar → pilih "authorizeMailApp" → klik Run →
+ * pilih akun → Advanced → Go to project (unsafe) → Allow.
+ * Diperlukan agar MailApp.sendEmail (scope script.send_mail) terotorisasi
+ * untuk deployment Web App.
+ */
+function authorizeMailApp() {
+    MailApp.sendEmail({
+        to: Session.getActiveUser().getEmail(),
+        subject: "ERIC 2026 — MailApp authorization test",
+        body: "Jika Anda menerima email ini, MailApp sudah terotorisasi."
+    });
+    Logger.log("MailApp authorization OK — email test terkirim ke " + Session.getActiveUser().getEmail());
+}
+
 function doGet(e) {
     try {
         const action = e.parameter.action;
         const email = (e.parameter.email || '').toLowerCase().trim();
         const callback = e.parameter.callback;
 
-        if (action === "getRegistrations" && email) {
-            const ss = SpreadsheetApp.openById(SPREADSHEET_ID);
-            const allSheets = ss.getSheets();
+        const ss = SpreadsheetApp.openById(SPREADSHEET_ID);
+        const allSheets = ss.getSheets();
+
+        // Debug helper: lihat SEMUA tab + jumlah baris + header asli (verifikasi mapping kolom).
+        if (action === "debugHeaders") {
+            const out = {};
+            for (let s = 0; s < allSheets.length; s++) {
+                const sh = allSheets[s];
+                const info = { lastRow: sh.getLastRow(), lastColumn: sh.getLastColumn() };
+                if (sh.getLastRow() >= 1 && sh.getLastColumn() >= 1) {
+                    const hdrs = sh.getRange(1, 1, 1, sh.getLastColumn()).getValues()[0];
+                    info.headers = hdrs.map(function (h) { return String(h); });
+                }
+                out[sh.getName()] = info;
+            }
+            const jh = JSON.stringify(out);
+            if (callback) {
+                return ContentService.createTextOutput(callback + '(' + jh + ')')
+                    .setMimeType(ContentService.MimeType.JAVASCRIPT);
+            }
+            return ContentService.createTextOutput(jh)
+                .setMimeType(ContentService.MimeType.JSON);
+        }
+
+        if (action === "getRegistrations") {
             const result = [];
-
-            // Standard headers expected in each division sheet
-            const headers = [
-                "ID", "Timestamp", "Division", "Sub Category", "Level", "Team Name",
-                "Leader Name", "Leader Email", "Leader WhatsApp", "Leader Institution", "Leader Address", "Leader Congenital Disease",
-                "Leader ID Card", "Leader Twibbon",
-                "Member 1 Name", "Member 1 WhatsApp", "Member 1 Disease", "Member 1 ID Card", "Member 1 Twibbon",
-                "Member 2 Name", "Member 2 WhatsApp", "Member 2 Disease", "Member 2 ID Card", "Member 2 Twibbon",
-                "Lecturer Name", "Lecturer Email", "Lecturer WhatsApp", "Lecturer Disease", "Lecturer ID Card", "Lecturer Twibbon",
-                "Payment Method", "Payment Status", "Amount Paid", "Ref Code", "Payment Proof"
-            ];
-
-            function col(name) { return headers.indexOf(name); }
+            const seen = new Map(); // dedupe by id/refCode — tab "Copy of" bisa berisi baris sama
 
             for (let s = 0; s < allSheets.length; s++) {
                 const sheet = allSheets[s];
                 const sheetName = sheet.getName();
-                // Skip non-division sheets (like the auto-generated "Sheet1")
-                const isDivision = Object.values(DIVISION_MAP).includes(sheetName);
-                if (!isDivision) continue;
+                // Baca SEMUA tab — nama tab bisa berbeda dari DIVISION_MAP
+                // (data live ada di tab "ALL ERIC DATA"). Tab tanpa data dilewati.
                 if (sheet.getLastRow() <= 1) continue;
+                // Lewati duplikat/copy tab
+                if (/^Copy of/i.test(sheetName)) continue;
 
                 const data = sheet.getDataRange().getValues();
+                const headers = data[0].map(h => String(h).trim());
+
+                // --- Dynamic column mapping by header synonym ---
+                // Sheet live memakai header non-standar (NAMA TIM, Column 1, dst),
+                // jadi cari kolom lewat nama header yang mungkin dipakai.
+                const col = (...names) => {
+                    for (let i = 0; i < names.length; i++) {
+                        const idx = headers.indexOf(names[i]);
+                        if (idx >= 0) return idx;
+                    }
+                    return -1;
+                };
+                const val = (row, idx, def) => {
+                    if (idx < 0) return def;
+                    const v = row[idx];
+                    return v !== undefined && v !== null ? String(v).trim() : def;
+                };
+                const mVal = (row, idx) => {
+                    const v = val(row, idx, '');
+                    return (v === '-' || v === '') ? '' : v;
+                };
+                const fallbackDivision = Object.keys(DIVISION_MAP)
+                    .find(k => DIVISION_MAP[k].toLowerCase() === sheetName.toLowerCase()) || sheetName;
+
+                const C = {
+                    id: col('ID', 'Id', 'id'),
+                    divisionId: col('Division', 'divisionId', 'DIVISI'),
+                    subCategory: col('Sub Category', 'Sub Kategori', 'Subcategory', 'Sub', 'Kategori'),
+                    level: col('Level', 'LEVEL'),
+                    teamName: col('Team Name', 'NAMA TIM', 'Nama Tim', 'TIM', 'TEAM', 'Nama Team'),
+                    leaderName: col('Leader Name', 'leaderName', 'Nama Leader', 'Nama Ketua', 'KETUA', 'Nama Ketua Tim'),
+                    leaderEmail: col('Leader Email', 'leaderEmail', 'Email Leader', 'Email Ketua', 'EMAIL KETUA'),
+                    leaderWhatsApp: col('Leader WhatsApp', 'leaderWhatsApp', 'WhatsApp Leader', 'WA Ketua', 'No. HP Ketua'),
+                    leaderInstitution: col('Leader Institution', 'leaderInstitution', 'Institusi', 'Asal Sekolah', 'UNIVERSITAS', 'INSTITUSI'),
+                    leaderAddress: col('Leader Address', 'leaderAddress', 'Alamat'),
+                    leaderCongenitalDisease: col('Leader Congenital Disease', 'leaderCongenitalDisease', 'Penyakit Bawaan'),
+                    leaderIdCardUrl: col('Leader ID Card', 'leaderIdCardUrl', 'ID Card Leader', 'KTP Leader'),
+                    leaderTwibbonUrl: col('Leader Twibbon', 'leaderTwibbonUrl', 'Twibbon Leader'),
+                    m1Name: col('Member 1 Name', 'm1Name', 'Anggota 1', 'Nama Anggota 1', 'ANGGOTA 1'),
+                    m1WhatsApp: col('Member 1 WhatsApp', 'm1WhatsApp', 'WhatsApp Anggota 1', 'No. HP Anggota 1'),
+                    m1CongenitalDisease: col('Member 1 Disease', 'm1CongenitalDisease', 'Penyakit Bawaan Anggota 1'),
+                    m1IdCardUrl: col('Member 1 ID Card', 'm1IdCardUrl', 'ID Card Anggota 1'),
+                    m1TwibbonUrl: col('Member 1 Twibbon', 'm1TwibbonUrl', 'Twibbon Anggota 1'),
+                    m2Name: col('Member 2 Name', 'm2Name', 'Anggota 2', 'Nama Anggota 2', 'ANGGOTA 2'),
+                    m2WhatsApp: col('Member 2 WhatsApp', 'm2WhatsApp', 'WhatsApp Anggota 2', 'No. HP Anggota 2'),
+                    m2CongenitalDisease: col('Member 2 Disease', 'm2CongenitalDisease', 'Penyakit Bawaan Anggota 2'),
+                    m2IdCardUrl: col('Member 2 ID Card', 'm2IdCardUrl', 'ID Card Anggota 2'),
+                    m2TwibbonUrl: col('Member 2 Twibbon', 'm2TwibbonUrl', 'Twibbon Anggota 2'),
+                    lecturerName: col('Lecturer Name', 'lecturerName', 'Nama Pembimbing', 'Pembimbing', 'DOSEN'),
+                    lecturerEmail: col('Lecturer Email', 'lecturerEmail', 'Email Pembimbing'),
+                    lecturerWhatsapp: col('Lecturer WhatsApp', 'lecturerWhatsapp', 'WhatsApp Pembimbing'),
+                    lecturerCongenitalDisease: col('Lecturer Disease', 'lecturerCongenitalDisease', 'Penyakit Bawaan Pembimbing'),
+                    lecturerIdCardUrl: col('Lecturer ID Card', 'lecturerIdCardUrl', 'ID Card Pembimbing'),
+                    lecturerTwibbonUrl: col('Lecturer Twibbon', 'lecturerTwibbonUrl', 'Twibbon Pembimbing'),
+                    paymentMethod: col('Payment Method', 'paymentMethod', 'Metode Pembayaran', 'Metode', 'Cara Bayar'),
+                    paymentStatus: col('Payment Status', 'paymentStatus', 'Status Pembayaran', 'STATUS', 'Status'),
+                    amount: col('Amount Paid', 'amount', 'Amount', 'Jumlah', 'Total', 'Nominal'),
+                    refCode: col('Ref Code', 'refCode', 'REF', 'KODE REFERENSI', 'Kode Referensi'),
+                    paymentProof: col('Payment Proof', 'paymentProofUrl', 'Bukti Bayar', 'BUKTI', 'Bukti Pembayaran'),
+                    ticketStatus: col('Ticket Email Status', 'ticketEmailStatus', 'Status Email Tiket'),
+                    ticketDate: col('Ticket Email Date', 'ticketEmailDate', 'Tanggal Email Tiket'),
+                    ricStage1: col('ricStage1Status', 'RIC Stage 1 Status'),
+                    ricStage2: col('ricStage2Status', 'RIC Stage 2 Status'),
+                    ricStage3: col('ricStage3Status', 'RIC Stage 3 Status'),
+                    ricAbstractUrl: col('ricAbstractUrl', 'Abstract URL'),
+                    ricProposalUrl: col('ricProposalUrl', 'Proposal URL'),
+                    ricVideoLink: col('ricVideoLink', 'Video Link'),
+                    ricPosterUrl: col('ricPosterUrl', 'Poster URL'),
+                    ricPptUrl: col('ricPptUrl', 'PPT URL')
+                };
 
                 for (let i = 1; i < data.length; i++) {
                     const row = data[i];
-                    const leaderEmail = String(row[col("Leader Email")] || '').toLowerCase().trim();
+                    const leaderEmail = val(row, C.leaderEmail, '').toLowerCase();
+                    if (!leaderEmail) continue;
+                    if (email && !leaderEmail.includes(email)) continue;
 
-                    if (!leaderEmail || !leaderEmail.includes(email)) continue;
+                    const divisionId = C.divisionId >= 0
+                        ? val(row, C.divisionId, '')
+                        : fallbackDivision;
 
-                    function val(idx) {
-                        const v = row[idx];
-                        return v !== undefined && v !== null ? String(v).trim() : '';
-                    }
-
-                    function mVal(idx) {
-                        const v = val(idx);
-                        return v === '-' ? '' : v;
-                    }
-
-                    // Reconstruct Registration object
+                    // Output FLAT shape (kontrak flatToRegistration di frontend):
+                    // leaderName, m1Name, ..., lecturerName, ..., ricStage*, ticketEmail*
                     const reg = {
-                        id: val(col("ID")),
-                        divisionId: val(col("Division")),
-                        teamName: val(col("Team Name")),
-                        subCategory: mVal(col("Sub Category")),
-                        level: mVal(col("Level")),
-                        leader: {
-                            name: val(col("Leader Name")),
-                            email: val(col("Leader Email")),
-                            whatsapp: val(col("Leader WhatsApp")),
-                            institution: val(col("Leader Institution")),
-                            address: mVal(col("Leader Address")),
-                            congenitalDisease: mVal(col("Leader Congenital Disease")),
-                            idCardUrl: mVal(col("Leader ID Card")),
-                            twibbonUrl: mVal(col("Leader Twibbon"))
-                        },
-                        members: [],
-                        paymentMethod: val(col("Payment Method")),
-                        paymentStatus: val(col("Payment Status")),
-                        refCode: val(col("Ref Code")),
-                        amount: val(col("Amount Paid")),
-                        paymentProofUrl: mVal(col("Payment Proof")),
-                        lecturerName: mVal(col("Lecturer Name")),
-                        lecturerEmail: mVal(col("Lecturer Email")),
-                        lecturerWhatsapp: mVal(col("Lecturer WhatsApp")),
-                        lecturerCongenitalDisease: mVal(col("Lecturer Disease")),
-                        lecturerIdCardUrl: mVal(col("Lecturer ID Card")),
-                        lecturerTwibbonUrl: mVal(col("Lecturer Twibbon"))
+                        id: val(row, C.id, ''),
+                        divisionId: divisionId,
+                        teamName: val(row, C.teamName, ''),
+                        subCategory: mVal(row, C.subCategory),
+                        level: mVal(row, C.level),
+                        leaderName: val(row, C.leaderName, ''),
+                        leaderEmail: leaderEmail,
+                        leaderWhatsApp: val(row, C.leaderWhatsApp, ''),
+                        leaderInstitution: val(row, C.leaderInstitution, ''),
+                        leaderAddress: mVal(row, C.leaderAddress),
+                        leaderCongenitalDisease: mVal(row, C.leaderCongenitalDisease),
+                        leaderIdCardUrl: mVal(row, C.leaderIdCardUrl),
+                        leaderTwibbonUrl: mVal(row, C.leaderTwibbonUrl),
+                        m1Name: mVal(row, C.m1Name),
+                        m1WhatsApp: mVal(row, C.m1WhatsApp),
+                        m1CongenitalDisease: mVal(row, C.m1CongenitalDisease),
+                        m1IdCardUrl: mVal(row, C.m1IdCardUrl),
+                        m1TwibbonUrl: mVal(row, C.m1TwibbonUrl),
+                        m2Name: mVal(row, C.m2Name),
+                        m2WhatsApp: mVal(row, C.m2WhatsApp),
+                        m2CongenitalDisease: mVal(row, C.m2CongenitalDisease),
+                        m2IdCardUrl: mVal(row, C.m2IdCardUrl),
+                        m2TwibbonUrl: mVal(row, C.m2TwibbonUrl),
+                        lecturerName: mVal(row, C.lecturerName),
+                        lecturerEmail: mVal(row, C.lecturerEmail),
+                        lecturerWhatsapp: mVal(row, C.lecturerWhatsapp),
+                        lecturerCongenitalDisease: mVal(row, C.lecturerCongenitalDisease),
+                        lecturerIdCardUrl: mVal(row, C.lecturerIdCardUrl),
+                        lecturerTwibbonUrl: mVal(row, C.lecturerTwibbonUrl),
+                        paymentMethod: val(row, C.paymentMethod, ''),
+                        paymentStatus: val(row, C.paymentStatus, ''),
+                        amount: val(row, C.amount, ''),
+                        refCode: val(row, C.refCode, ''),
+                        paymentProofUrl: mVal(row, C.paymentProof),
+                        ticketEmailStatus: mVal(row, C.ticketStatus),
+                        ticketEmailDate: mVal(row, C.ticketDate),
+                        ricStage1Status: mVal(row, C.ricStage1),
+                        ricStage2Status: mVal(row, C.ricStage2),
+                        ricStage3Status: mVal(row, C.ricStage3),
+                        ricAbstractName: '',
+                        ricAbstractUrl: mVal(row, C.ricAbstractUrl),
+                        ricProposalName: '',
+                        ricProposalUrl: mVal(row, C.ricProposalUrl),
+                        ricVideoLink: mVal(row, C.ricVideoLink),
+                        ricPosterName: '',
+                        ricPosterUrl: mVal(row, C.ricPosterUrl),
+                        ricPptName: '',
+                        ricPptUrl: mVal(row, C.ricPptUrl)
                     };
 
-                    // Reconstruct members
-                    const m1Name = mVal(col("Member 1 Name"));
-                    if (m1Name) {
-                        reg.members.push({
-                            id: 'member-1',
-                            name: m1Name,
-                            whatsapp: mVal(col("Member 1 WhatsApp")),
-                            congenitalDisease: mVal(col("Member 1 Disease")),
-                            idCardUrl: mVal(col("Member 1 ID Card")),
-                            twibbonUrl: mVal(col("Member 1 Twibbon"))
-                        });
-                    }
-                    const m2Name = mVal(col("Member 2 Name"));
-                    if (m2Name) {
-                        reg.members.push({
-                            id: 'member-2',
-                            name: m2Name,
-                            whatsapp: mVal(col("Member 2 WhatsApp")),
-                            congenitalDisease: mVal(col("Member 2 Disease")),
-                            idCardUrl: mVal(col("Member 2 ID Card")),
-                            twibbonUrl: mVal(col("Member 2 Twibbon"))
-                        });
-                    }
+                    const key = reg.id || reg.refCode || (leaderEmail + ':' + i);
+                    if (seen.has(key)) continue;
+                    seen.set(key, true);
 
                     result.push(reg);
                 }
@@ -259,7 +468,7 @@ function doGet(e) {
                 .setMimeType(ContentService.MimeType.JSON);
         }
 
-        return ContentService.createTextOutput(JSON.stringify({ status: "error", message: 'Use ?action=getRegistrations&email=...' }))
+        return ContentService.createTextOutput(JSON.stringify({ status: "error", message: 'Use ?action=getRegistrations[&email=...] or ?action=debugHeaders' }))
             .setMimeType(ContentService.MimeType.JSON);
 
     } catch (err) {

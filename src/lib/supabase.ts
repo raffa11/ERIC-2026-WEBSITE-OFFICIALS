@@ -106,6 +106,8 @@ export function flatToRegistration(data: any): Registration {
     amount: data.amount || 'IDR 250,000',
     refCode: data.refCode || '',
     paymentProofUrl: data.paymentProofUrl || '',
+    ticketEmailStatus: data.ticketEmailStatus || '',
+    ticketEmailDate: data.ticketEmailDate || '',
   };
 
   // Members

@@ -80,6 +80,8 @@ export const syncToGoogleSheet = async (reg: Registration): Promise<boolean> => 
       refCode: reg.refCode,
       paymentProofName: reg.paymentProofName || '',
       paymentProofUrl: reg.paymentProofUrl || '',
+      ticketEmailStatus: reg.ticketEmailStatus || '',
+      ticketEmailDate: reg.ticketEmailDate || '',
 
       // RIC Submission Fields (prefix RIC_)
       ricStage1Status: reg.ric?.stage1Status || '-',
