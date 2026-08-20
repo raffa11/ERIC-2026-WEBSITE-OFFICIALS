@@ -549,7 +549,8 @@ export const SPONSORS = [
   { name: 'Cytron Technologies', initials: 'CT', logo: '/images/sponsors/ct-cytron.png', tier: 'gold' },
   { name: 'PDP Common Rail & Fuel Injection Pump', initials: 'PDP', logo: '/images/sponsors/pdp.png', tier: 'platinum' },
   { name: 'Alpha Mechatronics', initials: 'AM', logo: '/images/sponsors/ap-alpha.png', tier: 'titanium' },
-  { name: 'Robotic Enthusiast', initials: 'RE', logo: '/images/sponsors/robotic_enthusiast.png', tier: 'silver' }
+  { name: 'Robotic Enthusiast', initials: 'RE', logo: '/images/sponsors/robotic_enthusiast.png', tier: 'silver' },
+  { name: 'Schneider Electric', initials: 'SE', logo: '/images/sponsors/Schneider.png', tier: 'platinum' }
 ];
 
 // 3-Day Journey Blueprint Details
