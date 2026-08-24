@@ -7,7 +7,7 @@
 
 import { SideConnectRegistration } from '../types';
 
-const GAS_URL = 'https://script.google.com/macros/s/AKfycbxSIDE_CONNECT_DEPLOY_ID/exec';
+const GAS_URL = 'https://script.google.com/macros/s/AKfycbwkth-KlyqDJ2u1BCQ0jK670FAsHA4wjfzdlidRorp0y0aYjGq3udUY6txwck-fjfQn7Q/exec';
 
 export async function syncSideConnectToSheet(reg: SideConnectRegistration): Promise<boolean> {
   const url = localStorage.getItem('eric_sideconnect_gas_url') || GAS_URL;
