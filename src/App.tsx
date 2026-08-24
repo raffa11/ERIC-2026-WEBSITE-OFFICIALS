@@ -252,6 +252,9 @@ function AppContent() {
               <Divisions onSelectDivision={handleSelectDivision} />
             </ScrollReveal>
             <ScrollReveal>
+              <SideConnect onRegisterClick={() => setIsSideConnectModalOpen(true)} />
+            </ScrollReveal>
+            <ScrollReveal>
               <EventJourney />
             </ScrollReveal>
             <ScrollReveal>
@@ -265,9 +268,6 @@ function AppContent() {
             </ScrollReveal>
             <ScrollReveal>
               <ContactSection />
-            </ScrollReveal>
-            <ScrollReveal>
-              <SideConnect onRegisterClick={() => setIsSideConnectModalOpen(true)} />
             </ScrollReveal>
           </>
         )}
