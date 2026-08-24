@@ -13,9 +13,10 @@ import { SIDE_CONNECT_DIVISIONS, COUNTRY_CODES } from '../data';
 import { SideConnectRegistration } from '../types';
 import {
   Lightbulb, BookOpen, Compass, Send, CheckCircle2,
-  ArrowRight, ArrowLeft, X, User, Users, Plus, Trash2
+  ArrowRight, ArrowLeft, X, User, Users, Plus, Trash2, Download
 } from 'lucide-react';
 import { syncSideConnectToSheet } from '../lib/sideConnect';
+import { generateSideConnectPDF } from '../lib/generateSideConnectPDF';
 
 const ICON_MAP: Record<string, React.FC<{ className?: string }>> = {
   Lightbulb, BookOpen, Compass,
@@ -61,6 +62,7 @@ export default function SideConnectModal({ isOpen, onClose }: SideConnectModalPr
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isDone, setIsDone] = useState(false);
   const [doneRefCode, setDoneRefCode] = useState('');
+  const [doneReg, setDoneReg] = useState<SideConnectRegistration | null>(null);
 
   const maxMembers = participationType === 'team' ? 2 : 0;
 
@@ -101,6 +103,7 @@ export default function SideConnectModal({ isOpen, onClose }: SideConnectModalPr
     setIsSubmitting(false);
     setIsDone(false);
     setDoneRefCode('');
+    setDoneReg(null);
   };
 
   const handleClose = () => {
@@ -156,6 +159,7 @@ export default function SideConnectModal({ isOpen, onClose }: SideConnectModalPr
     }
 
     setDoneRefCode(refCode);
+    setDoneReg(reg);
     setIsDone(true);
     setIsSubmitting(false);
   };
@@ -226,8 +230,24 @@ export default function SideConnectModal({ isOpen, onClose }: SideConnectModalPr
                 </div>
                 <p className="text-zinc-500 text-xs">Save this code for your records.</p>
                 <button
+                  onClick={() => {
+                    if (!doneReg) return;
+                    try {
+                      generateSideConnectPDF(doneReg);
+                      showAlert({ message: t('Ticket downloaded. Show it as proof of your participation.', 'Tiket berhasil diunduh. Tunjukkan sebagai bukti partisipasi Anda.'), type: 'success' });
+                    } catch (err) {
+                      console.error('[SideConnect] PDF error:', err);
+                      showAlert({ message: t('Failed to generate ticket.', 'Gagal membuat tiket.'), type: 'error' });
+                    }
+                  }}
+                  className="mt-6 w-full flex items-center justify-center gap-2 px-6 py-3 border border-[#00FF88] text-[#00FF88] font-black text-sm uppercase rounded-xl hover:bg-[#00FF88]/10 transition-colors cursor-pointer"
+                >
+                  <Download className="w-4 h-4" />
+                  {t('DOWNLOAD TICKET (PDF)', 'UNDUH TIKET (PDF)')}
+                </button>
+                <button
                   onClick={handleClose}
-                  className="mt-6 px-6 py-3 bg-[#00FF88] text-black font-black text-sm uppercase rounded-xl hover:bg-[#00CC6A] transition-colors cursor-pointer"
+                  className="mt-3 w-full px-6 py-3 bg-[#00FF88] text-black font-black text-sm uppercase rounded-xl hover:bg-[#00CC6A] transition-colors cursor-pointer"
                 >
                   {t('CLOSE', 'TUTUP')}
                 </button>
