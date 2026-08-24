@@ -5,6 +5,8 @@
 
 import { Division, RobotMachine, TimelineEvent, GalleryItem } from './types';
 
+export const USD_TO_IDR = 17715.98;
+
 export const COMPETITION_DIVISIONS: Division[] = [
   {
     id: 'sumobot-500g',
@@ -26,7 +28,7 @@ export const COMPETITION_DIVISIONS: Division[] = [
     capacity: 100,
     registered: 42,
     price: 'Rp. 225,000',
-    priceUSD: '$14.00',
+    priceUSD: '$12.70',
     whatsappGroup: 'https://chat.whatsapp.com/HSFpgkTQjbJKNbmyzXeefT',
     contactPersons: [
       { name: 'Ade', waNumber: '6283143705558', label: 'National' },
@@ -53,7 +55,7 @@ export const COMPETITION_DIVISIONS: Division[] = [
     capacity: 100,
     registered: 31,
     price: 'Rp. 250,000',
-    priceUSD: '$20.00',
+    priceUSD: '$14.11',
     whatsappGroup: 'https://chat.whatsapp.com/GX3rv5PKbbp3fKB66FlwnJ',
     contactPersons: [
       { name: 'Ryan', waNumber: '6285711011898', label: 'National' },
@@ -78,7 +80,7 @@ export const COMPETITION_DIVISIONS: Division[] = [
     capacity: 80,
     registered: 27,
     price: 'Rp. 250,000',
-    priceUSD: '$20.00',
+    priceUSD: '$14.11',
     whatsappGroup: 'https://chat.whatsapp.com/K1oLVvfu38NHNV41KjqaZA',
     contactPersons: [
       { name: 'Dimas', waNumber: '6285715139655', label: 'National' },
@@ -105,7 +107,7 @@ export const COMPETITION_DIVISIONS: Division[] = [
     capacity: 100,
     registered: 55,
     price: 'Rp. 250,000',
-    priceUSD: '$20.00',
+    priceUSD: '$14.11',
     whatsappGroup: 'https://chat.whatsapp.com/HNXtjsKC5g50PZzuPt7NOq',
     contactPersons: [
       { name: 'Rizqba', waNumber: '6289637788569', label: 'National' },
@@ -132,7 +134,7 @@ export const COMPETITION_DIVISIONS: Division[] = [
     capacity: 60,
     registered: 18,
     price: 'Rp. 280,000',
-    priceUSD: '$26.00',
+    priceUSD: '$15.80',
     whatsappGroup: 'https://chat.whatsapp.com/B8RMDu9uJ3tIQBgcbcx4NL',
     contactPersons: [
       { name: 'Randy', waNumber: '6287824300637', label: 'National' },
@@ -159,7 +161,7 @@ export const COMPETITION_DIVISIONS: Division[] = [
     capacity: 50,
     registered: 50,
     price: 'Rp. 500,000',
-    priceUSD: '$30.00',
+    priceUSD: '$28.22',
     whatsappGroup: '',
     contactPersons: []
   },
@@ -185,7 +187,7 @@ export const COMPETITION_DIVISIONS: Division[] = [
     capacity: 80,
     registered: 80,
     price: 'Rp. 120,000',
-    priceUSD: '$7.50',
+    priceUSD: '$6.77',
     whatsappGroup: 'https://chat.whatsapp.com/Jp5VNTCxXgGFP3RNZCLI6z',
     contactPersons: [
       { name: 'Intan', waNumber: '6285780247605', label: 'National' },
@@ -212,7 +214,7 @@ export const COMPETITION_DIVISIONS: Division[] = [
     capacity: 100,
     registered: 63,
     price: 'Rp. 120,000',
-    priceUSD: '$7.50',
+    priceUSD: '$6.77',
     whatsappGroup: 'https://chat.whatsapp.com/LwWIV0GAElF1DbT2nmn6Ug',
     contactPersons: [
       { name: 'Joan', waNumber: '6285716476747', label: 'National' },
@@ -237,7 +239,7 @@ export const COMPETITION_DIVISIONS: Division[] = [
     capacity: 80,
     registered: 22,
     price: 'Rp. 120,000',
-    priceUSD: '$7.50',
+    priceUSD: '$6.77',
     whatsappGroup: 'https://chat.whatsapp.com/D4Gr6PaoSzI2ZI4gTiRYnZ',
     contactPersons: [
       { name: 'David Alberto', waNumber: '6282124347415', label: 'National' },

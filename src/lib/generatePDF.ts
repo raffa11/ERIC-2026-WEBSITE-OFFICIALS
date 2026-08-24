@@ -1,6 +1,6 @@
 import { jsPDF } from 'jspdf';
 import { Registration } from '../types';
-import { COMPETITION_DIVISIONS } from '../data';
+import { COMPETITION_DIVISIONS, USD_TO_IDR } from '../data';
 
 export function buildRegistrationPdf(reg: Registration): jsPDF {
   const doc = new jsPDF('portrait', 'mm', 'a4');
@@ -253,7 +253,7 @@ export function buildRegistrationPdf(reg: Registration): jsPDF {
   // ══════════════════════════════════════════
   //  PAYMENT INFO BOX
   // ══════════════════════════════════════════
-  const payH = 16;
+  const payH = 22;
   sectionBox(cursor, payH);
   sectionTitle('PAYMENT', cursor + 8);
 
@@ -267,6 +267,13 @@ export function buildRegistrationPdf(reg: Registration): jsPDF {
   setText(0, 255, 136);
   doc.setFont('Helvetica', 'bold');
   doc.text(divObj?.price || reg.amount || '–', ml + 82, cursor + 14);
+
+  // USD conversion line
+  const usdPrice = divObj?.priceUSD || reg.amountUSD || '–';
+  setText(130, 130, 130);
+  doc.setFont('Helvetica', 'normal');
+  doc.setFontSize(6.5);
+  doc.text(`(approx. ${usdPrice} USD @ 1 USD = Rp 17,715.98)`, ml + 6, cursor + 20);
 
   const payColor = reg.paymentStatus === 'PAID' ? rgb(0, 255, 136) : rgb(255, 200, 0);
   setFill(payColor.r, payColor.g, payColor.b);

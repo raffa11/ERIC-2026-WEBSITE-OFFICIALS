@@ -125,6 +125,7 @@ export interface Registration {
   paymentStatus: string;
   refCode: string;
   amount: string;
+  amountUSD?: string;
   subCategory?: string;
   level?: string;
   lecturerName?: string;

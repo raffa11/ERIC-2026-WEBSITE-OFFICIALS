@@ -838,7 +838,7 @@ function doPost(e) {
                     <div className="px-4 pb-4 pt-1 border-t border-white/5 grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-1.5 text-[10px] font-mono">
                       <div className="sm:col-span-2 text-[8px] font-mono text-zinc-600 uppercase tracking-widest pb-1 pt-2">ROSTER DATA PREVIEW — {registrationPdfSafeName(reg)}</div>
                       <div className="text-zinc-500">PAYMENT: <span className={`font-bold ${reg.paymentStatus === 'PAID' ? 'text-[#00FF88]' : 'text-amber-400'}`}>{reg.paymentStatus}</span> · {reg.paymentMethod}</div>
-                      <div className="text-zinc-500">AMOUNT: <span className="text-white font-bold">{reg.amount || divObj?.price || '-'}</span></div>
+                      <div className="text-zinc-500">AMOUNT: <span className="text-white font-bold">{reg.amount || divObj?.price || '-'}</span> <span className="text-zinc-400">({reg.amountUSD || divObj?.priceUSD || '-'})</span></div>
                       <div className="text-zinc-500">LEADER: <span className="text-white font-bold">{reg.leader?.name}</span></div>
                       <div className="text-zinc-500">WA: <span className="text-white font-bold">{reg.leader?.whatsapp || '-'}</span></div>
                       <div className="text-zinc-500">INSTITUTION: <span className="text-white font-bold">{reg.leader?.institution || '-'}</span></div>

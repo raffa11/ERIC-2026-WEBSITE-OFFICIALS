@@ -539,6 +539,7 @@ export default function RegistrationModal({
       paymentStatus: 'PAID',
       refCode: generatedPin,
       amount: divisionObj.price,
+      amountUSD: divisionObj.priceUSD,
       subCategory: divisionObj.hasSubCategory ? subCategory : undefined,
       level: divisionObj.hasLevels ? level : undefined,
       lecturerName: divisionObj.hasLecturer ? lecturerName : undefined,
@@ -1284,8 +1285,8 @@ export default function RegistrationModal({
                             <span className="text-xl font-mono text-[#FFD700] font-black tracking-tight block">
                               {divisionObj.price}
                             </span>
-                            <span className="text-[10px] font-mono text-zinc-500 tracking-tight block">
-                              {divisionObj.priceUSD} {t('USD', 'USD')}
+                            <span className="text-[11px] font-mono text-zinc-400 tracking-tight block mt-0.5">
+                              ≈ {divisionObj.priceUSD} USD
                             </span>
                           </div>
                         </div>
