@@ -20,11 +20,13 @@ import SponsorsSection from './components/SponsorsSection';
 import AdminDashboard from './components/AdminDashboard';
 import MyRegistrationsModal from './components/MyRegistrationsModal';
 import ContactSection from './components/ContactSection';
+import SideConnect from './components/SideConnect';
 import Footer from './components/Footer';
 
 // Modals
 import LoginModal from './components/LoginModal';
 import RegistrationModal from './components/RegistrationModal';
+import SideConnectModal from './components/SideConnectModal';
 
 import { Registration } from './types';
 import { COMPETITION_DIVISIONS } from './data';
@@ -51,6 +53,9 @@ function AppContent() {
   const [isRegistrationModalOpen, setIsRegistrationModalOpen] = useState(false);
   const [selectedDivisionId, setSelectedDivisionId] = useState('rov-underwater');
   const [registrations, setRegistrations] = useState<Registration[]>([]);
+
+  // Side Connect states
+  const [isSideConnectModalOpen, setIsSideConnectModalOpen] = useState(false);
 
 
 
@@ -261,6 +266,9 @@ function AppContent() {
             <ScrollReveal>
               <ContactSection />
             </ScrollReveal>
+            <ScrollReveal>
+              <SideConnect onRegisterClick={() => setIsSideConnectModalOpen(true)} />
+            </ScrollReveal>
           </>
         )}
 
@@ -292,6 +300,11 @@ function AppContent() {
               divisionsSection.scrollIntoView({ behavior: 'smooth' });
             }
           }}
+        />
+
+        <SideConnectModal
+          isOpen={isSideConnectModalOpen}
+          onClose={() => setIsSideConnectModalOpen(false)}
         />
 
       </div>

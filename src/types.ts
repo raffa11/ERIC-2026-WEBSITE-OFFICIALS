@@ -143,6 +143,37 @@ export interface Registration {
   ric?: RicSubmission;
 }
 
+export interface SideConnectRegistration {
+  id: string;
+  timestamp: string;
+  subCompetition: 'creative-innovation' | 'research-innovation' | 'drone-innovation';
+  participationType: 'individual' | 'team';
+  teamName: string;
+  leader: {
+    name: string;
+    email: string;
+    whatsapp: string;
+    institution: string;
+    country: string;
+    age: number;
+  };
+  members: {
+    name: string;
+    email: string;
+    whatsapp: string;
+    institution: string;
+    country: string;
+    age: number;
+  }[];
+  abstractTitle: string;
+  productDescription: string;
+  howItWorks: string;
+  productDesign: string;
+  benefits: string;
+  experience: string;
+  refCode: string;
+}
+
 // Centralized List of Administrator Emails
 // You can add more admin emails to this array below to grant them full access
 export const ADMIN_EMAILS = [

@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { Division, RobotMachine, TimelineEvent, GalleryItem } from './types';
+import { Division, RobotMachine, TimelineEvent, GalleryItem, SideConnectRegistration } from './types';
 
 export const USD_TO_IDR = 17715.98;
 
@@ -513,6 +513,36 @@ export const SUPPORTED_BY = [
     logo: '/images/supported-by/bemelka.png',
     initials: 'BMK'
   }
+];
+
+export const SIDE_CONNECT_DIVISIONS = [
+  {
+    id: 'creative-innovation',
+    title: 'Creative Innovation',
+    titleID: 'Inovasi Kreatif',
+    icon: 'Lightbulb',
+    description: 'A space to express creativity through simple yet idea-rich technology projects.',
+    descriptionID: 'Wadah mengekspresikan kreativitas melalui proyek teknologi yang sederhana namun penuh ide.',
+    color: 'rgba(77, 255, 184, 0.4)',
+  },
+  {
+    id: 'research-innovation',
+    title: 'Research Innovation Challenge (RIC)',
+    titleID: 'Tantangan Inovasi Penelitian (RIC)',
+    icon: 'BookOpen',
+    description: 'Creating a research perspective that focuses on telecommunications, control systems, automation, mechatronics, AI, and IoT.',
+    descriptionID: 'Membangun perspektif penelitian yang berfokus pada telekomunikasi, sistem kendali, otomasi, mekatronika, AI, dan IoT.',
+    color: 'rgba(0, 71, 171, 0.4)',
+  },
+  {
+    id: 'drone-innovation',
+    title: 'Drone Innovation',
+    titleID: 'Inovasi Drone',
+    icon: 'Compass',
+    description: 'Focusing on AI-driven autonomy, improved sensors (LiDAR, thermal), and enhanced capabilities like bird-like flight and ground mobility.',
+    descriptionID: 'Berfokus pada otonomi berbasis AI, sensor yang lebih baik (LiDAR, termal), dan kemampuan yang ditingkatkan seperti terbang menyerupai burung dan mobilitas darat.',
+    color: 'rgba(0, 255, 136, 0.4)',
+  },
 ];
 
 export const COUNTRY_CODES = [
