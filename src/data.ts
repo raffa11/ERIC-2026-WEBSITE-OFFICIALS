@@ -573,6 +573,7 @@ export const COUNTRY_CODES = [
   { code: '+44', country: 'United Kingdom', flag: '🇬🇧' },
   { code: '+61', country: 'Australia', flag: '🇦🇺' },
   { code: '+64', country: 'New Zealand', flag: '🇳🇿' },
+  { code: '+974', country: 'Qatar', flag: '🇶🇦' },
   { code: '+212', country: 'Morocco', flag: '🇲🇦' },
 ];
 
