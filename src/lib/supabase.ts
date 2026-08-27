@@ -9,6 +9,7 @@
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
 import { Registration } from '../types';
 import { fetchUserRegistrations } from './googleSheet';
+import { normalizeLevel } from './normalizeLevel';
 
 const metaEnv = (import.meta as any).env || {};
 const supabaseUrl = (metaEnv.VITE_SUPABASE_URL || '').trim();
@@ -62,7 +63,16 @@ function stripImages(reg: Registration): Registration {
 function safeGetItem(): Registration[] {
   try {
     const raw = localStorage.getItem(LS_KEY);
-    return raw ? JSON.parse(raw) : [];
+    const list: Registration[] = raw ? JSON.parse(raw) : [];
+    // Normalize legacy Creative Innovation level vocabulary on every read so a
+    // stale localStorage entry (pre-vocabulary-change) never shows a wrong level.
+    for (const reg of list) {
+      if (reg && reg.level) {
+        const normalized = normalizeLevel(reg.divisionId, reg.level);
+        if (normalized !== reg.level) reg.level = normalized;
+      }
+    }
+    return list;
   } catch (err) {
     console.error('[safeGetItem] ERROR reading localStorage:', err);
     return [];
@@ -87,7 +97,7 @@ export function flatToRegistration(data: any): Registration {
     id: data.id || '',
     divisionId: data.divisionId || '',
     subCategory: data.subCategory || '',
-    level: data.level || '',
+    level: normalizeLevel(data.divisionId, data.level),
     teamName: data.teamName || '',
     university: data.leaderInstitution || '',
     leader: {
@@ -177,17 +187,10 @@ export async function dbFetchRegistrations(
   const localRegs = safeGetItem();
   if (!userEmail) return localRegs;
 
-  // If we have local data, return it immediately — don't block on Sheets
-  const hasLocalData = localRegs.length > 0;
-  if (hasLocalData && !onBackgroundUpdate) {
-    // Fire-and-forget background refresh to update localStorage for next visit
-    dbFetchRegistrations(userEmail, (merged) => {
-      // Callback re-invokes to let caller update state if desired
-    }).catch(() => {});
-    return localRegs;
-  }
-
-  // Full fetch from Sheets (used during login or explicit refresh)
+  // Always resolve authoritative data from Google Sheets (source of truth).
+  // Merge with localStorage so offline/partial data (ex. RIC) is preserved.
+  // Tidak short-circuit ke localStorage: caller (unduh PDF, My Registrations)
+  // harus selalu mendapat data sheet terbaru, bukan data lokal yang basi.
   try {
     const sheetRegs = await fetchUserRegistrations(userEmail);
     if (sheetRegs && sheetRegs.length > 0) {
@@ -212,7 +215,7 @@ export async function dbFetchRegistrations(
     console.warn('Google Sheets fetch failed, using localStorage:', err);
   }
 
-  // If this was a background refresh with no local data, still return []
+  // Fallback: sheet kosong / gagal — pakai data lokal.
   if (onBackgroundUpdate) onBackgroundUpdate(localRegs);
   return localRegs;
 }
