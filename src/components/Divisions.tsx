@@ -112,8 +112,12 @@ export default function Divisions({ onSelectDivision, liveQuota = {} }: Division
               ? Math.max(division.capacity - effectiveRegistered, 0)
               : 0;
             const hasQuota = typeof division.capacity === 'number';
-            const quotaPct = hasQuota && division.capacity > 0 ? Math.round((remaining / division.capacity) * 100) : 0;
-            const quotaColor = remaining <= 0 ? 'bg-red-500' : quotaPct <= 10 ? 'bg-[#FFD700]' : quotaPct <= 30 ? 'bg-[#C5A059]' : 'bg-[#00FF88]';
+            // Fill percentage = how full the arena is (registered / capacity).
+            // The registered count rises +1 as new participants sign up.
+            const quotaPct = hasQuota && division.capacity > 0
+              ? Math.round((effectiveRegistered / division.capacity) * 100)
+              : 0;
+            const quotaColor = remaining <= 0 ? 'bg-red-500' : quotaPct >= 90 ? 'bg-[#FFD700]' : quotaPct >= 70 ? 'bg-[#C5A059]' : 'bg-[#00FF88]';
 
             return (
               <div
@@ -248,7 +252,9 @@ export default function Divisions({ onSelectDivision, liveQuota = {} }: Division
                       </div>
                     )}
 
-                    {/* Live quota per competition */}
+                    {/* Live quota per competition — shows the number of teams/participants
+                        registered so far. This count rises +1 each time a registration
+                        succeeds (pulled live from Google Sheets). */}
                     {hasQuota && (
                       <div className="space-y-1.5">
                         <div className="flex justify-between items-center text-[9px] font-mono">
@@ -261,14 +267,14 @@ export default function Divisions({ onSelectDivision, liveQuota = {} }: Division
                           </span>
                           <span className={`font-bold uppercase ${remaining > 0 ? 'text-white' : 'text-red-400'}`}>
                             {remaining > 0
-                              ? `${remaining} / ${division.capacity} ${t('LEFT', 'TERSISA')}`
+                              ? `${effectiveRegistered} / ${division.capacity} ${t('REGISTERED', 'TERDAFTAR')}`
                               : t('FULL', 'PENUH')}
                           </span>
                         </div>
                         <div className="h-1 w-full bg-zinc-900 rounded-full overflow-hidden">
                           <div
                             className={`h-full rounded-full transition-all duration-500 ${quotaColor}`}
-                            style={{ width: quotaPct + '%' }}
+                            style={{ width: Math.min(quotaPct, 100) + '%' }}
                           />
                         </div>
                       </div>
