@@ -10,9 +10,10 @@ import * as LucideIcons from 'lucide-react';
 
 interface DivisionsProps {
   onSelectDivision: (divisionId: string) => void;
+  liveQuota?: Record<string, number>;
 }
 
-export default function Divisions({ onSelectDivision }: DivisionsProps) {
+export default function Divisions({ onSelectDivision, liveQuota = {} }: DivisionsProps) {
   const { t } = useLanguage();
   const [isTouchDevice] = useState(() =>
     typeof window !== 'undefined' && window.matchMedia('(pointer: coarse)').matches
@@ -97,10 +98,20 @@ export default function Divisions({ onSelectDivision }: DivisionsProps) {
             const IconComponent = (LucideIcons[resolvedIconName] as React.ComponentType<{ className?: string }>) || LucideIcons.Cpu;
             const isUnavailable = !!division.canceled || !!division.closed;
             const canRegister = !division.comingSoon && !isUnavailable;
-            const remaining = typeof division.capacity === 'number' && typeof division.registered === 'number'
-              ? Math.max(division.capacity - division.registered, 0)
+
+            // Live quota: prefer the real registration count pulled from Google
+            // Sheets (liveQuota[division.id]); fall back to the static value from
+            // data.ts only until the first live fetch resolves. Canceled / closed
+            // divisions are intentionally shown as FULL regardless of live count.
+            const liveCount = liveQuota[division.id];
+            const effectiveRegistered = isUnavailable
+              ? (typeof division.capacity === 'number' ? division.capacity : 0)
+              : (liveCount !== undefined ? liveCount : (division.registered ?? 0));
+
+            const remaining = typeof division.capacity === 'number' && effectiveRegistered >= 0
+              ? Math.max(division.capacity - effectiveRegistered, 0)
               : 0;
-            const hasQuota = typeof division.capacity === 'number' && typeof division.registered === 'number';
+            const hasQuota = typeof division.capacity === 'number';
             const quotaPct = hasQuota && division.capacity > 0 ? Math.round((remaining / division.capacity) * 100) : 0;
             const quotaColor = remaining <= 0 ? 'bg-red-500' : quotaPct <= 10 ? 'bg-[#FFD700]' : quotaPct <= 30 ? 'bg-[#C5A059]' : 'bg-[#00FF88]';
 

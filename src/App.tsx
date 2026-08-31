@@ -36,6 +36,7 @@ import {
   dbDeleteRegistration, 
   getSupabaseAuth
 } from './lib/supabase';
+import { useLiveQuota } from './lib/useLiveQuota';
 
 
 function AppContent() {
@@ -56,6 +57,9 @@ function AppContent() {
 
   // Side Connect states
   const [isSideConnectModalOpen, setIsSideConnectModalOpen] = useState(false);
+
+  // Live registration quota per division (polls Google Sheets in the background)
+  const liveQuota = useLiveQuota();
 
 
 
@@ -169,6 +173,12 @@ function AppContent() {
     // Data is already correct in React state + localStorage.
     // Do NOT call refreshRegistrations here — it races with the React state update
     // and can overwrite with stale Sheets data (GAS hasn't processed syncToGoogleSheet yet).
+
+    // Refresh the live quota reflected in the arena cards. We wait a short moment
+    // so the new row has had a chance to sync to Google Sheets before re-reading it.
+    window.setTimeout(() => {
+      liveQuota.refresh();
+    }, 4000);
   };
 
   // Update registrations list directly (e.g., from edit or delete)
@@ -249,7 +259,7 @@ function AppContent() {
               <BenefitsSection />
             </ScrollReveal>
             <ScrollReveal>
-              <Divisions onSelectDivision={handleSelectDivision} />
+              <Divisions onSelectDivision={handleSelectDivision} liveQuota={liveQuota.map} />
             </ScrollReveal>
             <ScrollReveal>
               <SideConnect onRegisterClick={() => setIsSideConnectModalOpen(true)} />
