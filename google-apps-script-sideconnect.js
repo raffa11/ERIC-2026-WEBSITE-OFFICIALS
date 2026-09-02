@@ -203,53 +203,65 @@ function handleUploadFiles(data) {
     return json({ success: false, message: 'No files provided' });
   }
 
-  const ss = SpreadsheetApp.openById(SPREADSHEET_ID);
+  try {
+    const ss = SpreadsheetApp.openById(SPREADSHEET_ID);
 
-  // Locate the participant row by ref code across all sub-competition tabs.
-  const tabs = Object.values(SUB_COMP_MAP);
-  let sheet = null;
-  let rowNum = -1;
-  for (let t = 0; t < tabs.length && !sheet; t++) {
-    const s = ss.getSheetByName(tabs[t]);
-    if (!s) continue;
-    const rows = s.getDataRange().getValues();
-    const headers = rows[0].map(h => String(h).trim());
-    const ri = headers.indexOf('Ref Code');
-    if (ri < 0) continue;
-    for (let i = 1; i < rows.length; i++) {
-      if (String(rows[i][ri]).trim().toUpperCase() === refCode) {
-        sheet = s; rowNum = i + 1;
-        break;
+    // Locate the participant row by ref code across all sub-competition tabs.
+    const tabs = Object.values(SUB_COMP_MAP);
+    let sheet = null;
+    let rowNum = -1;
+    for (let t = 0; t < tabs.length && !sheet; t++) {
+      const s = ss.getSheetByName(tabs[t]);
+      if (!s) continue;
+      const rows = s.getDataRange().getValues();
+      const headers = rows[0].map(h => String(h).trim());
+      const ri = headers.indexOf('Ref Code');
+      if (ri < 0) continue;
+      for (let i = 1; i < rows.length; i++) {
+        if (String(rows[i][ri]).trim().toUpperCase() === refCode) {
+          sheet = s; rowNum = i + 1;
+          break;
+        }
       }
     }
-  }
-  if (!sheet) {
-    logUpload(refCode, 'ERROR', 'Ref code not found in any tab', fileNames);
-    return json({ success: false, message: 'Ref code not found' });
-  }
+    if (!sheet) {
+      logUpload(refCode, 'ERROR', 'Ref code not found in any tab', fileNames);
+      return json({ success: false, message: 'Ref code not found' });
+    }
 
-  const folder = getSideConnectFolder(refCode);
-  const links = [];
-  for (const f of files) {
-    if (!f || !f.data) continue;
-    const bytes = Utilities.base64Decode(String(f.data));
-    const blob = Utilities.newBlob(bytes, f.mimeType || 'application/octet-stream', f.name || 'file');
-    const file = folder.createFile(blob);
-    file.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW);
-    links.push({ name: f.name, url: file.getUrl(), id: file.getId() });
-  }
-  if (links.length === 0) {
-    logUpload(refCode, 'ERROR', 'No valid files (empty/decode failed)', fileNames);
-    return json({ success: false, message: 'No valid files' });
-  }
+    const folder = getSideConnectFolder(refCode);
+    const links = [];
+    for (const f of files) {
+      if (!f || !f.data) continue;
+      const bytes = Utilities.base64Decode(String(f.data));
+      const blob = Utilities.newBlob(bytes, f.mimeType || 'application/octet-stream', f.name || 'file');
+      const file = folder.createFile(blob);
+      file.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW);
+      links.push({ name: f.name, url: file.getUrl(), id: file.getId() });
+    }
+    if (links.length === 0) {
+      logUpload(refCode, 'ERROR', 'No valid files (empty/decode failed)', fileNames);
+      return json({ success: false, message: 'No valid files' });
+    }
 
-  const col = ensureColumn(sheet, 'Report Files');
-  const existing = sheet.getRange(rowNum, col).getValue();
-  const fresh = existing ? String(existing) + '\n' : '';
-  sheet.getRange(rowNum, col).setValue(fresh + links.map(l => l.url).join('\n'));
+    const col = ensureColumn(sheet, 'Report Files');
+    const existing = sheet.getRange(rowNum, col).getValue();
+    const fresh = existing ? String(existing) + '\n' : '';
+    sheet.getRange(rowNum, col).setValue(fresh + links.map(l => l.url).join('\n'));
 
-  logUpload(refCode, 'OK', 'Uploaded ' + links.length + ' file(s) to row ' + rowNum, links.map(l => l.name));
-  return json({ success: true, message: 'Uploaded ' + links.length + ' file(s)', files: links });
+    logUpload(refCode, 'OK', 'Uploaded ' + links.length + ' file(s) to row ' + rowNum, links.map(l => l.name));
+    return json({ success: true, message: 'Uploaded ' + links.length + ' file(s)', files: links });
+  } catch (err) {
+    // CATCH-ALL: guarantees the real failure reason is never hidden. If Drive
+    // permission is missing (DriveApp scope not re-authorized), a base64 error,
+    // or any other exception, it is recorded to the UPLOAD LOG tab.
+    console.error('handleUploadFiles error:', err.toString());
+    logUpload(refCode, 'ERROR', 'Exception: ' + err.toString(), fileNames);
+    if (String(err).indexOf('DriveApp') >= 0 || String(err).indexOf('permission') >= 0) {
+      logUpload(refCode, 'ERROR', 'DRIVE SCOPE LIKELY MISSING - reauthorize DriveApp', fileNames);
+    }
+    return json({ success: false, message: err.toString() });
+  }
 }
 
 function doGet(e) {
