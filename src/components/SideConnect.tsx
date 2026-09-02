@@ -5,10 +5,11 @@
  * SIDE CONNECT — Landing Page Section
  */
 
-import React from 'react';
+import React, { useState } from 'react';
 import { useLanguage } from './LanguageContext';
 import { SIDE_CONNECT_DIVISIONS } from '../data';
-import { Lightbulb, BookOpen, Compass, Zap, Globe, Users, ArrowRight } from 'lucide-react';
+import { Lightbulb, BookOpen, Compass, Zap, Globe, Users, ArrowRight, UploadCloud } from 'lucide-react';
+import SideConnectUploadModal from './SideConnectUploadModal';
 
 const ICON_MAP: Record<string, React.FC<{ className?: string }>> = {
   Lightbulb, BookOpen, Compass,
@@ -20,6 +21,7 @@ interface SideConnectProps {
 
 export default function SideConnect({ onRegisterClick }: SideConnectProps) {
   const { t } = useLanguage();
+  const [isUploadOpen, setIsUploadOpen] = useState(false);
 
   return (
     <section id="side-connect-section" className="relative py-16 md:py-28 bg-[#050505] border-t border-white/5 overflow-hidden">
@@ -118,8 +120,26 @@ export default function SideConnect({ onRegisterClick }: SideConnectProps) {
           >
             {t('REGISTER NOW — FREE', 'DAFTAR SEKARANG — GRATIS')} <ArrowRight className="w-4 h-4" />
           </button>
+
+          <div className="mt-4 flex items-center justify-center gap-3">
+            <div className="h-px w-16 bg-gradient-to-r from-transparent to-[#00FF88]/30" />
+            <span className="text-[10px] font-mono text-zinc-500 uppercase tracking-widest">
+              {t('ALREADY REGISTERED?', 'SUDAH MENDAFTAR?')}
+            </span>
+            <div className="h-px w-16 bg-gradient-to-l from-transparent to-[#00FF88]/30" />
+          </div>
+
+          <button
+            onClick={() => setIsUploadOpen(true)}
+            className="mt-4 inline-flex items-center gap-2 px-6 py-3 border border-[#00FF88]/40 text-[#00FF88] font-black text-xs uppercase tracking-wider rounded-2xl hover:bg-[#00FF88]/10 transition-all duration-300 cursor-pointer"
+          >
+            <UploadCloud className="w-4 h-4" />
+            {t('UPLOAD PROPOSAL / REPORT', 'UPLOAD PROPOSAL / LAPORAN')}
+          </button>
         </div>
       </div>
+
+      <SideConnectUploadModal isOpen={isUploadOpen} onClose={() => setIsUploadOpen(false)} />
     </section>
   );
 }

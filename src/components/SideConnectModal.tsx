@@ -13,9 +13,9 @@ import { SIDE_CONNECT_DIVISIONS, COUNTRY_CODES } from '../data';
 import { SideConnectRegistration } from '../types';
 import {
   Lightbulb, BookOpen, Compass, Send, CheckCircle2,
-  ArrowRight, ArrowLeft, X, User, Users, Plus, Trash2, Download
+  ArrowRight, ArrowLeft, X, User, Users, Plus, Trash2, Download, UploadCloud, FileText
 } from 'lucide-react';
-import { syncSideConnectToSheet } from '../lib/sideConnect';
+import { syncSideConnectToSheet, uploadSideConnectFiles } from '../lib/sideConnect';
 import { generateSideConnectPDF } from '../lib/generateSideConnectPDF';
 
 const ICON_MAP: Record<string, React.FC<{ className?: string }>> = {
@@ -63,6 +63,7 @@ export default function SideConnectModal({ isOpen, onClose }: SideConnectModalPr
   const [isDone, setIsDone] = useState(false);
   const [doneRefCode, setDoneRefCode] = useState('');
   const [doneReg, setDoneReg] = useState<SideConnectRegistration | null>(null);
+  const [reportFiles, setReportFiles] = useState<File[]>([]);
 
   const maxMembers = participationType === 'team' ? 2 : 0;
 
@@ -104,6 +105,7 @@ export default function SideConnectModal({ isOpen, onClose }: SideConnectModalPr
     setIsDone(false);
     setDoneRefCode('');
     setDoneReg(null);
+    setReportFiles([]);
   };
 
   const handleClose = () => {
@@ -156,6 +158,19 @@ export default function SideConnectModal({ isOpen, onClose }: SideConnectModalPr
       await syncSideConnectToSheet(reg);
     } catch (err) {
       console.error('[SideConnect] Sync error:', err);
+    }
+
+    // If the participant attached report/proposal files, upload them via the
+    // same Ref Code path (saved to Drive, links recorded on the row).
+    if (reportFiles.length > 0) {
+      try {
+        const up = await uploadSideConnectFiles(refCode, reportFiles);
+        if (!up.success) {
+          console.warn('[SideConnect] File upload:', up.message);
+        }
+      } catch (err) {
+        console.warn('[SideConnect] File upload error:', err);
+      }
     }
 
     setDoneRefCode(refCode);
@@ -518,6 +533,42 @@ export default function SideConnectModal({ isOpen, onClose }: SideConnectModalPr
                     <textarea value={experience} onChange={(e) => setExperience(e.target.value)} rows={2}
                       placeholder="Any relevant experience? (optional)"
                       className="w-full bg-zinc-900 border border-white/5 focus:border-[#00FF88] rounded-xl px-3 py-2.5 text-xs text-white focus:outline-none resize-none" />
+                  </div>
+
+                  {/* Report / Proposal file upload (optional) */}
+                  <div className="border-t border-white/5 pt-4">
+                    <label className="text-[9px] font-mono text-zinc-500 uppercase tracking-widest block mb-1.5">
+                      {t('UPLOAD REPORT / PROPOSAL (OPTIONAL)', 'UPLOAD LAPORAN / PROPOSAL (OPSIONAL)')}
+                    </label>
+                    <p className="text-[10px] text-zinc-500 mb-2">
+                      {t('Attach your report/proposal file(s). You can also upload them later with your Ref Code.', 'Lampirkan file laporan/proposal Anda. Anda juga bisa mengunggahnya nanti dengan Ref Code.')}
+                    </p>
+                    <label className="flex items-center justify-center gap-2 border border-dashed border-white/15 bg-zinc-900/40 rounded-xl px-4 py-5 text-center cursor-pointer hover:border-[#00FF88]/40 transition-colors">
+                      <UploadCloud className="w-5 h-5 text-[#00FF88]" />
+                      <span className="text-xs font-bold text-white uppercase">{t('CLICK TO SELECT FILES', 'KLIK UNTUK PILIH FILE')}</span>
+                      <input type="file" multiple className="hidden" onChange={(e) => {
+                        const picked: File[] = Array.from(e.target.files || []) as File[];
+                        setReportFiles((prev) => {
+                          const names = new Set(prev.map((f) => f.name));
+                          return [...prev, ...picked.filter((f) => !names.has(f.name))];
+                        });
+                      }} />
+                    </label>
+                    {reportFiles.length > 0 && (
+                      <div className="mt-3 space-y-2">
+                        {reportFiles.map((f) => (
+                          <div key={f.name} className="flex items-center gap-3 bg-zinc-900/60 border border-white/5 rounded-lg px-3 py-2">
+                            <FileText className="w-4 h-4 text-[#00FF88] shrink-0" />
+                            <span className="flex-1 min-w-0 text-xs text-white truncate">{f.name}</span>
+                            <span className="text-[10px] text-zinc-500 shrink-0">{(f.size / 1024 / 1024).toFixed(2)} MB</span>
+                            <button type="button" onClick={() => setReportFiles((prev) => prev.filter((x) => x.name !== f.name))}
+                              className="text-zinc-500 hover:text-[#FF3B30] transition-colors cursor-pointer">
+                              <X className="w-3.5 h-3.5" />
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                    )}
                   </div>
                 </div>
 

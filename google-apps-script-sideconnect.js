@@ -36,7 +36,8 @@ const FULL_HEADERS = [
   "Leader Name", "Leader Email", "Leader WhatsApp", "Leader Institution", "Leader Country", "Leader Age",
   "Member 1 Name", "Member 1 Email", "Member 1 WhatsApp", "Member 1 Institution", "Member 1 Country", "Member 1 Age",
   "Member 2 Name", "Member 2 Email", "Member 2 WhatsApp", "Member 2 Institution", "Member 2 Country", "Member 2 Age",
-  "Abstract Title", "Product Description", "How It Works", "Product Design", "Benefits", "Experience"
+  "Abstract Title", "Product Description", "How It Works", "Product Design", "Benefits", "Experience",
+  "Report Files"
 ];
 
 function getOrCreateSheet(subCompetition) {
@@ -95,6 +96,7 @@ function doPost(e) {
         data.productDesign,
         data.benefits,
         data.experience,
+        data.reportFiles ? String(data.reportFiles) : '',
       ];
 
       sheet.appendRow(row);
@@ -108,6 +110,10 @@ function doPost(e) {
       ).setMimeType(ContentService.MimeType.JSON);
     }
 
+    if (data.action === 'uploadFiles') {
+      return handleUploadFiles(data);
+    }
+
     return ContentService.createTextOutput(
       JSON.stringify({ success: false, message: 'Unknown action' })
     ).setMimeType(ContentService.MimeType.JSON);
@@ -117,6 +123,91 @@ function doPost(e) {
       JSON.stringify({ success: false, message: err.toString() })
     ).setMimeType(ContentService.MimeType.JSON);
   }
+}
+
+/** Response helper — GAS Web App needs the JSON mime type to return JSONP/text. */
+function json(obj) {
+  return ContentService.createTextOutput(JSON.stringify(obj))
+    .setMimeType(ContentService.MimeType.JSON);
+}
+
+/** Ensure a column exists by header name; returns 1-based column index. */
+function ensureColumn(sheet, name) {
+  const headers = sheet.getRange(1, 1, 1, sheet.getLastColumn()).getValues()[0]
+    .map(h => String(h).trim());
+  const existing = headers.indexOf(name);
+  if (existing >= 0) return existing + 1;
+  const col = headers.length + 1;
+  const cell = sheet.getRange(1, col);
+  cell.setValue(name);
+  cell.setFontWeight('bold');
+  cell.setBackground('#00FF88');
+  cell.setFontColor('#000000');
+  return col;
+}
+
+/** Create (or reuse) a Drive folder per ref code under a shared "SIDE CONNECT" folder. */
+function getSideConnectFolder(refCode) {
+  const rootName = 'SIDE CONNECT FILES';
+  let root = null;
+  const it = DriveApp.getFoldersByName(rootName);
+  if (it.hasNext()) root = it.next();
+  else root = DriveApp.createFolder(rootName);
+
+  const subName = refCode;
+  const subIt = root.getFoldersByName(subName);
+  if (subIt.hasNext()) return subIt.next();
+  return root.createFolder(subName);
+}
+
+function handleUploadFiles(data) {
+  const refCode = String(data.refCode || '').trim().toUpperCase();
+  if (!refCode) return json({ success: false, message: 'Missing refCode' });
+
+  const files = Array.isArray(data.files) ? data.files : [];
+  if (files.length === 0) return json({ success: false, message: 'No files provided' });
+
+  const ss = SpreadsheetApp.openById(SPREADSHEET_ID);
+
+  // Locate the participant row by ref code across all sub-competition tabs.
+  const tabs = Object.values(SUB_COMP_MAP);
+  let sheet = null;
+  let rowNum = -1;
+  let refIdx = -1;
+  for (let t = 0; t < tabs.length && !sheet; t++) {
+    const s = ss.getSheetByName(tabs[t]);
+    if (!s) continue;
+    const rows = s.getDataRange().getValues();
+    const headers = rows[0].map(h => String(h).trim());
+    const ri = headers.indexOf('Ref Code');
+    if (ri < 0) continue;
+    for (let i = 1; i < rows.length; i++) {
+      if (String(rows[i][ri]).trim().toUpperCase() === refCode) {
+        sheet = s; rowNum = i + 1; refIdx = ri;
+        break;
+      }
+    }
+  }
+  if (!sheet) return json({ success: false, message: 'Ref code not found' });
+
+  const folder = getSideConnectFolder(refCode);
+  const links = [];
+  for (const f of files) {
+    if (!f || !f.data) continue;
+    const bytes = Utilities.base64Decode(String(f.data));
+    const blob = Utilities.newBlob(bytes, f.mimeType || 'application/octet-stream', f.name || 'file');
+    const file = folder.createFile(blob);
+    file.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW);
+    links.push({ name: f.name, url: file.getUrl(), id: file.getId() });
+  }
+  if (links.length === 0) return json({ success: false, message: 'No valid files' });
+
+  const col = ensureColumn(sheet, 'Report Files');
+  const existing = sheet.getRange(rowNum, col).getValue();
+  const fresh = existing ? String(existing) + '\n' : '';
+  sheet.getRange(rowNum, col).setValue(fresh + links.map(l => l.url).join('\n'));
+
+  return json({ success: true, message: 'Uploaded ' + links.length + ' file(s)', files: links });
 }
 
 function doGet(e) {
