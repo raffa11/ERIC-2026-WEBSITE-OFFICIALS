@@ -146,6 +146,34 @@ function ensureColumn(sheet, name) {
   return col;
 }
 
+/** Create (or reuse) the "UPLOAD LOG" tab and append a row so every upload
+ *  attempt (success or failure + reason) is visible even when the frontend
+ *  uses no-cors (which silently hides GAS responses/errors). */
+function logUpload(refCode, status, message, fileNames) {
+  try {
+    const ss = SpreadsheetApp.openById(SPREADSHEET_ID);
+    let log = ss.getSheetByName('UPLOAD LOG');
+    if (!log) {
+      log = ss.insertSheet('UPLOAD LOG');
+      log.appendRow(['Timestamp', 'Ref Code', 'Status', 'Message', 'Files']);
+      const h = log.getRange(1, 1, 1, 5);
+      h.setFontWeight('bold');
+      h.setBackground('#FFB300');
+      h.setFontColor('#000000');
+    }
+    log.appendRow([
+      new Date(),
+      refCode || '',
+      status,
+      message || '',
+      Array.isArray(fileNames) ? fileNames.join(', ') : String(fileNames || ''),
+    ]);
+  } catch (err) {
+    // Logging must never break the upload flow.
+    console.error('logUpload failed:', err.toString());
+  }
+}
+
 /** Create (or reuse) a Drive folder per ref code under a shared "SIDE CONNECT" folder. */
 function getSideConnectFolder(refCode) {
   const rootName = 'SIDE CONNECT FILES';
@@ -162,10 +190,18 @@ function getSideConnectFolder(refCode) {
 
 function handleUploadFiles(data) {
   const refCode = String(data.refCode || '').trim().toUpperCase();
-  if (!refCode) return json({ success: false, message: 'Missing refCode' });
+  const fileNames = (Array.isArray(data.files) ? data.files : []).map(f => f && f.name).filter(Boolean);
+
+  if (!refCode) {
+    logUpload('', 'ERROR', 'Missing refCode', fileNames);
+    return json({ success: false, message: 'Missing refCode' });
+  }
 
   const files = Array.isArray(data.files) ? data.files : [];
-  if (files.length === 0) return json({ success: false, message: 'No files provided' });
+  if (files.length === 0) {
+    logUpload(refCode, 'ERROR', 'No files provided', []);
+    return json({ success: false, message: 'No files provided' });
+  }
 
   const ss = SpreadsheetApp.openById(SPREADSHEET_ID);
 
@@ -173,7 +209,6 @@ function handleUploadFiles(data) {
   const tabs = Object.values(SUB_COMP_MAP);
   let sheet = null;
   let rowNum = -1;
-  let refIdx = -1;
   for (let t = 0; t < tabs.length && !sheet; t++) {
     const s = ss.getSheetByName(tabs[t]);
     if (!s) continue;
@@ -183,12 +218,15 @@ function handleUploadFiles(data) {
     if (ri < 0) continue;
     for (let i = 1; i < rows.length; i++) {
       if (String(rows[i][ri]).trim().toUpperCase() === refCode) {
-        sheet = s; rowNum = i + 1; refIdx = ri;
+        sheet = s; rowNum = i + 1;
         break;
       }
     }
   }
-  if (!sheet) return json({ success: false, message: 'Ref code not found' });
+  if (!sheet) {
+    logUpload(refCode, 'ERROR', 'Ref code not found in any tab', fileNames);
+    return json({ success: false, message: 'Ref code not found' });
+  }
 
   const folder = getSideConnectFolder(refCode);
   const links = [];
@@ -200,13 +238,17 @@ function handleUploadFiles(data) {
     file.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW);
     links.push({ name: f.name, url: file.getUrl(), id: file.getId() });
   }
-  if (links.length === 0) return json({ success: false, message: 'No valid files' });
+  if (links.length === 0) {
+    logUpload(refCode, 'ERROR', 'No valid files (empty/decode failed)', fileNames);
+    return json({ success: false, message: 'No valid files' });
+  }
 
   const col = ensureColumn(sheet, 'Report Files');
   const existing = sheet.getRange(rowNum, col).getValue();
   const fresh = existing ? String(existing) + '\n' : '';
   sheet.getRange(rowNum, col).setValue(fresh + links.map(l => l.url).join('\n'));
 
+  logUpload(refCode, 'OK', 'Uploaded ' + links.length + ' file(s) to row ' + rowNum, links.map(l => l.name));
   return json({ success: true, message: 'Uploaded ' + links.length + ' file(s)', files: links });
 }
 
