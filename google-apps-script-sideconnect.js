@@ -267,6 +267,32 @@ function handleUploadFiles(data) {
 function doGet(e) {
   const action = e.parameter.action;
 
+  // Version check that works from a plain browser tab (GET is not blocked by
+  // CORS). Open ?action=debug to confirm the DEPLOYED code actually contains
+  // the uploadFiles handler and the logUpload helper.
+  if (action === 'debug') {
+    const info = {
+      success: true,
+      deployedWith: 'UPLOAD-LOG+V2',
+      hasUploadFilesHandler: typeof handleUploadFiles === 'function',
+      hasLogUpload: typeof logUpload === 'function',
+      hasRegisterAction: typeof doPost === 'function',
+      tabs: Object.values(SUB_COMP_MAP),
+      spreadsheetIdSet: SPREADSHEET_ID !== 'PASTE_YOUR_SIDE_CONNECT_SHEET_ID_HERE',
+    };
+    try {
+      const ss = SpreadsheetApp.openById(SPREADSHEET_ID);
+      info.sheetAccessible = true;
+      info.sheetTabs = ss.getSheets().map(s => s.getName());
+      info.hasUploadLogTab = ss.getSheetByName('UPLOAD LOG') !== null;
+    } catch (err) {
+      info.sheetAccessible = false;
+      info.sheetError = err.toString();
+    }
+    return ContentService.createTextOutput(JSON.stringify(info))
+      .setMimeType(ContentService.MimeType.JSON);
+  }
+
   if (action === 'getRegistrations') {
     const subComp = e.parameter.subCompetition;
     const ss = SpreadsheetApp.openById(SPREADSHEET_ID);
