@@ -394,9 +394,19 @@ function doGet(e) {
                     if (!leaderEmail) continue;
                     if (email && !leaderEmail.includes(email)) continue;
 
-                    const divisionId = C.divisionId >= 0
+                    // Normalisasi divisionId: nilai kolom "Division" bisa berisi
+                    // sub-kategori (RC / Autonomous) alih-alih nama divisi penuh pada
+                    // baris sumobot lama. Dalam kasus itu, pakai divisi asal tab
+                    // (fallbackDivision dari nama sheet) supaya terhitung benar.
+                    let divisionId = C.divisionId >= 0
                         ? val(row, C.divisionId, '')
                         : fallbackDivision;
+                    if (!Object.prototype.hasOwnProperty.call(DIVISION_MAP, divisionId)) {
+                        divisionId = fallbackDivision;
+                    }
+                    if (!Object.prototype.hasOwnProperty.call(DIVISION_MAP, divisionId)) {
+                        divisionId = '';
+                    }
 
                     // Output FLAT shape (kontrak flatToRegistration di frontend):
                     // leaderName, m1Name, ..., lecturerName, ..., ricStage*, ticketEmail*

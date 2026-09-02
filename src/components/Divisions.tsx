@@ -11,9 +11,11 @@ import * as LucideIcons from 'lucide-react';
 interface DivisionsProps {
   onSelectDivision: (divisionId: string) => void;
   liveQuota?: Record<string, number>;
+  /** true until the first live quota fetch resolves — used to avoid flashing the static placeholder count */
+  liveQuotaLoading?: boolean;
 }
 
-export default function Divisions({ onSelectDivision, liveQuota = {} }: DivisionsProps) {
+export default function Divisions({ onSelectDivision, liveQuota = {}, liveQuotaLoading = false }: DivisionsProps) {
   const { t } = useLanguage();
   const [isTouchDevice] = useState(() =>
     typeof window !== 'undefined' && window.matchMedia('(pointer: coarse)').matches
@@ -100,13 +102,18 @@ export default function Divisions({ onSelectDivision, liveQuota = {} }: Division
             const canRegister = !division.comingSoon && !isUnavailable;
 
             // Live quota: prefer the real registration count pulled from Google
-            // Sheets (liveQuota[division.id]); fall back to the static value from
-            // data.ts only until the first live fetch resolves. Canceled / closed
-            // divisions are intentionally shown as FULL regardless of live count.
+            // Sheets (liveQuota[division.id]). While the first live fetch is still
+            // resolving we show a loading placeholder instead of flashing the
+            // static (placeholder) value from data.ts, so the count doesn't jump
+            // from e.g. 27 → 82 after load. Canceled / closed divisions are
+            // intentionally shown as FULL regardless of live count.
             const liveCount = liveQuota[division.id];
+            const quotaPending = isUnavailable
+              ? false
+              : (liveQuotaLoading && liveCount === undefined);
             const effectiveRegistered = isUnavailable
               ? (typeof division.capacity === 'number' ? division.capacity : 0)
-              : (liveCount !== undefined ? liveCount : (division.registered ?? 0));
+              : (quotaPending ? -1 : (liveCount !== undefined ? liveCount : (division.registered ?? 0)));
 
             const remaining = typeof division.capacity === 'number' && effectiveRegistered >= 0
               ? Math.max(division.capacity - effectiveRegistered, 0)
@@ -266,15 +273,17 @@ export default function Divisions({ onSelectDivision, liveQuota = {} }: Division
                             {t('LIVE QUOTA', 'KUOTA LIVE')}
                           </span>
                           <span className={`font-bold uppercase ${remaining > 0 ? 'text-white' : 'text-red-400'}`}>
-                            {remaining > 0
-                              ? `${effectiveRegistered} / ${division.capacity} ${t('REGISTERED', 'TERDAFTAR')}`
-                              : t('FULL', 'PENUH')}
+                            {quotaPending
+                              ? <span className="text-zinc-500 animate-pulse">{t('LOADING…', 'MEMUAT…')}</span>
+                              : (remaining > 0
+                                  ? `${effectiveRegistered} / ${division.capacity} ${t('REGISTERED', 'TERDAFTAR')}`
+                                  : t('FULL', 'PENUH'))}
                           </span>
                         </div>
                         <div className="h-1 w-full bg-zinc-900 rounded-full overflow-hidden">
                           <div
-                            className={`h-full rounded-full transition-all duration-500 ${quotaColor}`}
-                            style={{ width: Math.min(quotaPct, 100) + '%' }}
+                            className={`h-full rounded-full transition-all duration-500 ${quotaPending ? 'bg-zinc-700 animate-pulse' : quotaColor}`}
+                            style={{ width: (quotaPending ? 100 : Math.min(quotaPct, 100)) + '%' }}
                           />
                         </div>
                       </div>

@@ -259,7 +259,7 @@ function AppContent() {
               <BenefitsSection />
             </ScrollReveal>
             <ScrollReveal>
-              <Divisions onSelectDivision={handleSelectDivision} liveQuota={liveQuota.map} />
+              <Divisions onSelectDivision={handleSelectDivision} liveQuota={liveQuota.map} liveQuotaLoading={liveQuota.loading} />
             </ScrollReveal>
             <ScrollReveal>
               <SideConnect onRegisterClick={() => setIsSideConnectModalOpen(true)} />
