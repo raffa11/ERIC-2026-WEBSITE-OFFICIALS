@@ -2,64 +2,57 @@
  * @license
  * SPDX-License-Identifier: Apache-2.0
  *
- * Live quota: counts real registrations per division straight from Google Sheets
- * (via the Apps Script getRegistrations endpoint) so the "LIVE QUOTA" boxes on
- * the arena cards reflect actual registrations and rise in real time as new
- * participants register and sync to the sheet.
+ * Live quota: the arena cards show the registered-count per division and rise
+ * +1 whenever a new participant successfully registers in the current session.
+ *
+ * The base counts come from the static `registered` values in data.ts (which are
+ * manually kept up to date). On top of that we track how many successful
+ * registrations happened locally and add them on, so the number increments in
+ * real time without depending on an Apps Script / Google Sheets round-trip.
  */
 
-import { useCallback, useEffect, useRef, useState } from 'react';
-import { fetchAllRegistrations } from './googleSheet';
+import { useCallback, useRef, useState } from 'react';
+import { COMPETITION_DIVISIONS } from '../data';
 
 export interface LiveQuota {
-  /** divisionId -> number of real registrations currently in the sheet */
+  /** divisionId -> current registered count (base + local increments) */
   map: Record<string, number>;
-  /** true until the first successful fetch resolves */
+  /** no longer fetched from a remote source, so it is never "loading" */
   loading: boolean;
-  /** timestamp (ms) of the last successful refresh, or null if never fetched */
+  /** timestamp (ms) of the last update, or null if never updated */
   lastUpdated: number | null;
-  /** re-fetch registration counts from the sheet now */
-  refresh: () => Promise<void>;
+  /** bump the count for a division by +1 after a successful registration */
+  increment: (divisionId: string) => void;
+  /** reset local increments back to the base data.ts values */
+  reset: () => void;
 }
 
-const DEFAULT_POLL_INTERVAL_MS = 60000;
+const DEFAULT_BASE_COUNTS: Record<string, number> = (() => {
+  const base: Record<string, number> = {};
+  for (const d of COMPETITION_DIVISIONS) {
+    base[d.id] = d.registered ?? 0;
+  }
+  return base;
+})();
 
-export function useLiveQuota(pollIntervalMs: number = DEFAULT_POLL_INTERVAL_MS): LiveQuota {
-  const [map, setMap] = useState<Record<string, number>>({});
-  const [loading, setLoading] = useState(true);
+export function useLiveQuota(): LiveQuota {
+  const baseCounts = useRef<Record<string, number>>({ ...DEFAULT_BASE_COUNTS });
+
+  const [map, setMap] = useState<Record<string, number>>(() => ({ ...baseCounts.current }));
   const [lastUpdated, setLastUpdated] = useState<number | null>(null);
-  const inFlight = useRef(false);
 
-  const refresh = useCallback(async () => {
-    // Guard against overlapping fetchAllRegistrations requests (it already has
-    // its own retry logic, so we only serialize at the hook layer).
-    if (inFlight.current) return;
-    inFlight.current = true;
-    try {
-      const regs = await fetchAllRegistrations();
-      if (regs) {
-        const counts: Record<string, number> = {};
-        for (const r of regs) {
-          const id = r?.divisionId;
-          if (!id) continue;
-          counts[id] = (counts[id] || 0) + 1;
-        }
-        setMap(counts);
-        setLastUpdated(Date.now());
-      }
-    } catch (err) {
-      console.error('[useLiveQuota] Error fetching live registrations:', err);
-    } finally {
-      setLoading(false);
-      inFlight.current = false;
-    }
+  const increment = useCallback((divisionId: string) => {
+    setMap(prev => {
+      const current = typeof prev[divisionId] === 'number' ? prev[divisionId] : (baseCounts.current[divisionId] ?? 0);
+      return { ...prev, [divisionId]: current + 1 };
+    });
+    setLastUpdated(Date.now());
   }, []);
 
-  useEffect(() => {
-    refresh();
-    const interval = setInterval(refresh, pollIntervalMs);
-    return () => clearInterval(interval);
-  }, [refresh, pollIntervalMs]);
+  const reset = useCallback(() => {
+    setMap({ ...baseCounts.current });
+    setLastUpdated(null);
+  }, []);
 
-  return { map, loading, lastUpdated, refresh };
+  return { map, loading: false, lastUpdated, increment, reset };
 }
