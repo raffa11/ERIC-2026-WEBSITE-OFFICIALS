@@ -2,57 +2,76 @@
  * @license
  * SPDX-License-Identifier: Apache-2.0
  *
- * Live quota: the arena cards show the registered-count per division and rise
- * +1 whenever a new participant successfully registers in the current session.
+ * Live quota (global): the arena cards show a registered-count per division that
+ * is the same on every device and rises +1 whenever any participant registers.
  *
- * The base counts come from the static `registered` values in data.ts (which are
- * manually kept up to date). On top of that we track how many successful
- * registrations happened locally and add them on, so the number increments in
- * real time without depending on an Apps Script / Google Sheets round-trip.
+ * The count comes from the real registrations stored in Google Sheets (the shared
+ * source of truth, so desktop and Android always agree). A manual floor is applied
+ * per division from the `registered` values in data.ts — see Divisions.tsx, where
+ * effective = max(sheetCount, manual) — so a number you set by hand is never shown
+ * smaller, while real signups still push it upward globally.
  */
 
-import { useCallback, useRef, useState } from 'react';
-import { COMPETITION_DIVISIONS } from '../data';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { fetchAllRegistrations } from './googleSheet';
 
 export interface LiveQuota {
-  /** divisionId -> current registered count (base + local increments) */
+  /** divisionId -> count of real registrations in Google Sheets + local bumps */
   map: Record<string, number>;
-  /** no longer fetched from a remote source, so it is never "loading" */
+  /** true until the first successful fetch resolves */
   loading: boolean;
-  /** timestamp (ms) of the last update, or null if never updated */
+  /** timestamp (ms) of the last successful fetch, or null if never fetched */
   lastUpdated: number | null;
-  /** bump the count for a division by +1 after a successful registration */
-  increment: (divisionId: string) => void;
-  /** reset local increments back to the base data.ts values */
-  reset: () => void;
+  /** re-fetch registration counts from the sheet now */
+  refresh: () => Promise<void>;
+  /** optimistic +1 bump for UX; superseded by the sheet count on next refresh */
+  incrementLocal: (divisionId: string) => void;
 }
 
-const DEFAULT_BASE_COUNTS: Record<string, number> = (() => {
-  const base: Record<string, number> = {};
-  for (const d of COMPETITION_DIVISIONS) {
-    base[d.id] = d.registered ?? 0;
-  }
-  return base;
-})();
+const DEFAULT_POLL_INTERVAL_MS = 60000;
 
-export function useLiveQuota(): LiveQuota {
-  const baseCounts = useRef<Record<string, number>>({ ...DEFAULT_BASE_COUNTS });
-
-  const [map, setMap] = useState<Record<string, number>>(() => ({ ...baseCounts.current }));
+export function useLiveQuota(pollIntervalMs: number = DEFAULT_POLL_INTERVAL_MS): LiveQuota {
+  const [map, setMap] = useState<Record<string, number>>({});
+  const [loading, setLoading] = useState(true);
   const [lastUpdated, setLastUpdated] = useState<number | null>(null);
+  const inFlight = useRef(false);
 
-  const increment = useCallback((divisionId: string) => {
-    setMap(prev => {
-      const current = typeof prev[divisionId] === 'number' ? prev[divisionId] : (baseCounts.current[divisionId] ?? 0);
-      return { ...prev, [divisionId]: current + 1 };
-    });
+  const refresh = useCallback(async () => {
+    if (inFlight.current) return;
+    inFlight.current = true;
+    try {
+      const regs = await fetchAllRegistrations();
+      if (regs) {
+        const counts: Record<string, number> = {};
+        for (const r of regs) {
+          const id = r?.divisionId;
+          if (!id) continue;
+          counts[id] = (counts[id] || 0) + 1;
+        }
+        setMap(counts);
+        setLastUpdated(Date.now());
+      }
+    } catch (err) {
+      console.error('[useLiveQuota] Error fetching live registrations:', err);
+    } finally {
+      setLoading(false);
+      inFlight.current = false;
+    }
+  }, []);
+
+  // Optimistic local bump so the card increments instantly on success. This is
+  // session-scoped and temporary — the next refresh() overwrites the map with the
+  // authoritative sheet count.
+  const incrementLocal = useCallback((divisionId: string) => {
+    setMap(prev => ({ ...prev, [divisionId]: (prev[divisionId] || 0) + 1 }));
     setLastUpdated(Date.now());
   }, []);
 
-  const reset = useCallback(() => {
-    setMap({ ...baseCounts.current });
-    setLastUpdated(null);
-  }, []);
+  useEffect(() => {
+    refresh();
+    const interval = setInterval(refresh, pollIntervalMs);
+    return () => clearInterval(interval);
+  }, [refresh, pollIntervalMs]);
 
-  return { map, loading: false, lastUpdated, increment, reset };
+  return { map, loading, lastUpdated, refresh, incrementLocal };
 }

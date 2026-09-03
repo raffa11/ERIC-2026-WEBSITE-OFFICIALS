@@ -101,19 +101,21 @@ export default function Divisions({ onSelectDivision, liveQuota = {}, liveQuotaL
             const isUnavailable = !!division.canceled || !!division.closed;
             const canRegister = !division.comingSoon && !isUnavailable;
 
-            // Live quota: prefer the real registration count pulled from Google
-            // Sheets (liveQuota[division.id]). While the first live fetch is still
-            // resolving we show a loading placeholder instead of flashing the
-            // static (placeholder) value from data.ts, so the count doesn't jump
-            // from e.g. 27 → 82 after load. Canceled / closed divisions are
-            // intentionally shown as FULL regardless of live count.
+            // Live quota: prefer the count pulled from Google Sheets (the shared
+            // source of truth, so every device shows the same number). A manual
+            // floor from data.ts is applied so a hand-set value is never shown
+            // smaller while real signups still push the number up globally.
+            // effective = max(sheetCount, manualFloor).
             const liveCount = liveQuota[division.id];
             const quotaPending = isUnavailable
               ? false
               : (liveQuotaLoading && liveCount === undefined);
+            const manualFloor = division.registered ?? 0;
             const effectiveRegistered = isUnavailable
               ? (typeof division.capacity === 'number' ? division.capacity : 0)
-              : (quotaPending ? -1 : (liveCount !== undefined ? liveCount : (division.registered ?? 0)));
+              : (quotaPending
+                  ? manualFloor
+                  : (liveCount !== undefined ? Math.max(liveCount, manualFloor) : manualFloor));
 
             const remaining = typeof division.capacity === 'number' && effectiveRegistered >= 0
               ? Math.max(division.capacity - effectiveRegistered, 0)
