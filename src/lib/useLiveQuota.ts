@@ -2,76 +2,106 @@
  * @license
  * SPDX-License-Identifier: Apache-2.0
  *
- * Live quota (global): the arena cards show a registered-count per division that
- * is the same on every device and rises +1 whenever any participant registers.
+ * Live quota (global, Supabase-backed): the arena cards show a registered-count
+ * per division that is the same on every device and rises +1 whenever any
+ * participant registers. Only a NUMBER per division is stored in Supabase
+ * (division_quotas table) — no participant data or images.
  *
- * The count comes from the real registrations stored in Google Sheets (the shared
- * source of truth, so desktop and Android always agree). A manual floor is applied
- * per division from the `registered` values in data.ts — see Divisions.tsx, where
- * effective = max(sheetCount, manual) — so a number you set by hand is never shown
- * smaller, while real signups still push it upward globally.
+ * Effective count displayed = max(manualFloorFromDataTs, supabaseCount). The
+ * manual floor guarantees a hand-set number is never shown smaller even if the
+ * Supabase counter isn't seeded yet, while real signups push the number up
+ * globally via the atomic increment + Postgres realtime subscription.
  */
 
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { fetchAllRegistrations } from './googleSheet';
+import { getSupabase } from './supabase';
+import {
+  fetchQuotaCounts,
+  incrementQuotaCount,
+  isQuotaSupabaseConfigured,
+} from './liveQuotaSupabase';
 
 export interface LiveQuota {
-  /** divisionId -> count of real registrations in Google Sheets + local bumps */
-  map: Record<string, number>;
-  /** true until the first successful fetch resolves */
+  /** divisionId -> authoritative count from Supabase (global), if available */
+  supabaseCounts: Record<string, number>;
+  /** true until the first Supabase fetch resolves */
   loading: boolean;
-  /** timestamp (ms) of the last successful fetch, or null if never fetched */
+  /** timestamp (ms) of the last update, or null if never */
   lastUpdated: number | null;
-  /** re-fetch registration counts from the sheet now */
+  /** atomic +1 of a division's counter in Supabase */
+  increment: (divisionId: string) => Promise<void>;
+  /** re-fetch counts from Supabase now */
   refresh: () => Promise<void>;
-  /** optimistic +1 bump for UX; superseded by the sheet count on next refresh */
-  incrementLocal: (divisionId: string) => void;
 }
 
-const DEFAULT_POLL_INTERVAL_MS = 60000;
+/** Default caution: never poll hard if Supabase is absent. */
+const DEFAULT_REFRESH_MS = 60000;
 
-export function useLiveQuota(pollIntervalMs: number = DEFAULT_POLL_INTERVAL_MS): LiveQuota {
-  const [map, setMap] = useState<Record<string, number>>({});
+let realtimeSubscribed = false;
+
+export function useLiveQuota(refreshMs: number = DEFAULT_REFRESH_MS): LiveQuota {
+  const [supabaseCounts, setSupabaseCounts] = useState<Record<string, number>>({});
   const [loading, setLoading] = useState(true);
   const [lastUpdated, setLastUpdated] = useState<number | null>(null);
   const inFlight = useRef(false);
 
   const refresh = useCallback(async () => {
+    if (!isQuotaSupabaseConfigured()) {
+      setLoading(false);
+      return;
+    }
     if (inFlight.current) return;
     inFlight.current = true;
     try {
-      const regs = await fetchAllRegistrations();
-      if (regs) {
-        const counts: Record<string, number> = {};
-        for (const r of regs) {
-          const id = r?.divisionId;
-          if (!id) continue;
-          counts[id] = (counts[id] || 0) + 1;
-        }
-        setMap(counts);
+      const counts = await fetchQuotaCounts();
+      if (counts) {
+        setSupabaseCounts(counts);
         setLastUpdated(Date.now());
       }
     } catch (err) {
-      console.error('[useLiveQuota] Error fetching live registrations:', err);
+      console.error('[useLiveQuota] refresh failed:', err);
     } finally {
       setLoading(false);
       inFlight.current = false;
     }
   }, []);
 
-  // Optimistic local bump so the card increments instantly on success. This is
-  // session-scoped and temporary — the next refresh() overwrites the map with the
-  // authoritative sheet count.
-  const incrementLocal = useCallback((divisionId: string) => {
-    setMap(prev => ({ ...prev, [divisionId]: (prev[divisionId] || 0) + 1 }));
+  const increment = useCallback(async (divisionId: string) => {
+    // Optimistic local bump for instant UX.
+    setSupabaseCounts(prev => ({ ...prev, [divisionId]: (prev[divisionId] || 0) + 1 }));
     setLastUpdated(Date.now());
+    // Atomic increment in Supabase; the realtime subscription / next refresh
+    // reconciles any drift across devices.
+    await incrementQuotaCount(divisionId);
   }, []);
 
+  // Subscribe to Postgres realtime changes so all devices update instantly.
   useEffect(() => {
+    const supabase = getSupabase();
+    if (!supabase) {
+      setLoading(false);
+      return;
+    }
     refresh();
-    const interval = setInterval(refresh, pollIntervalMs);
-    return () => clearInterval(interval);
-  }, [refresh, pollIntervalMs]);
 
-  return { map, loading, lastUpdated, refresh, incrementLocal };
+    if (!realtimeSubscribed) {
+      realtimeSubscribed = true;
+      const channel = supabase
+        .channel('division-quotas-live')
+        .on(
+          'postgres_changes',
+          { event: '*', schema: 'public', table: 'division_quotas' },
+          () => {
+            void refresh();
+          }
+        )
+        .subscribe();
+      // No cleanup: keep the single channel alive for the app lifetime.
+    }
+
+    const interval = setInterval(() => { void refresh(); }, refreshMs);
+    return () => clearInterval(interval);
+  }, [refresh, refreshMs]);
+
+  return { supabaseCounts, loading, lastUpdated, increment, refresh };
 }

@@ -58,9 +58,9 @@ function AppContent() {
   // Side Connect states
   const [isSideConnectModalOpen, setIsSideConnectModalOpen] = useState(false);
 
-  // Live registration quota per division, sourced from Google Sheets (shared
-  // across all devices) with a manual floor in data.ts. Falls back to a quick
-  // client-side bump so the number on the card doesn't wait for the sheet sync.
+  // Live registration quota per division, backed by a Supabase counter (global,
+  // realtime, +1 per signup). A manual floor in data.ts guarantees a hand-set
+  // number is never shown smaller. Effective = max(manualFloor, supabaseCount).
   const liveQuota = useLiveQuota();
 
 
@@ -176,13 +176,10 @@ function AppContent() {
     // Do NOT call refreshRegistrations here — it races with the React state update
     // and can overwrite with stale Sheets data (GAS hasn't processed syncToGoogleSheet yet).
 
-    // Bump the arena-card quota by +1 immediately for UX, then refresh from the
-    // authoritative sheet count once the new row has had time to sync (a short
-    // delay avoids racing the React state update). The next poll keeps it in sync.
-    liveQuota.incrementLocal(newReg.divisionId);
-    window.setTimeout(() => {
-      liveQuota.refresh();
-    }, 5000);
+    // Bump the arena-card quota by +1 in Supabase (atomic, global, realtime).
+    // No Sheets round-trip needed — the counter lives in Supabase and the
+    // Postgres realtime subscription updates every device instantly.
+    void liveQuota.increment(newReg.divisionId);
   };
 
   // Update registrations list directly (e.g., from edit or delete)
@@ -263,7 +260,7 @@ function AppContent() {
               <BenefitsSection />
             </ScrollReveal>
             <ScrollReveal>
-              <Divisions onSelectDivision={handleSelectDivision} liveQuota={liveQuota.map} liveQuotaLoading={liveQuota.loading} />
+              <Divisions onSelectDivision={handleSelectDivision} liveQuota={liveQuota.supabaseCounts} liveQuotaLoading={liveQuota.loading} />
             </ScrollReveal>
             <ScrollReveal>
               <SideConnect onRegisterClick={() => setIsSideConnectModalOpen(true)} />

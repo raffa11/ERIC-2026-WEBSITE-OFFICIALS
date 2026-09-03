@@ -101,11 +101,11 @@ export default function Divisions({ onSelectDivision, liveQuota = {}, liveQuotaL
             const isUnavailable = !!division.canceled || !!division.closed;
             const canRegister = !division.comingSoon && !isUnavailable;
 
-            // Live quota: prefer the count pulled from Google Sheets (the shared
-            // source of truth, so every device shows the same number). A manual
-            // floor from data.ts is applied so a hand-set value is never shown
-            // smaller while real signups still push the number up globally.
-            // effective = max(sheetCount, manualFloor).
+            // Live quota: prefer the Supabase counter (the shared, realtime
+            // source shared by every device). A manual floor from data.ts is
+            // applied so a hand-set value is never shown smaller while real
+            // signups still push the number up globally.
+            // effective = max(supabaseCount, manualFloor).
             const liveCount = liveQuota[division.id];
             const quotaPending = isUnavailable
               ? false
