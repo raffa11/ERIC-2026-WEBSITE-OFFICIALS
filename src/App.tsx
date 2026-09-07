@@ -29,7 +29,7 @@ import RegistrationModal from './components/RegistrationModal';
 import SideConnectModal from './components/SideConnectModal';
 
 import { Registration } from './types';
-import { COMPETITION_DIVISIONS } from './data';
+import { COMPETITION_DIVISIONS, REGISTRATION_CLOSED } from './data';
 import { 
   dbFetchRegistrations, 
   dbUpsertRegistration, 
@@ -207,6 +207,12 @@ function AppContent() {
 
     // Division selection from cards
     const handleSelectDivision = (divisionId: string) => {
+      // Global registration closed
+      if (REGISTRATION_CLOSED) {
+        showAlert({ message: 'Registration has officially closed. Thank you for participating!', type: 'warning' });
+        return;
+      }
+
       // Hard-block closed, canceled, or coming-soon divisions
       const division = COMPETITION_DIVISIONS.find(d => d.id === divisionId);
       if (!division || division.comingSoon || division.closed || division.canceled) {
@@ -223,6 +229,15 @@ function AppContent() {
     
     setSelectedDivisionId(divisionId);
     setIsRegistrationModalOpen(true);
+  };
+
+  // Side Connect registration click — blocked when global registration is closed
+  const handleSideConnectRegisterClick = () => {
+    if (REGISTRATION_CLOSED) {
+      showAlert({ message: 'Side Connect registration has officially closed. Thank you for participating!', type: 'warning' });
+      return;
+    }
+    setIsSideConnectModalOpen(true);
   };
 
   return (
@@ -263,7 +278,7 @@ function AppContent() {
               <Divisions onSelectDivision={handleSelectDivision} liveQuota={liveQuota.supabaseCounts} liveQuotaLoading={liveQuota.loading} />
             </ScrollReveal>
             <ScrollReveal>
-              <SideConnect onRegisterClick={() => setIsSideConnectModalOpen(true)} />
+              <SideConnect onRegisterClick={handleSideConnectRegisterClick} />
             </ScrollReveal>
             <ScrollReveal>
               <EventJourney />

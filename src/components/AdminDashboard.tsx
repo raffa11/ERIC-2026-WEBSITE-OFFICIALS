@@ -21,7 +21,7 @@ import {
 import { getGoogleScriptUrl, setGoogleScriptUrl, syncToGoogleSheet, fetchAllRegistrations } from '../lib/googleSheet';
 import { reconstructRic } from '../lib/supabase';
 import { generateRegistrationPDF, registrationPdfSafeName } from '../lib/generatePDF';
-import { sendTicketEmail, getSendTicketSecret, setSendTicketSecret, normalizeRegistration } from '../lib/ticketRescue';
+import { sendTicketEmail, getAdminToken, setAdminToken, normalizeRegistration } from '../lib/ticketRescue';
 import gasScriptRaw from '../../google-apps-script.js?raw';
 
 interface AdminDashboardProps {
@@ -54,14 +54,14 @@ export default function AdminDashboard({
   const [sendToEmail, setSendToEmail] = useState('');
   const [sendSubject, setSendSubject] = useState('');
   const [sendBody, setSendBody] = useState('');
-  const [sendSecret, setSendSecret] = useState(getSendTicketSecret());
+  const [sendSecret, setSendSecret] = useState(getAdminToken());
   const [isSending, setIsSending] = useState(false);
 
   // Fetch ALL registrations from Google Sheets when RIC tab is active
   React.useEffect(() => {
     if (activeTab === 'ric') {
       setIsLoadingRic(true);
-      fetchAllRegistrations().then((data) => {
+      fetchAllRegistrations(getAdminToken()).then((data) => {
         if (data) {
           const reconstructed = data.map(reconstructRic);
           setRicSheetData(reconstructed);
@@ -75,7 +75,7 @@ export default function AdminDashboard({
   React.useEffect(() => {
     if (activeTab === 'tickets') {
       setIsLoadingTickets(true);
-      fetchAllRegistrations().then((data) => {
+      fetchAllRegistrations(getAdminToken()).then((data) => {
         if (data) {
           const normalized = data
             .map(normalizeRegistration)
@@ -199,7 +199,7 @@ export default function AdminDashboard({
   // ─── PDF TICKET RESCUE LOGIC ─────────────────────────────
   const refreshTickets = () => {
     setIsLoadingTickets(true);
-    fetchAllRegistrations().then((data) => {
+    fetchAllRegistrations(getAdminToken()).then((data) => {
       if (data) {
         const normalized = data
           .map(normalizeRegistration)
@@ -759,21 +759,21 @@ function doPost(e) {
         <div className="p-4 bg-zinc-950 border border-white/5 rounded-2xl flex flex-col sm:flex-row sm:items-center gap-3">
           <div className="flex items-center gap-2 text-[10px] font-mono text-zinc-400 uppercase shrink-0">
             <KeyRound className="w-4 h-4 text-[#FF3B30]" />
-            ADMIN SEND SECRET
+            ADMIN TOKEN
           </div>
           <input
-            type="text"
-            name="admin-send-secret"
+            type="password"
+            name="admin-token"
             value={sendSecret}
             onChange={(e) => {
               setSendSecret(e.target.value);
-              setSendTicketSecret(e.target.value);
+              setAdminToken(e.target.value);
             }}
-            placeholder="Secret token (harus sama dengan GAS script)"
+            placeholder="Masukkan admin token (dari setupSecurity GAS)"
             className="flex-1 min-w-0 bg-zinc-900 border border-white/5 focus:border-[#FF3B30]/40 rounded-xl px-3 py-2 text-[11px] font-mono text-white placeholder-zinc-600 focus:outline-none"
           />
           <p className="text-[8.5px] font-mono text-zinc-600 uppercase leading-relaxed">
-            Wajib sama persis dengan const SECRET di handleSendTicket (google-apps-script.js). Default: ERIC2026_TICKET_RESCUE
+            Token tersimpan di device ini. Tanpa token, semua aksi admin ke Google Sheet DITOLAK (termasuk kirim tiket). Jalankan setupSecurity() sekali di Apps Script utk menyetel token.
           </p>
         </div>
 

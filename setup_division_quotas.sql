@@ -66,7 +66,17 @@ create policy "public read division quotas"
 --    & execute fungsi RPC.
 grant select on table public.division_quotas to anon;
 grant execute on function public.increment_division_quota(text) to anon;
-grant execute on function public.set_division_quota(text, integer) to anon;
+
+-- >>> PEPERANG 2026-09-07: CABUT akses anon ke set_division_quota <<<
+-- Sebelumnya anon boleh memanggil set_division_quota => siapataun bisa
+-- menaikkan/menurunkan kuota sewenang-wenang (dan menyisipkan baris uji
+-- seperti '12345' / 'cleanuptest1788783400'). Sekarang SET hanya bisa
+-- lewat service_role/authenticated (mis. dari Supabase dashboard / backend).
+revoke execute on function public.set_division_quota(text, integer) from anon;
+revoke execute on function public.set_division_quota(text, integer) from authenticated;
+
+-- 6) Bersihkan baris uji yang pernah disisipkan melalui celah anon di atas.
+delete from public.division_quotas where division_id in ('12345', 'cleanuptest1788783400');
 
 -- (Optional) agar tidak bisa update/delete langsung oleh anon —
 --   anon TIDAK diberi grant insert/update/delete, hanya lewat fungsi.

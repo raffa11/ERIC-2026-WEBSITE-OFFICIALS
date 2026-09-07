@@ -14,23 +14,42 @@ import { getGoogleScriptUrl } from './googleSheet';
 import { flatToRegistration } from './supabase';
 
 const SECRET_KEY = 'eric_ticket_send_secret';
-const DEFAULT_SECRET = 'ERIC2026_TICKET_RESCUE';
+const ADMIN_TOKEN_KEY = 'eric_admin_token';
 
-export const getSendTicketSecret = (): string => {
+/**
+ * Token admin tunggal yang dipakai utk SEMUA aksi sensitif ke
+ * Google Apps Script: read all registrations (getRegistrations tanpa email),
+ * sendTicket, dsb. Token ini TIDAK boleh di-hardcode di bundle — admin
+ * memasukkannya di Admin Dashboard dan tersimpan di localStorage device admin.
+ *
+ * Keamanan sejati utk aksi admin (yang TIDAK mungkin dicapai murni
+ * client-side) membutuhkan backend/server proxy. Token di sini hanya
+ * menaikkan batas dibandingkan tanpa token sama sekali: orang yang tidak
+ * tahu token TIDAK bisa dump dataset. (Lihat README/SECURITY note.)
+ */
+
+export const getAdminToken = (): string => {
   try {
-    return localStorage.getItem(SECRET_KEY) || DEFAULT_SECRET;
+    return localStorage.getItem(ADMIN_TOKEN_KEY) || '';
   } catch {
-    return DEFAULT_SECRET;
+    return '';
   }
 };
 
-export const setSendTicketSecret = (value: string) => {
+export const setAdminToken = (value: string) => {
   try {
-    localStorage.setItem(SECRET_KEY, value);
+    if (value) localStorage.setItem(ADMIN_TOKEN_KEY, value);
+    else localStorage.removeItem(ADMIN_TOKEN_KEY);
   } catch {
     // ignore
   }
 };
+
+// Alias lama utk kompatibilitas — kini mengarah ke token admin terpadu,
+// TANPA default hardcoded (default = kosong => GAS menolak sampai admin
+// memasukkan token).
+export const getSendTicketSecret = (): string => getAdminToken();
+export const setSendTicketSecret = (value: string): void => setAdminToken(value);
 
 const s = (v: any): string => (v === null || v === undefined ? '' : String(v));
 

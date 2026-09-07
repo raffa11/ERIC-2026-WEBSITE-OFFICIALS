@@ -7,8 +7,8 @@
 
 import React, { useState } from 'react';
 import { useLanguage } from './LanguageContext';
-import { SIDE_CONNECT_DIVISIONS } from '../data';
-import { Lightbulb, BookOpen, Compass, Zap, Globe, Users, ArrowRight, UploadCloud } from 'lucide-react';
+import { SIDE_CONNECT_DIVISIONS, REGISTRATION_CLOSED } from '../data';
+import { Lightbulb, BookOpen, Compass, Zap, Globe, Users, ArrowRight, UploadCloud, Lock } from 'lucide-react';
 import SideConnectUploadModal from './SideConnectUploadModal';
 
 const ICON_MAP: Record<string, React.FC<{ className?: string }>> = {
@@ -54,6 +54,25 @@ export default function SideConnect({ onRegisterClick }: SideConnectProps) {
           </span>
           <div className="h-px flex-1 max-w-[80px] bg-gradient-to-l from-transparent to-[#00FF88]/30" />
         </div>
+
+        {/* Official Closing Banner */}
+        {REGISTRATION_CLOSED && (
+          <div className="mb-10 relative overflow-hidden rounded-2xl border border-[#00FF88]/20 bg-[#00FF88]/5 backdrop-blur">
+            <div className="absolute inset-0 bg-gradient-to-r from-[#00FF88]/10 via-[#00FF88]/2 to-transparent pointer-events-none" />
+            <div className="relative z-10 px-6 sm:px-10 py-8 sm:py-10 text-center">
+              <div className="inline-flex items-center gap-2 text-[10px] font-mono text-[#00FF88] tracking-[0.4em] uppercase mb-4">
+                <Lock className="w-4 h-4" />
+                <span>{t('OFFICIAL NOTICE', 'PENGUMUMAN RESMI')}</span>
+              </div>
+              <h3 className="text-lg sm:text-2xl md:text-3xl font-sans font-black uppercase tracking-tight text-white leading-tight max-w-4xl mx-auto">
+                {t('SIDE CONNECT REGISTRATION HAS OFFICIALLY CLOSED', 'PENDAFTARAN SIDE CONNECT TELAH DITUTUP SECARA RESMI')}
+              </h3>
+              <p className="text-[#B3B3B3] font-mono text-xs sm:text-sm uppercase max-w-2xl mx-auto mt-4 leading-relaxed">
+                {t('Thank you to all participants who have already joined this event. See you there!', 'Terima kasih kepada seluruh peserta yang telah bergabung di acara ini. Sampai jumpa!')}
+              </p>
+            </div>
+          </div>
+        )}
 
         {/* Cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-5 mb-10">
@@ -114,12 +133,19 @@ export default function SideConnect({ onRegisterClick }: SideConnectProps) {
 
         {/* CTA */}
         <div className="text-center">
-          <button
-            onClick={onRegisterClick}
-            className="inline-flex items-center gap-2 px-8 py-4 bg-[#00FF88] text-black font-black text-sm uppercase tracking-wider rounded-2xl hover:bg-[#00CC6A] transition-all duration-300 hover:shadow-[0_0_30px_rgba(0,255,136,0.3)] cursor-pointer"
-          >
-            {t('REGISTER NOW — FREE', 'DAFTAR SEKARANG — GRATIS')} <ArrowRight className="w-4 h-4" />
-          </button>
+          {REGISTRATION_CLOSED ? (
+            <div className="inline-flex items-center gap-2 px-8 py-4 bg-zinc-900/40 border border-[#00FF88]/20 text-zinc-300 font-black text-sm uppercase tracking-wider rounded-2xl cursor-not-allowed">
+              <Lock className="w-4 h-4 text-[#00FF88]" />
+              {t('REGISTRATION CLOSED', 'PENDAFTARAN DITUTUP')}
+            </div>
+          ) : (
+            <button
+              onClick={onRegisterClick}
+              className="inline-flex items-center gap-2 px-8 py-4 bg-[#00FF88] text-black font-black text-sm uppercase tracking-wider rounded-2xl hover:bg-[#00CC6A] transition-all duration-300 hover:shadow-[0_0_30px_rgba(0,255,136,0.3)] cursor-pointer"
+            >
+              {t('REGISTER NOW — FREE', 'DAFTAR SEKARANG — GRATIS')} <ArrowRight className="w-4 h-4" />
+            </button>
+          )}
 
           <div className="mt-4 flex items-center justify-center gap-3">
             <div className="h-px w-16 bg-gradient-to-r from-transparent to-[#00FF88]/30" />

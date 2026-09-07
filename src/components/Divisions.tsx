@@ -5,7 +5,7 @@
 
 import React, { useState } from 'react';
 import { useLanguage } from './LanguageContext';
-import { COMPETITION_DIVISIONS } from '../data';
+import { COMPETITION_DIVISIONS, REGISTRATION_CLOSED } from '../data';
 import * as LucideIcons from 'lucide-react';
 
 interface DivisionsProps {
@@ -44,6 +44,25 @@ export default function Divisions({ onSelectDivision, liveQuota = {}, liveQuotaL
             {t('9 competition arenas with 12 categories built to test the limits of innovation, design, and practical electronics and robotics application.', '9 arena kompetisi dengan 12 kategori yang dirancang untuk menguji batas inovasi, desain, dan aplikasi elektronika serta robotika praktis.')}
           </p>
         </div>
+
+        {/* Official Closing Banner */}
+        {REGISTRATION_CLOSED && (
+          <div className="mb-12 relative overflow-hidden rounded-2xl border border-[#FFD700]/25 bg-[#FFD700]/5 backdrop-blur">
+            <div className="absolute inset-0 bg-gradient-to-r from-[#FFD700]/10 via-[#FFD700]/2 to-transparent pointer-events-none" />
+            <div className="relative z-10 px-6 sm:px-10 py-8 sm:py-10 text-center">
+              <div className="inline-flex items-center gap-2 text-[10px] font-mono text-[#FFD700] tracking-[0.4em] uppercase mb-4">
+                <LucideIcons.Lock className="w-4 h-4" />
+                <span>{t('OFFICIAL NOTICE', 'PENGUMUMAN RESMI')}</span>
+              </div>
+              <h3 className="text-lg sm:text-2xl md:text-3xl font-sans font-black uppercase tracking-tight text-white leading-tight max-w-4xl mx-auto">
+                {t('INTERNATIONAL ERIC 2026 REGISTRATION HAS OFFICIALLY CLOSED', 'PENDAFTARAN INTERNATIONAL ERIC 2026 TELAH DITUTUP SECARA RESMI')}
+              </h3>
+              <p className="text-[#B3B3B3] font-mono text-xs sm:text-sm uppercase max-w-2xl mx-auto mt-4 leading-relaxed">
+                {t('Thank you to all participants who have already joined this competition. See you at the arena!', 'Terima kasih kepada seluruh peserta yang telah bergabung di kompetisi ini. Sampai jumpa di arena!')}
+              </p>
+            </div>
+          </div>
+        )}
 
         <div className="mb-14">
           <p className="text-[#B3B3B3] font-mono text-xs uppercase tracking-wider mb-5 select-none">
@@ -99,7 +118,7 @@ export default function Divisions({ onSelectDivision, liveQuota = {}, liveQuotaL
             const resolvedIconName = (division.icon as keyof typeof LucideIcons) || 'Cpu';
             const IconComponent = (LucideIcons[resolvedIconName] as React.ComponentType<{ className?: string }>) || LucideIcons.Cpu;
             const isUnavailable = !!division.canceled || !!division.closed;
-            const canRegister = !division.comingSoon && !isUnavailable;
+            const canRegister = !REGISTRATION_CLOSED && !division.comingSoon && !isUnavailable;
 
             // Live quota: prefer the Supabase counter (the shared, realtime
             // source shared by every device). A manual floor from data.ts is
@@ -318,9 +337,15 @@ export default function Divisions({ onSelectDivision, liveQuota = {}, liveQuotaL
 
                     {!division.comingSoon && (
                       <div className="pt-1.5 text-center">
-                        <span className={`inline-flex items-center gap-1.5 font-mono text-[8.5px] text-[#FFD700] font-bold tracking-widest uppercase bg-[#FFD700]/5 border border-[#FFD700]/20 px-3 py-1 rounded-full w-full justify-center ${isTouchDevice ? '' : 'opacity-0 group-hover:opacity-100 group-hover:translate-y-0 translate-y-1 transition-all duration-300'}`}>
-                          <span>{t('REGISTER FOR THIS ARENA', 'DAFTAR DI ARENA INI')}</span>
-                          <LucideIcons.ArrowRight className="w-3 h-3 text-[#FFD700]" />
+                        <span className={`inline-flex items-center gap-1.5 font-mono text-[8.5px] font-bold tracking-widest uppercase px-3 py-1 rounded-full w-full justify-center ${
+                          REGISTRATION_CLOSED
+                            ? 'text-zinc-500 bg-zinc-800/60 border border-zinc-700/50'
+                            : 'text-[#FFD700] bg-[#FFD700]/5 border border-[#FFD700]/20'
+                        } ${!REGISTRATION_CLOSED && !isTouchDevice ? 'opacity-0 group-hover:opacity-100 group-hover:translate-y-0 translate-y-1 transition-all duration-300' : ''}`}>
+                          {REGISTRATION_CLOSED
+                            ? <><LucideIcons.Lock className="w-3 h-3" /> {t('REGISTRATION CLOSED', 'PENDAFTARAN DITUTUP')}</>
+                            : <><span>{t('REGISTER FOR THIS ARENA', 'DAFTAR DI ARENA INI')}</span>
+                          <LucideIcons.ArrowRight className="w-3 h-3 text-[#FFD700]" /></>}
                         </span>
                       </div>
                     )}

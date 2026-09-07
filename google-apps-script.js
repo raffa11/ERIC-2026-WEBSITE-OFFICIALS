@@ -23,11 +23,81 @@
  *   dengan action="sendTicket", token rahasia, refCode, toEmail, subject, body, pdfBase64.
  * - Jika token cocok, PDF dikirim via MailApp dan kolom "Ticket Email Status"/"Ticket Email Date"
  *   di baris peserta di-update menjadi SENT.
- * - DEFAULT SECRET: "ERIC2026_TICKET_RESCUE" — ganti di const SECRET (handleSendTicket)
- *   DAN di Admin Dashboard (field ADMIN SEND SECRET) agar sama persis.
+ * - Token admin (ADMIN_TOKEN) di Script Properties — set lewat setupSecurity()
+ *   dan isikan di Admin Dashboard (field ADMIN TOKEN) agar sama persis.
  */
 
 const SPREADSHEET_ID = "12ouLbtyguh2VWYX0_DQlJUU_KCCEZ4qQBtH0RL2UFP8";
+
+// ============================================================
+// SECURITY HARDENING 2026-09-07
+// Semua aksi >read/elektif (<getRegistrations>, <debugHeaders>,
+// <sendTicket>) mewajibkan admin token. Token BUKAN hardcoded di
+// kode — disimpan di Script Properties (PropertiesService) dan
+// diset SEKALI saat deploy:
+//
+//   1) Buka Extensions > Apps Script editor
+//   2) Toolbar: pilih fungsi "setupSecurity" lalu klik Run ONCE
+//      (akan diminta akses + Anda memasukkan token admin sendiri)
+//   3) Atau jalankan di editor konsol: 
+//      PropertiesService.getScriptProperties().setProperty('ADMIN_TOKEN', 'GANTI_DENGAN_TOKEN_AMAN_PANJANG')
+//
+// Seluruh deployment Web App memakai token yang sama di Script
+// Properties => ganti token = invalidate semua sesi admin instan.
+// ============================================================
+function getAdminToken() {
+  try {
+    return PropertiesService.getScriptProperties().getProperty('ADMIN_TOKEN') || '';
+  } catch (e) {
+    return '';
+  }
+}
+
+function tokenIsValid(token) {
+  if (!token) return false;
+  const valid = getAdminToken();
+  if (!valid) return false;
+  // Timing-safe compare
+  if (String(token).length !== String(valid).length) return false;
+  let diff = 0;
+  for (let i = 0; i < String(token).length; i++) {
+    diff |= String(token).charCodeAt(i) ^ String(valid).charCodeAt(i);
+  }
+  return diff === 0;
+}
+
+/**
+ * ONE-TIME SETUP — jalankan SEKALI dari editor Apps Script agar
+ * Script Properties berisi token admin. Token akan diminta lewat
+ * UI prompt (prompt()). JANGAN commit token ke kode/repo.
+ */
+function setupSecurity() {
+  const current = getAdminToken();
+  const ui = SpreadsheetApp.getUi();
+  const res = ui.prompt(
+    'ERIC Security Setup',
+    'Masukkan ADMIN TOKEN (panjang, acak, minimal 16 karakter).' +
+    (current ? ' Saat ini sudah ada token. Kosongkan untuk mempertahankan.' : ''),
+    ui.ButtonSet.OK_CANCEL
+  );
+  if (res.getSelectedButton() !== ui.Button.OK) {
+    Logger.log('Setup dibatalkan.');
+    return;
+  }
+  const input = String(res.getResponseText() || '').trim();
+  if (input) {
+    PropertiesService.getScriptProperties().setProperty('ADMIN_TOKEN', input);
+    Logger.log('ADMIN_TOKEN disimpan. Token sekarang aktif utk semua deployment.');
+  } else if (!current) {
+    Logger.log('Tidak ada token di-set. Akses admin akan DITOLAK sampai Anda set token.');
+  }
+}
+
+// Helper JSON response
+function jsonResp(obj) {
+  return ContentService.createTextOutput(JSON.stringify(obj))
+    .setMimeType(ContentService.MimeType.JSON);
+}
 
 const DIVISION_MAP = {
     'sumobot-500g': 'Sumobot 500g',
@@ -85,15 +155,66 @@ function getOrCreateDivisionSheet(divisionId) {
     return sheet;
 }
 
+/**
+ * Cari refCode yang sudah ada di sheet divisi (utk mencegah duplikat).
+ * Mengembalikan true bila refCode sudah terpakai di tab divisi tsb.
+ */
+function findRefCode(refCode, divisionId) {
+    if (!refCode || !divisionId) return false;
+    try {
+        const ss = SpreadsheetApp.openById(SPREADSHEET_ID);
+        const sheetName = getDivisionSheetName(divisionId);
+        const sheet = ss.getSheetByName(sheetName);
+        if (!sheet || sheet.getLastRow() <= 1) return false;
+        const headers = sheet.getRange(1, 1, 1, sheet.getLastColumn()).getValues()[0];
+        const refIdx = headers.map(h => String(h)).indexOf('Ref Code');
+        if (refIdx < 0) return false;
+        const data = sheet.getDataRange().getValues();
+        const needle = String(refCode).trim();
+        for (let i = 1; i < data.length; i++) {
+            if (String(data[i][refIdx]).trim() === needle) return true;
+        }
+        return false;
+    } catch (e) {
+        // Gagal cek duplikat => tolak tulis (fail-closed) supaya aman.
+        return true;
+    }
+}
+
 function doPost(e) {
     try {
         const data = JSON.parse(e.postData.contents);
 
         // PDF TICKET RESCUE: kirim tiket via email (admin action)
         if (data.action === "sendTicket") {
+            if (!tokenIsValid(data.token)) {
+                return ContentService.createTextOutput(JSON.stringify({ status: "error", message: "Invalid admin token." }))
+                    .setMimeType(ContentService.MimeType.JSON);
+            }
             const result = handleSendTicket(data);
             return ContentService.createTextOutput(JSON.stringify(result))
                 .setMimeType(ContentService.MimeType.JSON);
+        }
+
+        // --- Aksi register / update (jalur PESERTA): tidak pakai token admin
+        //     (peserta tidak memilikinya). Perlindungan = validasi ketat +
+        //     tolak duplikat id/refCode supaya anonim tidak mudah spam/poison sheet.
+        //     Catatan: otentikasi peserta sejati butuh backend proxy (lihat catatan keamanan).
+        if (!data.id || !data.divisionId || !data.leaderEmail) {
+            return ContentService.createTextOutput(JSON.stringify({ status: "error", message: "Missing required fields (id, divisionId, leaderEmail)." }))
+                .setMimeType(ContentService.MimeType.JSON);
+        }
+        if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(String(data.leaderEmail))) {
+            return ContentService.createTextOutput(JSON.stringify({ status: "error", message: "Invalid leader email." }))
+                .setMimeType(ContentService.MimeType.JSON);
+        }
+        // Duplicate refCode guard: tolak jika refCode sudah ada di sheet divisi tsb
+        if (data.refCode) {
+            const existing = findRefCode(data.refCode, data.divisionId);
+            if (existing) {
+                return ContentService.createTextOutput(JSON.stringify({ status: "error", message: "Duplicate refCode: " + data.refCode }))
+                    .setMimeType(ContentService.MimeType.JSON);
+            }
         }
 
         const sheet = getOrCreateDivisionSheet(data.divisionId);
@@ -115,7 +236,8 @@ function doPost(e) {
                 const decoded = Utilities.base64Decode(parts[1]);
                 const blob = Utilities.newBlob(decoded, mimeType, filename);
                 const file = uploadsFolder.createFile(blob);
-                file.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW);
+                // PEPERANG 2026-09-07: JANGAN share publik (bukti bayar/KTP)
+                // File tetap PRIVATE — panitia dengan akses folder Drive bisa lihat.
                 return file.getUrl();
             } catch (err) {
                 return "Upload Error: " + err.toString();
@@ -188,10 +310,7 @@ function ensureTicketLogColumns(sheet) {
  * Dipanggil dari doPost dengan data.action === "sendTicket".
  */
 function handleSendTicket(data) {
-    const SECRET = "ERIC2026_TICKET_RESCUE";
-    if (data.token !== SECRET) {
-        return { status: "error", message: "Invalid admin token." };
-    }
+    // Token telah diverifikasi di doPost (tokenIsValid). Cukup cek payload.
     if (!data.pdfBase64 || !data.toEmail) {
         return { status: "error", message: "Missing pdf attachment or recipient email." };
     }
@@ -278,6 +397,25 @@ function doGet(e) {
         const action = e.parameter.action;
         const email = (e.parameter.email || '').toLowerCase().trim();
         const callback = e.parameter.callback;
+        const token = e.parameter.token || '';
+
+        // KEBIJAKAN AKSES:
+        //  - getRegistrations TANPA email (admin dump SEMUA data peserta + PII)
+        //    => WAJIB admin token.
+        //  - getRegistrations DENGAN email (data milik pengguna itu sendiri)
+        //    => diizinkan, tapi dipersempit ke pencocokan email PERSIS (bukan includes)
+        //      agar pengguna tidak bisa menarik data pengguna lain.
+        //  - debugHeaders => WAJIB admin token.
+        const isAllDump = (action === "getRegistrations" && !email) ||
+                          action === "debugHeaders";
+        if (isAllDump && !tokenIsValid(token)) {
+            const err = JSON.stringify({ status: "error", message: "Forbidden: invalid access token." });
+            if (callback) {
+                return ContentService.createTextOutput(callback + '(' + err + ')')
+                    .setMimeType(ContentService.MimeType.JAVASCRIPT);
+            }
+            return ContentService.createTextOutput(err).setMimeType(ContentService.MimeType.JSON);
+        }
 
         const ss = SpreadsheetApp.openById(SPREADSHEET_ID);
         const allSheets = ss.getSheets();
@@ -392,7 +530,10 @@ function doGet(e) {
                     const row = data[i];
                     const leaderEmail = val(row, C.leaderEmail, '').toLowerCase();
                     if (!leaderEmail) continue;
-                    if (email && !leaderEmail.includes(email)) continue;
+                    // Keamanan: jika filter email diberikan, wajib cocok PERSIS
+                    // dengan email leader (bukan substring) agar seorang pengguna
+                    // tidak bisa menarik data pengguna lain.
+                    if (email && leaderEmail !== email) continue;
 
                     // Normalisasi divisionId: nilai kolom "Division" bisa berisi
                     // sub-kategori (RC / Autonomous) alih-alih nama divisi penuh pada

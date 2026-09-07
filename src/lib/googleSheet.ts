@@ -119,11 +119,13 @@ export const syncToGoogleSheet = async (reg: Registration): Promise<boolean> => 
  * This bypasses CORS issues often encountered with standard fetch requests to GAS Web Apps.
  * Includes retry logic with exponential backoff for reliability.
  */
-const jsonpFetch = (url: string, email: string): Promise<Registration[] | null> => {
+const jsonpFetch = (url: string, email: string, token?: string): Promise<Registration[] | null> => {
   return new Promise((resolve) => {
     const callbackName = 'jsonp_callback_' + Math.round(100000 * Math.random());
+    let src = `${url}?action=getRegistrations&email=${encodeURIComponent(email)}&callback=${callbackName}`;
+    if (token) src += `&token=${encodeURIComponent(token)}`;
     const script = document.createElement('script');
-    script.src = `${url}?action=getRegistrations&email=${encodeURIComponent(email)}&callback=${callbackName}`;
+    script.src = src;
 
     const timeoutId = setTimeout(() => {
       cleanup();
@@ -162,11 +164,12 @@ const jsonpFetch = (url: string, email: string): Promise<Registration[] | null> 
  * Fetch ALL registrations (admin). Calls GAS without email filter.
  * Requires GAS doGet to support `action=getRegistrations` without `email` param.
  */
-const jsonpFetchAll = (url: string): Promise<Registration[] | null> => {
+const jsonpFetchAll = (url: string, token?: string): Promise<Registration[] | null> => {
   return new Promise((resolve) => {
     const callbackName = 'jsonp_callback_' + Math.round(100000 * Math.random());
+    let fullUrl = `${url}?action=getRegistrations&callback=${callbackName}`;
+    if (token) fullUrl += `&token=${encodeURIComponent(token)}`;
     const script = document.createElement('script');
-    const fullUrl = `${url}?action=getRegistrations&callback=${callbackName}`;
     script.src = fullUrl;
 
     const timeoutId = setTimeout(() => {
@@ -195,25 +198,25 @@ const jsonpFetchAll = (url: string): Promise<Registration[] | null> => {
   });
 };
 
-export const fetchAllRegistrations = async (): Promise<Registration[] | null> => {
+export const fetchAllRegistrations = async (token?: string): Promise<Registration[] | null> => {
   const url = getGoogleScriptUrl();
   if (!url) return null;
   const maxAttempts = 3;
   for (let attempt = 1; attempt <= maxAttempts; attempt++) {
-    const result = await jsonpFetchAll(url);
+    const result = await jsonpFetchAll(url, token);
     if (result !== null) return result;
     if (attempt < maxAttempts) await new Promise(r => setTimeout(r, attempt * 2000));
   }
   return null;
 };
 
-export const fetchUserRegistrations = async (email: string): Promise<Registration[] | null> => {
+export const fetchUserRegistrations = async (email: string, token?: string): Promise<Registration[] | null> => {
   const url = getGoogleScriptUrl();
   if (!url) return null;
 
   const maxAttempts = 3;
   for (let attempt = 1; attempt <= maxAttempts; attempt++) {
-    const result = await jsonpFetch(url, email);
+    const result = await jsonpFetch(url, email, token);
     if (result !== null) return result;
     if (attempt < maxAttempts) {
       const delay = attempt * 2000;

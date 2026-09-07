@@ -7,6 +7,10 @@ import { Division, RobotMachine, TimelineEvent, GalleryItem, SideConnectRegistra
 
 export const USD_TO_IDR = 17715.98;
 
+// Global switch that closes ALL registrations (main competition + Side Connect).
+// When true: register buttons are disabled and an official closing notice is shown.
+export const REGISTRATION_CLOSED = true;
+
 export const COMPETITION_DIVISIONS: Division[] = [
   {
     id: 'sumobot-500g',

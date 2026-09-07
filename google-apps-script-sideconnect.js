@@ -25,6 +25,61 @@
 
 const SPREADSHEET_ID = "PASTE_YOUR_SIDE_CONNECT_SHEET_ID_HERE";
 
+// ============================================================
+// SECURITY HARDENING 2026-09-07
+// Aksi baca data (getRegistrations) & debug WAJIB admin token
+// (PropertiesService — TIDAK di-hardcode). Set SEKALI via
+// setupSecuritySideConnect() dari editor Apps Script, atau:
+//   PropertiesService.getScriptProperties().setProperty('ADMIN_TOKEN', 'GANTI_DENGAN_TOKEN_PANJANG')
+// Register/uploadFiles tetap dapat diakses peserta (jurusan publik),
+// tapi kini divalidasi ketat (email, field wajib, tolak duplikat ID/refCode)
+// supaya anonim tidak bisa spam/poison sheet atau menumpuk file di Drive.
+// ============================================================
+function getAdminToken() {
+  try {
+    return PropertiesService.getScriptProperties().getProperty('ADMIN_TOKEN') || '';
+  } catch (e) {
+    return '';
+  }
+}
+
+function tokenIsValid(token) {
+  if (!token) return false;
+  const valid = getAdminToken();
+  if (!valid) return false;
+  if (String(token).length !== String(valid).length) return false;
+  let diff = 0;
+  for (let i = 0; i < String(token).length; i++) {
+    diff |= String(token).charCodeAt(i) ^ String(valid).charCodeAt(i);
+  }
+  return diff === 0;
+}
+
+/** ONE-TIME SETUP — jalankan dari editor Apps Script utk menyetel ADMIN_TOKEN. */
+function setupSecuritySideConnect() {
+  const ui = SpreadsheetApp.getUi();
+  const current = getAdminToken();
+  const res = ui.prompt(
+    'ERIC Side Connect Security Setup',
+    'Masukkan ADMIN TOKEN (panjang, acak, minimal 16 karakter).' +
+    (current ? ' Saat ini sudah ada token. Kosongkan untuk mempertahankan.' : ''),
+    ui.ButtonSet.OK_CANCEL
+  );
+  if (res.getSelectedButton() !== ui.Button.OK) {
+    Logger.log('Setup dibatalkan.');
+    return;
+  }
+  const input = String(res.getResponseText() || '').trim();
+  if (input) {
+    PropertiesService.getScriptProperties().setProperty('ADMIN_TOKEN', input);
+    Logger.log('ADMIN_TOKEN disimpan.');
+  } else if (!current) {
+    Logger.log('Tidak ada token: akses baca (getRegistrations) akan DITOLAK.');
+  }
+}
+
+const EMAIL_RE = /^[^@\s]+@[^@\s]+\.[^@\s]+$/;
+
 const SUB_COMP_MAP = {
   'creative-innovation': 'Creative Innovation',
   'research-innovation': 'Research Innovation',
@@ -63,6 +118,47 @@ function doPost(e) {
     const data = JSON.parse(e.postData.contents);
 
     if (data.action === 'register') {
+      // --- Validasi input (anti spam/poison) ---
+      if (!data.id || !data.subCompetition || !data.leaderEmail || !data.refCode) {
+        return ContentService.createTextOutput(
+          JSON.stringify({ success: false, message: 'Missing required fields (id, subCompetition, leaderEmail, refCode)' })
+        ).setMimeType(ContentService.MimeType.JSON);
+      }
+      if (!EMAIL_RE.test(String(data.leaderEmail))) {
+        return ContentService.createTextOutput(
+          JSON.stringify({ success: false, message: 'Invalid leader email' })
+        ).setMimeType(ContentService.MimeType.JSON);
+      }
+      const tabName = SUB_COMP_MAP[data.subCompetition];
+      if (!tabName) {
+        return ContentService.createTextOutput(
+          JSON.stringify({ success: false, message: 'Unknown subCompetition' })
+        ).setMimeType(ContentService.MimeType.JSON);
+      }
+      // Tolak ID atau refCode yang sudah ada (fail-closed saat cek gagal)
+      const ssx = SpreadsheetApp.openById(SPREADSHEET_ID);
+      const tabx = ssx.getSheetByName(tabName);
+      if (tabx && tabx.getLastRow() > 1) {
+        const rowsx = tabx.getDataRange().getValues();
+        const headersx = rowsx[0].map(h => String(h).trim());
+        const iId = headersx.indexOf('ID');
+        const iRef = headersx.indexOf('Ref Code');
+        if (iRef < 0) {
+          return ContentService.createTextOutput(
+            JSON.stringify({ success: false, message: 'Sheet header missing' })
+          ).setMimeType(ContentService.MimeType.JSON);
+        }
+        for (let i = 1; i < rowsx.length; i++) {
+          const rId = iId >= 0 ? String(rowsx[i][iId]).trim().toLowerCase() : '';
+          const rRef = String(rowsx[i][iRef]).trim().toLowerCase();
+          if (rId === String(data.id).trim().toLowerCase() || rRef === String(data.refCode).trim().toLowerCase()) {
+            return ContentService.createTextOutput(
+              JSON.stringify({ success: false, message: 'Duplicate id or refCode' })
+            ).setMimeType(ContentService.MimeType.JSON);
+          }
+        }
+      }
+
       const sheet = getOrCreateSheet(data.subCompetition);
 
       const row = [
@@ -236,7 +332,9 @@ function handleUploadFiles(data) {
       const bytes = Utilities.base64Decode(String(f.data));
       const blob = Utilities.newBlob(bytes, f.mimeType || 'application/octet-stream', f.name || 'file');
       const file = folder.createFile(blob);
-      file.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW);
+      // PEPERANG 2026-09-07: JANGAN share publik. File hasil upload tetap
+      // PRIVATE (default Drive) — hanya pemilik/granted-access yang bisa lihat.
+      // Jika panitia perlu membagikannya ke peserta, beri akses manual per-file.
       links.push({ name: f.name, url: file.getUrl(), id: file.getId() });
     }
     if (links.length === 0) {
@@ -266,6 +364,16 @@ function handleUploadFiles(data) {
 
 function doGet(e) {
   const action = e.parameter.action;
+
+  // SEMUA aksi baca/struktur WAJIB admin token (fail-closed).
+  const token = e.parameter.token || '';
+  if (action === 'debug' || action === 'getRegistrations') {
+    if (!tokenIsValid(token)) {
+      return ContentService.createTextOutput(
+        JSON.stringify({ success: false, message: 'Forbidden: invalid access token' })
+      ).setMimeType(ContentService.MimeType.JSON);
+    }
+  }
 
   // Version check that works from a plain browser tab (GET is not blocked by
   // CORS). Open ?action=debug to confirm the DEPLOYED code actually contains
