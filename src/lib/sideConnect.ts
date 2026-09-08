@@ -98,11 +98,13 @@ export async function uploadSideConnectFiles(
 }
 
 
-export async function syncSideConnectToSheet(reg: SideConnectRegistration): Promise<boolean> {
+export async function syncSideConnectToSheet(
+  reg: SideConnectRegistration
+): Promise<{ success: boolean; message: string; refCode?: string }> {
   const url = localStorage.getItem('eric_sideconnect_gas_url') || GAS_URL;
   if (!url || url.includes('PASTE_YOUR')) {
     console.warn('[SideConnect] GAS URL not configured. Sync skipped.');
-    return false;
+    return { success: false, message: 'GAS URL not configured' };
   }
 
   try {
@@ -161,17 +163,18 @@ export async function syncSideConnectToSheet(reg: SideConnectRegistration): Prom
     }
     if (!data.success) {
       console.error('[SideConnect] GAS rejected:', data.message || text.slice(0, 300));
-      return false;
+      return { success: false, message: data.message || 'Registration rejected by server' };
     }
 
     console.log('[SideConnect] Synced to Google Sheet:', data.refCode || reg.refCode);
-    return true;
+    return { success: true, message: 'Synced', refCode: data.refCode || reg.refCode };
   } catch (err) {
     if (err instanceof DOMException && err.name === 'AbortError') {
       console.error('[SideConnect] Sync timeout (30s)');
+      return { success: false, message: 'Sync timeout' };
     } else {
       console.error('[SideConnect] Failed to sync:', err);
+      return { success: false, message: err instanceof Error ? err.message : 'Sync failed' };
     }
-    return false;
   }
 }

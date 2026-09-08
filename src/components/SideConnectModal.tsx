@@ -155,17 +155,28 @@ export default function SideConnectModal({ isOpen, onClose }: SideConnectModalPr
     };
 
     try {
-      const ok = await syncSideConnectToSheet(reg);
-      if (!ok) {
-        console.error('[SideConnect] Sync rejected — data may NOT be saved');
+      const sync = await syncSideConnectToSheet(reg);
+      if (!sync.success) {
+        const isDuplicateIdOnly = /duplicate\s*id/i.test(sync.message) && !/duplicate\s*refcode/i.test(sync.message);
+        console.error('[SideConnect] Sync rejected — data may NOT be saved:', sync.message);
         setIsSubmitting(false);
-        showAlert({
-          message: t(
-            'Sync to the server failed. Please try again or contact support.',
-            'Sinkronisasi ke server gagal. Silakan coba lagi atau hubungi kami.'
-          ),
-          type: 'error',
-        });
+        if (isDuplicateIdOnly) {
+          showAlert({
+            message: t(
+              'This registration was already submitted. Please check My Registrations for your reference code.',
+              'Pendaftaran ini sudah pernah dikirim. Silakan cek My Registrations untuk kode referensi Anda.'
+            ),
+            type: 'info',
+          });
+        } else {
+          showAlert({
+            message: t(
+              'Sync to the server failed. Reason: ${reason}. Please try again or contact support.',
+              'Sinkronisasi ke server gagal. Alasan: ${reason}. Silakan coba lagi atau hubungi kami.'
+            ).replace('${reason}', sync.message),
+            type: 'error',
+          });
+        }
         return;
       }
     } catch (err) {

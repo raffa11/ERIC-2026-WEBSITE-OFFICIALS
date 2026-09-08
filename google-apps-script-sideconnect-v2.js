@@ -205,6 +205,7 @@ function doPost(e) {
       }
       // Cek duplikat di semua tab
       const ssx = SpreadsheetApp.openById(SPREADSHEET_ID);
+      let existingRefForId = null;
       for (const [, name] of Object.entries(SUB_COMP_MAP)) {
         const s = ssx.getSheetByName(name);
         if (!s || s.getLastRow() <= 1) continue;
@@ -220,9 +221,16 @@ function doPost(e) {
             return json({ success: false, message: 'Duplicate refCode' });
           }
           if (existingId === String(data.id).trim()) {
-            return json({ success: false, message: 'Duplicate id' });
+            // Row sudah pernah ditulis (mis. klien timeout setelah server simpan).
+            // Jangan tolak — kembalikan refCode yang sudah ada agar idempoten.
+            existingRefForId = existingRef || ref;
+            break;
           }
         }
+        if (existingRefForId) break;
+      }
+      if (existingRefForId) {
+        return json({ success: true, message: 'Already registered', refCode: existingRefForId, already: true });
       }
 
       const sheet = getOrCreateSheet(data.subCompetition);
