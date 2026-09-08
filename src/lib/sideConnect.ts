@@ -61,7 +61,7 @@ export async function uploadSideConnectFiles(
 
     await fetch(url, {
       method: 'POST',
-      mode: 'no-cors',
+      mode: 'cors',
       headers: { 'Content-Type': 'text/plain' },
       body: JSON.stringify(payload),
     });
@@ -119,7 +119,7 @@ export async function syncSideConnectToSheet(reg: SideConnectRegistration): Prom
 
     await fetch(url, {
       method: 'POST',
-      mode: 'no-cors',
+      mode: 'cors',
       headers: { 'Content-Type': 'text/plain' },
       body: JSON.stringify(payload),
     });
