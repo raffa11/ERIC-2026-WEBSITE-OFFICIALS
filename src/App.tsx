@@ -29,7 +29,7 @@ import RegistrationModal from './components/RegistrationModal';
 import SideConnectModal from './components/SideConnectModal';
 
 import { Registration } from './types';
-import { COMPETITION_DIVISIONS, REGISTRATION_CLOSED } from './data';
+import { COMPETITION_DIVISIONS, REGISTRATION_CLOSED, SIDE_CONNECT_REGISTRATION_CLOSED } from './data';
 import { 
   dbFetchRegistrations, 
   dbUpsertRegistration, 
@@ -231,9 +231,9 @@ function AppContent() {
     setIsRegistrationModalOpen(true);
   };
 
-  // Side Connect registration click — blocked when global registration is closed
+  // Side Connect registration click — blocked when Side Connect registration is closed
   const handleSideConnectRegisterClick = () => {
-    if (REGISTRATION_CLOSED) {
+    if (SIDE_CONNECT_REGISTRATION_CLOSED) {
       showAlert({ message: 'Side Connect registration has officially closed. Thank you for participating!', type: 'warning' });
       return;
     }

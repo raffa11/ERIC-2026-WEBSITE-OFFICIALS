@@ -7,7 +7,7 @@
 
 import React, { useState } from 'react';
 import { useLanguage } from './LanguageContext';
-import { SIDE_CONNECT_DIVISIONS, REGISTRATION_CLOSED } from '../data';
+import { SIDE_CONNECT_DIVISIONS, SIDE_CONNECT_REGISTRATION_CLOSED } from '../data';
 import { Lightbulb, BookOpen, Compass, Zap, Globe, Users, ArrowRight, UploadCloud, Lock } from 'lucide-react';
 import SideConnectUploadModal from './SideConnectUploadModal';
 
@@ -56,7 +56,7 @@ export default function SideConnect({ onRegisterClick }: SideConnectProps) {
         </div>
 
         {/* Official Closing Banner */}
-        {REGISTRATION_CLOSED && (
+        {SIDE_CONNECT_REGISTRATION_CLOSED && (
           <div className="mb-10 relative overflow-hidden rounded-2xl border border-[#00FF88]/20 bg-[#00FF88]/5 backdrop-blur">
             <div className="absolute inset-0 bg-gradient-to-r from-[#00FF88]/10 via-[#00FF88]/2 to-transparent pointer-events-none" />
             <div className="relative z-10 px-6 sm:px-10 py-8 sm:py-10 text-center">
@@ -133,7 +133,7 @@ export default function SideConnect({ onRegisterClick }: SideConnectProps) {
 
         {/* CTA */}
         <div className="text-center">
-          {REGISTRATION_CLOSED ? (
+          {SIDE_CONNECT_REGISTRATION_CLOSED ? (
             <div className="inline-flex items-center gap-2 px-8 py-4 bg-zinc-900/40 border border-[#00FF88]/20 text-zinc-300 font-black text-sm uppercase tracking-wider rounded-2xl cursor-not-allowed">
               <Lock className="w-4 h-4 text-[#00FF88]" />
               {t('REGISTRATION CLOSED', 'PENDAFTARAN DITUTUP')}
