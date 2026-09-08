@@ -7,7 +7,9 @@
 
 import { SideConnectRegistration } from '../types';
 
-const GAS_URL = 'https://script.google.com/macros/s/AKfycbwkth-KlyqDJ2u1BCQ0jK670FAsHA4wjfzdlidRorp0y0aYjGq3udUY6txwck-fjfQn7Q/exec';
+// Deployment URL for google-apps-script-sideconnect-v2.js
+// Or set via localStorage key 'eric_sideconnect_gas_url'
+const GAS_URL = 'https://script.google.com/macros/s/AKfycbyFC8T_G5dszEXm3JDMWF8H7hCz1ooahf7-aHRH87FqR7WhqnijFoTwONBP_cGWAez6/exec';
 
 const MAX_FILE_MB = 8;
 
@@ -35,7 +37,7 @@ export async function uploadSideConnectFiles(
   files: File[]
 ): Promise<{ success: boolean; message: string; links?: string[] }> {
   const url = localStorage.getItem('eric_sideconnect_gas_url') || GAS_URL;
-  if (!url || url.includes('SIDE_CONNECT_DEPLOY_ID')) {
+  if (!url || url.includes('PASTE_YOUR')) {
     console.warn('[SideConnect] GAS URL not configured. Upload skipped.');
     return { success: false, message: 'GAS URL not configured' };
   }
@@ -57,18 +59,39 @@ export async function uploadSideConnectFiles(
       });
     }
 
-    const payload = { action: 'uploadFiles', refCode, files: encoded };
+    const payload = { action: 'uploadFiles', refCode: refCode.toUpperCase(), files: encoded };
 
-    await fetch(url, {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 60000);
+
+    const res = await fetch(url, {
       method: 'POST',
       mode: 'cors',
       headers: { 'Content-Type': 'text/plain' },
       body: JSON.stringify(payload),
+      signal: controller.signal,
     });
+    clearTimeout(timeoutId);
+
+    const text = await res.text();
+    let data: { success?: boolean; message?: string; files?: { name: string; url: string }[] } = {};
+    try {
+      data = text ? JSON.parse(text) : {};
+    } catch {
+      console.error('[SideConnect] Upload: GAS returned non-JSON:', text.slice(0, 200));
+    }
+    if (!data.success) {
+      console.error('[SideConnect] Upload rejected:', data.message || text.slice(0, 300));
+      return { success: false, message: data.message || 'Upload rejected by server' };
+    }
 
     console.log('[SideConnect] Files uploaded for ref code:', refCode);
-    return { success: true, message: `Uploaded ${files.length} file(s)`, links: encoded.map(f => f.name) };
+    return { success: true, message: `Uploaded ${files.length} file(s)`, links: data.files?.map(f => f.url) || encoded.map(f => f.name) };
   } catch (err) {
+    if (err instanceof DOMException && err.name === 'AbortError') {
+      console.error('[SideConnect] Upload timeout (60s)');
+      return { success: false, message: 'Upload timeout' };
+    }
     console.error('[SideConnect] Upload failed:', err);
     return { success: false, message: 'Upload failed' };
   }
@@ -77,7 +100,7 @@ export async function uploadSideConnectFiles(
 
 export async function syncSideConnectToSheet(reg: SideConnectRegistration): Promise<boolean> {
   const url = localStorage.getItem('eric_sideconnect_gas_url') || GAS_URL;
-  if (!url || url.includes('SIDE_CONNECT_DEPLOY_ID')) {
+  if (!url || url.includes('PASTE_YOUR')) {
     console.warn('[SideConnect] GAS URL not configured. Sync skipped.');
     return false;
   }
@@ -117,29 +140,38 @@ export async function syncSideConnectToSheet(reg: SideConnectRegistration): Prom
       refCode: reg.refCode,
     };
 
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 30000);
+
     const res = await fetch(url, {
       method: 'POST',
       mode: 'cors',
       headers: { 'Content-Type': 'text/plain' },
       body: JSON.stringify(payload),
+      signal: controller.signal,
     });
+    clearTimeout(timeoutId);
 
     const text = await res.text();
-    let data: { success?: boolean; message?: string } = {};
+    let data: { success?: boolean; message?: string; refCode?: string } = {};
     try {
       data = text ? JSON.parse(text) : {};
     } catch {
-      data = {};
+      console.error('[SideConnect] GAS returned non-JSON:', text.slice(0, 200));
     }
     if (!data.success) {
-      console.error('[SideConnect] GAS rejected sync:', data.message || text);
+      console.error('[SideConnect] GAS rejected:', data.message || text.slice(0, 300));
       return false;
     }
 
-    console.log('[SideConnect] Synced to Google Sheet:', reg.refCode);
+    console.log('[SideConnect] Synced to Google Sheet:', data.refCode || reg.refCode);
     return true;
   } catch (err) {
-    console.error('[SideConnect] Failed to sync:', err);
+    if (err instanceof DOMException && err.name === 'AbortError') {
+      console.error('[SideConnect] Sync timeout (30s)');
+    } else {
+      console.error('[SideConnect] Failed to sync:', err);
+    }
     return false;
   }
 }
