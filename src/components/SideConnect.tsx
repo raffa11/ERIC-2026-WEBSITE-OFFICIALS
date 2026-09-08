@@ -65,10 +65,10 @@ export default function SideConnect({ onRegisterClick }: SideConnectProps) {
                 <span>{t('OFFICIAL NOTICE', 'PENGUMUMAN RESMI')}</span>
               </div>
               <h3 className="text-lg sm:text-2xl md:text-3xl font-sans font-black uppercase tracking-tight text-white leading-tight max-w-4xl mx-auto">
-                {t('SIDE CONNECT REGISTRATION HAS OFFICIALLY CLOSED', 'PENDAFTARAN SIDE CONNECT TELAH DITUTUP SECARA RESMI')}
+                {t('SIDE CONNECT REGISTRATION IS TEMPORARILY CLOSED', 'PENDAFTARAN SIDE CONNECT DITUTUP SEMENTARA')}
               </h3>
               <p className="text-[#B3B3B3] font-mono text-xs sm:text-sm uppercase max-w-2xl mx-auto mt-4 leading-relaxed">
-                {t('Thank you to all participants who have already joined this event. See you there!', 'Terima kasih kepada seluruh peserta yang telah bergabung di acara ini. Sampai jumpa!')}
+                {t('Registration will reopen soon. Thank you for your patience!', 'Pendaftaran akan dibuka kembali segera. Terima kasih atas kesabaran Anda!')}
               </p>
             </div>
           </div>
@@ -136,7 +136,7 @@ export default function SideConnect({ onRegisterClick }: SideConnectProps) {
           {SIDE_CONNECT_REGISTRATION_CLOSED ? (
             <div className="inline-flex items-center gap-2 px-8 py-4 bg-zinc-900/40 border border-[#00FF88]/20 text-zinc-300 font-black text-sm uppercase tracking-wider rounded-2xl cursor-not-allowed">
               <Lock className="w-4 h-4 text-[#00FF88]" />
-              {t('REGISTRATION CLOSED', 'PENDAFTARAN DITUTUP')}
+              {t('REGISTRATION TEMPORARILY CLOSED', 'PENDAFTARAN DITUTUP SEMENTARA')}
             </div>
           ) : (
             <button

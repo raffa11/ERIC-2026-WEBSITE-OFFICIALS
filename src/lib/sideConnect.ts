@@ -117,12 +117,24 @@ export async function syncSideConnectToSheet(reg: SideConnectRegistration): Prom
       refCode: reg.refCode,
     };
 
-    await fetch(url, {
+    const res = await fetch(url, {
       method: 'POST',
       mode: 'cors',
       headers: { 'Content-Type': 'text/plain' },
       body: JSON.stringify(payload),
     });
+
+    const text = await res.text();
+    let data: { success?: boolean; message?: string } = {};
+    try {
+      data = text ? JSON.parse(text) : {};
+    } catch {
+      data = {};
+    }
+    if (!data.success) {
+      console.error('[SideConnect] GAS rejected sync:', data.message || text);
+      return false;
+    }
 
     console.log('[SideConnect] Synced to Google Sheet:', reg.refCode);
     return true;

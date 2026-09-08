@@ -155,9 +155,30 @@ export default function SideConnectModal({ isOpen, onClose }: SideConnectModalPr
     };
 
     try {
-      await syncSideConnectToSheet(reg);
+      const ok = await syncSideConnectToSheet(reg);
+      if (!ok) {
+        console.error('[SideConnect] Sync rejected — data may NOT be saved');
+        setIsSubmitting(false);
+        showAlert({
+          message: t(
+            'Sync to the server failed. Please try again or contact support.',
+            'Sinkronisasi ke server gagal. Silakan coba lagi atau hubungi kami.'
+          ),
+          type: 'error',
+        });
+        return;
+      }
     } catch (err) {
       console.error('[SideConnect] Sync error:', err);
+      setIsSubmitting(false);
+      showAlert({
+        message: t(
+          'An unexpected error occurred while registering. Please try again.',
+          'Terjadi kesalahan tak terduga saat mendaftar. Silakan coba lagi.'
+        ),
+        type: 'error',
+      });
+      return;
     }
 
     // If the participant attached report/proposal files, upload them via the

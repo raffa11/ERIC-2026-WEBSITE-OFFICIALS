@@ -234,7 +234,7 @@ function AppContent() {
   // Side Connect registration click — blocked when Side Connect registration is closed
   const handleSideConnectRegisterClick = () => {
     if (SIDE_CONNECT_REGISTRATION_CLOSED) {
-      showAlert({ message: 'Side Connect registration has officially closed. Thank you for participating!', type: 'warning' });
+      showAlert({ message: 'Side Connect registration is temporarily closed. Please check back soon!', type: 'warning' });
       return;
     }
     setIsSideConnectModalOpen(true);
