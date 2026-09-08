@@ -12,7 +12,7 @@ export const USD_TO_IDR = 17715.98;
 export const REGISTRATION_CLOSED = true;
 
 // Side Connect has its own registration switch (independent of main competition).
-export const SIDE_CONNECT_REGISTRATION_CLOSED = true;
+export const SIDE_CONNECT_REGISTRATION_CLOSED = false;
 
 export const COMPETITION_DIVISIONS: Division[] = [
   {
