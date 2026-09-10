@@ -9,9 +9,137 @@ import { SideConnectRegistration } from '../types';
 
 // Deployment URL for google-apps-script-sideconnect-v2.js
 // Or set via localStorage key 'eric_sideconnect_gas_url'
-const GAS_URL = 'https://script.google.com/macros/s/AKfycbyFC8T_G5dszEXm3JDMWF8H7hCz1ooahf7-aHRH87FqR7WhqnijFoTwONBP_cGWAez6/exec';
+const GAS_URL = 'https://script.google.com/macros/s/AKfycbwkth-KlyqDJ2u1BCQ0jK670FAsHA4wjfzdlidRorp0y0aYjGq3udUY6txwck-fjfQn7Q/exec';
 
 const MAX_FILE_MB = 8;
+
+function getSideConnectUrl(): string {
+  const url = localStorage.getItem('eric_sideconnect_gas_url') || GAS_URL;
+  return url || '';
+}
+
+/**
+ * Map satu baris flat dari GAS getRegistrations (objek {header: value}) menjadi
+ * SideConnectRegistration. Mengembalikan null bila baris kosong / tidak punya
+ * ID & Ref Code.
+ */
+export function flatToSideConnectRegistration(
+  row: Record<string, unknown> | null | undefined
+): SideConnectRegistration | null {
+  if (!row) return null;
+  const s = (k: string): string => String(row[k] ?? '').trim();
+  const id = s('ID');
+  const refCode = s('Ref Code');
+  if (!id && !refCode) return null;
+
+  const subCompRaw = String(row['_subCompetition'] ?? s('Sub Competition'));
+  const subCompetition: SideConnectRegistration['subCompetition'] =
+    subCompRaw === 'research-innovation' || subCompRaw === 'drone-innovation'
+      ? subCompRaw
+      : 'creative-innovation';
+  const participationType: SideConnectRegistration['participationType'] =
+    s('Participation Type').toLowerCase() === 'team' ? 'team' : 'individual';
+
+  const member = (i: number) => ({
+    name: s(`Member ${i} Name`) === '-' ? '' : s(`Member ${i} Name`),
+    email: s(`Member ${i} Email`) === '-' ? '' : s(`Member ${i} Email`),
+    whatsapp: s(`Member ${i} WhatsApp`) === '-' ? '' : s(`Member ${i} WhatsApp`),
+    institution: s(`Member ${i} Institution`) === '-' ? '' : s(`Member ${i} Institution`),
+    country: s(`Member ${i} Country`) === '-' ? '' : s(`Member ${i} Country`),
+    age: Number(s(`Member ${i} Age`)) || 0,
+  });
+
+  return {
+    id,
+    timestamp: s('Timestamp'),
+    subCompetition,
+    participationType,
+    teamName: s('Team Name'),
+    leader: {
+      name: s('Leader Name'),
+      email: s('Leader Email'),
+      whatsapp: s('Leader WhatsApp'),
+      institution: s('Leader Institution'),
+      country: s('Leader Country'),
+      age: Number(s('Leader Age')) || 0,
+    },
+    members: [member(1), member(2)].filter((m) => !!(m.name || m.email)),
+    abstractTitle: s('Abstract Title'),
+    productDescription: s('Product Description'),
+    howItWorks: s('How It Works'),
+    productDesign: s('Product Design'),
+    benefits: s('Benefits'),
+    experience: s('Experience'),
+    refCode,
+  };
+}
+
+/**
+ * Ambil registrasi Side Connect milik satu pengguna (public, tanpa token).
+ * GAS hanya membalas baris di mana Leader Email cocok PERSIS.
+ */
+export async function fetchSideConnectRegistrations(
+  email: string
+): Promise<SideConnectRegistration[]> {
+  const url = getSideConnectUrl();
+  if (!url || url.includes('PASTE_YOUR')) {
+    console.warn('[SideConnect] GAS URL not configured. Fetch skipped.');
+    return [];
+  }
+  try {
+    const res = await fetch(
+      url + '?action=getRegistrations&email=' + encodeURIComponent(email.trim()),
+      { mode: 'cors' }
+    );
+    const text = await res.text();
+    let data: { success?: boolean; data?: Record<string, unknown>[] } = {};
+    try {
+      data = text ? JSON.parse(text) : {};
+    } catch {
+      console.error('[SideConnect] Fetch: GAS returned non-JSON:', text.slice(0, 200));
+    }
+    if (!data.success || !Array.isArray(data.data)) return [];
+    return data.data
+      .map(flatToSideConnectRegistration)
+      .filter((r): r is SideConnectRegistration => !!r);
+  } catch (err) {
+    console.error('[SideConnect] Fetch registrations failed:', err);
+    return [];
+  }
+}
+
+/**
+ * Ambil SEMUA registrasi Side Connect (open — tanpa token sejak keputusan user).
+ */
+export async function fetchAllSideConnectRegistrations(): Promise<SideConnectRegistration[]> {
+  const url = getSideConnectUrl();
+  if (!url || url.includes('PASTE_YOUR')) {
+    console.warn('[SideConnect] GAS URL not configured. Fetch skipped.');
+    return [];
+  }
+  try {
+    const res = await fetch(url + '?action=getRegistrations', {
+      mode: 'cors',
+    });
+    const text = await res.text();
+    let data: { success?: boolean; data?: Record<string, unknown>[]; message?: string } = {};
+    try {
+      data = text ? JSON.parse(text) : {};
+    } catch {
+      console.error('[SideConnect] Fetch: GAS returned non-JSON:', text.slice(0, 200));
+    }
+    if (!data.success || !Array.isArray(data.data)) {
+      console.error('[SideConnect] Fetch rejected:', data.message || text.slice(0, 200));
+      return [];
+    }
+    return data.data
+      .map(flatToSideConnectRegistration)
+      .filter((r): r is SideConnectRegistration => !!r);
+  } catch (err) {
+    console.error('[SideConnect] Fetch failed:', err);
+    return [];
+  }
+}
 
 async function fileToBase64(file: File): Promise<string> {
   return new Promise((resolve, reject) => {

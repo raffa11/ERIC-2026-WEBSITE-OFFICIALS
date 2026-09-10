@@ -8,17 +8,15 @@
  * 2. Copy Sheet ID dari URL:
  *    https://docs.google.com/spreadsheets/d/YOUR_SHEET_ID_HERE/edit
  * 3. Paste di bawah → SPREADSHEET_ID.
- * 4. Di Sheet → Extensions → Apps Script → hapus default code → paste ini.
- * 5. Jalankan fungsi setupSecurityV2() dari editor (satu kali).
- * 6. Deploy → New deployment → Web app → Anyone can access → Deploy.
- * 7. Copy URL deploy → paste di:
+ * 4. Di Sheet → Extensions → Apps Script → hapus semua code → paste ini.
+ * 5. Deploy → Manage deployments → edit → New version (JANGAN New deployment).
+ * 6. Pastikan deployment URL-nya:
  *    src/lib/sideConnect.ts (GAS_URL)
  *    ATAU set via localStorage: eric_sideconnect_gas_url
  *
  * SECURITY v2:
- * - Admin token di Script Properties (bukan hardcoded).
- * - getRegistrations & debug WAJIB token admin.
- * - register & uploadFiles terbuka untuk peserta tapi TELITI divalidasi.
+ * - Semua action TERBUKA (tanpa token) — keputusan user, ini side event gratis.
+ * - register & uploadFiles tetap divalidasi ketat.
  * - File upload = PRIVATE (tidak share publik).
  * - Duplikat refCode DITOLAK.
  * - Email wajib valid format.
@@ -30,56 +28,10 @@
 // ============================================================
 const SPREADSHEET_ID = '1QFXSzf1BqY9OudpgnVW9R4-iPQtS_LYP9CMqM5YyDSA';
 
-// ============================================================
-// SECURITY — token admin via Script Properties
-// ============================================================
-function getAdminToken() {
-  try {
-    return PropertiesService.getScriptProperties().getProperty('ADMIN_TOKEN') || '';
-  } catch (e) {
-    return '';
-  }
-}
-
-function tokenIsValid(token) {
-  if (!token) return false;
-  const valid = getAdminToken();
-  if (!valid) return false;
-  if (String(token).length !== String(valid).length) return false;
-  let diff = 0;
-  for (let i = 0; i < String(token).length; i++) {
-    diff |= String(token).charCodeAt(i) ^ String(valid).charCodeAt(i);
-  }
-  return diff === 0;
-}
-
-/** ONE-TIME SETUP — jalankan dari editor utk set ADMIN_TOKEN. */
-function setupSecurityV2() {
-  const ui = SpreadsheetApp.getUi();
-  const current = getAdminToken();
-  const res = ui.prompt(
-    'ERIC Side Connect v2 — Security Setup',
-    'Masukkan ADMIN TOKEN (minimal 16 karakter, acak).' +
-    (current ? ' Token lama ada. Kosongkan utk pertahankan.' : ''),
-    ui.ButtonSet.OK_CANCEL
-  );
-  if (res.getSelectedButton() !== ui.Button.OK) {
-    Logger.log('Setup dibatalkan.');
-    return;
-  }
-  const input = String(res.getResponseText() || '').trim();
-  if (input && input.length >= 16) {
-    PropertiesService.getScriptProperties().setProperty('ADMIN_TOKEN', input);
-    Logger.log('ADMIN_TOKEN disimpan. Token aktif.');
-    SpreadsheetApp.getUi().alert('ADMIN_TOKEN berhasil disimpan!');
-  } else if (input && input.length < 16) {
-    Logger.log('Token terlalu pendek. Minimal 16 karakter.');
-    SpreadsheetApp.getUi().alert('Token terlalu pendek! Minimal 16 karakter.');
-  } else if (!current) {
-    Logger.log('Tidak ada token — getRegistrations akan DITOLAK.');
-    SpreadsheetApp.getUi().alert('Tidak ada token. Akses data admin akan ditolak.');
-  }
-}
+// Sheet LAMA (legacy) — sumber data untuk action importLegacy.
+// Data peserta yang sudah terdaftar di sheet lama akan disalin SATU KALI
+// ke SPREADSHEET_ID di atas (ID & refCode dipertahankan).
+const LEGACY_SPREADSHEET_ID = '1JdZKshwzduSUAaIJn2qlo2s_UC3MFELsb03n_Zatogk';
 
 // ============================================================
 // CONSTANTS
@@ -364,18 +316,12 @@ function handleUploadFiles(data) {
 }
 
 // ============================================================
-// doGet — getRegistrations + debug (WAJIB admin token)
+// doGet — getRegistrations (+filter email) + debug + importLegacy
+//   Semua action TERBUKA (tanpa token). Keputusan user: side event gratis.
 // ============================================================
 function doGet(e) {
   const action = e.parameter.action;
-  const token = e.parameter.token || '';
-
-  // Admin-only actions
-  if (action === 'debug' || action === 'getRegistrations') {
-    if (!tokenIsValid(token)) {
-      return json({ success: false, message: 'Forbidden: invalid access token' });
-    }
-  }
+  const email = String(e.parameter.email || '').trim().toLowerCase();
 
   if (action === 'debug') {
     const info = {
@@ -409,38 +355,144 @@ function doGet(e) {
     const subComp = e.parameter.subCompetition;
     const ss = SpreadsheetApp.openById(SPREADSHEET_ID);
 
+    // Helper: ubah baris sheet menjadi objek {header: value} + penanda sub-competition.
+    const sheetToObjects = (sheet, key) => {
+      if (!sheet) return [];
+      const rows = sheet.getDataRange().getValues();
+      const headers = rows[0].map(h => String(h).trim());
+      const out = [];
+      for (let i = 1; i < rows.length; i++) {
+        const row = rows[i];
+        if (row.every(c => c === '' || c === null || c === undefined)) continue;
+        const obj = { _subCompetition: key, _tab: SUB_COMP_MAP[key] || key };
+        headers.forEach((h, idx) => { obj[h] = row[idx]; });
+        out.push(obj);
+      }
+      return out;
+    };
+
     // Single tab
     if (subComp && SUB_COMP_MAP[subComp]) {
       const sheet = ss.getSheetByName(SUB_COMP_MAP[subComp]);
-      if (!sheet) return json({ success: true, data: [] });
-      const rows = sheet.getDataRange().getValues();
-      const headers = rows[0];
-      const data = rows.slice(1).map(row => {
-        const obj = {};
-        headers.forEach((h, i) => { obj[h] = row[i]; });
-        return obj;
-      });
+      let data = sheetToObjects(sheet, subComp);
+      if (email) {
+        data = data.filter(o => String(o['Leader Email'] || '').trim().toLowerCase() === email);
+      }
       return json({ success: true, data });
     }
 
-    // All tabs
-    const allData = {};
+    // All tabs → flat array (+ filter email publik bila ada)
+    const allData = [];
     for (const [key, name] of Object.entries(SUB_COMP_MAP)) {
-      const sheet = ss.getSheetByName(name);
-      if (sheet) {
-        const rows = sheet.getDataRange().getValues();
-        const headers = rows[0];
-        allData[key] = rows.slice(1).map(row => {
-          const obj = {};
-          headers.forEach((h, i) => { obj[h] = row[i]; });
-          return obj;
-        });
-      } else {
-        allData[key] = [];
+      let rows = sheetToObjects(ss.getSheetByName(name), key);
+      if (email) {
+        rows = rows.filter(o => String(o['Leader Email'] || '').trim().toLowerCase() === email);
       }
+      allData.push(...rows);
     }
     return json({ success: true, data: allData });
   }
 
+  // --- ACTION: importLegacy — migrasi data dari sheet LAMA (sekali) ---
+  if (action === 'importLegacy') {
+    return handleImportLegacy();
+  }
+
   return json({ success: false, message: 'No action specified. Use ?action=getRegistrations' });
+}
+
+// ============================================================
+// handleImportLegacy — salin peserta dari sheet lama ke sheet baru
+// ID & refCode dipertahankan; baris yang sudah ada DI-LEWATI (dedupe).
+// ============================================================
+function handleImportLegacy() {
+  const summary = { success: true, message: '', imported: 0, skipped: 0, perTab: {} };
+  try {
+    const legacySs = SpreadsheetApp.openById(LEGACY_SPREADSHEET_ID);
+    const targetSs = SpreadsheetApp.openById(SPREADSHEET_ID);
+
+    for (const [key, name] of Object.entries(SUB_COMP_MAP)) {
+      const legacySheet = legacySs.getSheetByName(name);
+      const targetSheet = targetSs.getSheetByName(name);
+      summary.perTab[key] = { found: false, read: 0, imported: 0, skipped: 0 };
+
+      if (!legacySheet || legacySheet.getLastRow() <= 1) continue;
+      summary.perTab[key].found = true;
+
+      // Header lama → posisi slice data
+      const legacyRows = legacySheet.getDataRange().getValues();
+      const legacyHeaders = legacyRows[0].map(h => String(h).trim());
+
+      // Header target (FULL_HEADERS) → index kolom di sheet lama (kalau ada)
+      const srcIndex = {};
+      FULL_HEADERS.forEach((h, i) => {
+        const idx = legacyHeaders.indexOf(h);
+        srcIndex[h] = idx >= 0 ? idx : -1;
+      });
+
+      // Kumpulkan refCode & ID yang sudah ada di target utk dedupe
+      const seenRefs = new Set();
+      const seenIds = new Set();
+      if (targetSheet) {
+        const tRows = targetSheet.getDataRange().getValues();
+        const tHeaders = tRows[0].map(h => String(h).trim());
+        const tiRef = tHeaders.indexOf('Ref Code');
+        const tiId = tHeaders.indexOf('ID');
+        for (let i = 1; i < tRows.length; i++) {
+          if (tiRef >= 0) seenRefs.add(String(tRows[i][tiRef]).trim().toUpperCase());
+          if (tiId >= 0) seenIds.add(String(tRows[i][tiId]).trim());
+        }
+      }
+
+      const target = targetSheet || getOrCreateSheet(key);
+      let newRows = [];
+      for (let i = 1; i < legacyRows.length; i++) {
+        const row = legacyRows[i];
+        // Lewati baris kosong
+        if (!row.some(c => c !== '' && c !== null && c !== undefined)) continue;
+        summary.perTab[key].read++;
+
+        const ref = String(srcIndex['Ref Code'] >= 0 ? row[srcIndex['Ref Code']] : '').trim().toUpperCase();
+        const id = String(srcIndex['ID'] >= 0 ? row[srcIndex['ID']] : '').trim();
+
+        if (ref && seenRefs.has(ref)) { summary.perTab[key].skipped++; summary.skipped++; continue; }
+        if (id && seenIds.has(id)) { summary.perTab[key].skipped++; summary.skipped++; continue; }
+
+        // Bangun baris baru sesuai FULL_HEADERS target
+        const newRow = FULL_HEADERS.map((h) => {
+          if (h === '_subCompetition' || h === '_tab') return undefined;
+          if (h === 'Ref Code') return ref;
+          if (srcIndex[h] >= 0) return row[srcIndex[h]];
+          return '';
+        });
+        if (ref) seenRefs.add(ref);
+        if (id) seenIds.add(id);
+        newRows.push(newRow);
+      }
+
+      if (newRows.length > 0) {
+        if (newRows.length === 1) {
+          target.appendRow(newRows[0]);
+        } else {
+          target.getRange(target.getLastRow() + 1, 1, newRows.length, newRows[0].length).setValues(newRows);
+        }
+        // Highlight kolom ref code pada baris baru
+        if (target.getLastRow() >= 2) {
+          target
+            .getRange(target.getLastRow() - newRows.length + 1, 3, newRows.length, 1)
+            .setFontColor('#00FF88');
+        }
+        summary.imported += newRows.length;
+        summary.perTab[key].imported += newRows.length;
+      }
+    }
+
+    summary.message =
+      'Legacy import selesai: ' + summary.imported + ' baris diimpor, ' +
+      summary.skipped + ' di-skip (duplikat/baris kosong). ' +
+      JSON.stringify(summary.perTab);
+    return json(summary);
+  } catch (err) {
+    return json({ success: false, message: 'importLegacy gagal: ' + err.toString(), error: err.toString() });
+  }
 }

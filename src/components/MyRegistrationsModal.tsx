@@ -3,14 +3,16 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React from 'react';
+import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { useLanguage } from './LanguageContext';
-import { COMPETITION_DIVISIONS, MAIN_WHATSAPP_GROUP } from '../data';
-import { Registration } from '../types';
-import { Trophy, X, MessageCircle, CheckCircle, Download } from 'lucide-react';
+import { COMPETITION_DIVISIONS, SIDE_CONNECT_DIVISIONS, MAIN_WHATSAPP_GROUP } from '../data';
+import { Registration, SideConnectRegistration } from '../types';
+import { Trophy, X, MessageCircle, CheckCircle, Download, Users, Sparkles } from 'lucide-react';
 import { generateRegistrationPDF } from '../lib/generatePDF';
 import RICSubmissionPanel from './RICSubmissionPanel';
+import { fetchSideConnectRegistrations } from '../lib/sideConnect';
+import { buildSideConnectPdf } from '../lib/generateSideConnectPDF';
 
 interface MyRegistrationsModalProps {
   isOpen: boolean;
@@ -30,6 +32,24 @@ export default function MyRegistrationsModal({
   onRegisterNewTeamClick,
 }: MyRegistrationsModalProps) {
   const { t } = useLanguage();
+
+  // Side Connect registrations (fetched per-user, no admin token needed)
+  const [scRegs, setScRegs] = useState<SideConnectRegistration[] | null>(null);
+  const [scLoading, setScLoading] = useState(false);
+
+  const loadSc = React.useCallback(() => {
+    if (!currentUser) return;
+    setScRegs(null);
+    setScLoading(true);
+    fetchSideConnectRegistrations(currentUser.email).then((rows) => {
+      setScRegs(rows);
+      setScLoading(false);
+    });
+  }, [currentUser]);
+
+  React.useEffect(() => {
+    if (isOpen && currentUser) loadSc();
+  }, [isOpen, currentUser, loadSc]);
 
   if (!isOpen || !currentUser) return null;
 
@@ -168,6 +188,107 @@ export default function MyRegistrationsModal({
                 })}
               </div>
             )}
+
+            {/* SIDE CONNECT — free side event registrations */}
+            <div className="space-y-3 pt-2">
+              <div className="flex items-center gap-2">
+                <Sparkles className="w-3.5 h-3.5 text-[#00FF88] shrink-0" />
+                <span className="text-[9px] font-mono text-[#00FF88] uppercase tracking-widest font-black">
+                  SIDE CONNECT // FREE SIDE EVENT
+                </span>
+              </div>
+
+              {scLoading && scRegs === null ? (
+                <div className="p-6 bg-zinc-950 border border-white/5 rounded-2xl text-center text-[10px] font-mono text-zinc-500">
+                  Loading Side Connect registrations...
+                </div>
+              ) : scRegs === null ? (
+                <div className="p-6 bg-zinc-950 border border-dashed border-white/10 rounded-2xl text-center space-y-2">
+                  <p className="text-[10px] font-mono text-zinc-500 uppercase">
+                    Tidak dapat memuat data Side Connect.
+                  </p>
+                  <button
+                    onClick={loadSc}
+                    className="px-4 py-2 bg-[#00FF88]/10 hover:bg-[#00FF88]/20 border border-[#00FF88]/20 text-[10px] font-mono text-[#00FF88] rounded-xl cursor-pointer font-bold"
+                  >
+                    RETRY
+                  </button>
+                </div>
+              ) : scRegs.length === 0 ? (
+                <div className="p-6 bg-zinc-950 border border-dashed border-white/10 rounded-2xl text-center space-y-1">
+                  <p className="text-[10px] font-mono text-zinc-400 uppercase">
+                    Belum ada pendaftaran Side Connect untuk akun ini.
+                  </p>
+                  <p className="text-[8px] font-mono text-zinc-600 uppercase">
+                    Side connect adalah side event GRATIS (Creative / Research / Drone Innovation).
+                  </p>
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-h-[420px] overflow-y-auto pr-1">
+                  {scRegs.map((reg, i) => {
+                    const scDiv = SIDE_CONNECT_DIVISIONS.find(d => d.id === reg.subCompetition);
+                    return (
+                      <div key={`${reg.id || reg.refCode || 'sc'}-${i}`} className="p-5 bg-zinc-950 border border-[#00FF88]/15 rounded-2xl space-y-4 relative overflow-hidden group">
+                        <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-[#00FF88] to-[#0EA5E9]" />
+
+                        <div className="flex items-center gap-2">
+                          <CheckCircle className="w-4 h-4 text-[#00FF88] shrink-0" />
+                          <div>
+                            <span className="text-[8px] font-mono text-[#00FF88] uppercase tracking-widest block font-black">
+                              {reg.participationType === 'team' ? 'TEAM' : 'INDIVIDUAL'}
+                            </span>
+                            <h5 className="text-sm font-sans font-black text-white uppercase tracking-tight">
+                              {scDiv?.title || reg.subCompetition}
+                            </h5>
+                          </div>
+                        </div>
+
+                        <div className="text-[10px] font-mono text-zinc-400 space-y-1.5 border-t border-b border-white/5 py-3">
+                          <div>REF CODE: <span className="text-[#00FF88] select-all font-bold">{reg.refCode}</span></div>
+                          <div className="text-[9px] text-zinc-500 flex items-center gap-1">
+                            <Users className="w-3 h-3" />
+                            {reg.leader?.name || '-'}
+                            {reg.leader?.institution ? ` · ${reg.leader.institution}` : ''}
+                          </div>
+                          {reg.abstractTitle && (
+                            <div className="text-[9px] text-zinc-500 truncate">
+                              ABSTRACT: <span className="text-zinc-400">{reg.abstractTitle}</span>
+                            </div>
+                          )}
+                        </div>
+
+                        <div className="flex gap-2">
+                          <button
+                            onClick={() => {
+                              try {
+                                buildSideConnectPdf(reg);
+                              } catch (err) {
+                                console.error('[SideConnect] PDF failed:', err);
+                              }
+                            }}
+                            className="flex-1 flex items-center justify-center gap-2 px-3 py-2 bg-[#00FF88]/10 border border-[#00FF88]/20 hover:bg-[#00FF88]/20 hover:border-[#00FF88]/40 rounded-xl text-[10px] font-mono text-[#00FF88] hover:text-white transition-all cursor-pointer"
+                          >
+                            <Download className="w-3.5 h-3.5" />
+                            <span className="hidden sm:inline">DOWNLOAD PDF TICKET</span>
+                            <span className="sm:hidden">PDF</span>
+                          </button>
+                          <a
+                            href={MAIN_WHATSAPP_GROUP}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="flex-1 flex items-center justify-center gap-2 px-3 py-2 bg-[#00FF88]/5 border border-[#00FF88]/10 hover:bg-[#00FF88]/10 hover:border-[#00FF88]/30 rounded-xl text-[10px] font-mono text-[#00FF88] hover:text-white transition-all cursor-pointer"
+                          >
+                            <MessageCircle className="w-3.5 h-3.5 shrink-0" />
+                            <span className="hidden sm:inline">WHATSAPP GROUP</span>
+                            <span className="sm:hidden">WA</span>
+                          </a>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
           </div>
 
           <div className="pt-4 border-t border-white/5 flex justify-end">

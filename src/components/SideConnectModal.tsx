@@ -9,11 +9,11 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { useLanguage } from './LanguageContext';
 import { useAlert } from './AlertModal';
-import { SIDE_CONNECT_DIVISIONS, COUNTRY_CODES } from '../data';
+import { SIDE_CONNECT_DIVISIONS, COUNTRY_CODES, MAIN_WHATSAPP_GROUP } from '../data';
 import { SideConnectRegistration } from '../types';
 import {
   Lightbulb, BookOpen, Compass, Send, CheckCircle2,
-  ArrowRight, ArrowLeft, X, User, Users, Plus, Trash2, Download, UploadCloud, FileText
+  ArrowRight, ArrowLeft, X, User, Users, Plus, Trash2, Download, UploadCloud, FileText, MessageCircle
 } from 'lucide-react';
 import { syncSideConnectToSheet, uploadSideConnectFiles } from '../lib/sideConnect';
 import { generateSideConnectPDF } from '../lib/generateSideConnectPDF';
@@ -276,6 +276,15 @@ export default function SideConnectModal({ isOpen, onClose }: SideConnectModalPr
                   <span className="text-2xl font-mono text-[#00FF88] font-black tracking-widest">{doneRefCode}</span>
                 </div>
                 <p className="text-zinc-500 text-xs">Save this code for your records.</p>
+                <a
+                  href={MAIN_WHATSAPP_GROUP}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="mt-4 w-full flex items-center justify-center gap-2 px-6 py-2.5 border border-[#00FF88]/40 bg-[#00FF88]/5 text-[#00FF88] font-bold text-xs uppercase rounded-xl hover:bg-[#00FF88]/10 transition-colors cursor-pointer"
+                >
+                  <MessageCircle className="w-4 h-4" />
+                  {t('JOIN ERIC WHATSAPP GROUP', 'GABUNG GRUP WHATSAPP ERIC')}
+                </a>
                 <button
                   onClick={() => {
                     if (!doneReg) return;

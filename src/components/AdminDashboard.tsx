@@ -7,8 +7,8 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { useLanguage } from './LanguageContext';
 import { useAlert } from './AlertModal';
-import { COMPETITION_DIVISIONS } from '../data';
-import { Registration, ADMIN_EMAILS } from '../types';
+import { COMPETITION_DIVISIONS, SIDE_CONNECT_DIVISIONS } from '../data';
+import { Registration, ADMIN_EMAILS, SideConnectRegistration } from '../types';
 
 import * as XLSX from 'xlsx';
 import { 
@@ -16,12 +16,14 @@ import {
   FileSpreadsheet, Database, ArrowLeft, X,
   CreditCard, Users, Globe, ExternalLink,
   FileText, Lock, Check, Eye, Unlock,
-  Ticket, Mail, Send, Search, RefreshCw, KeyRound, ShieldCheck
+  Ticket, Mail, Send, Search, RefreshCw, KeyRound, ShieldCheck, Sparkles
 } from 'lucide-react';
 import { getGoogleScriptUrl, setGoogleScriptUrl, syncToGoogleSheet, fetchAllRegistrations } from '../lib/googleSheet';
 import { reconstructRic } from '../lib/supabase';
 import { generateRegistrationPDF, registrationPdfSafeName } from '../lib/generatePDF';
 import { sendTicketEmail, getAdminToken, setAdminToken, normalizeRegistration } from '../lib/ticketRescue';
+import { fetchAllSideConnectRegistrations } from '../lib/sideConnect';
+import { buildSideConnectPdf } from '../lib/generateSideConnectPDF';
 import gasScriptRaw from '../../google-apps-script.js?raw';
 
 interface AdminDashboardProps {
@@ -40,9 +42,15 @@ export default function AdminDashboard({
   const { t } = useLanguage();
   const { showAlert, showConfirm } = useAlert();
 
-  const [activeTab, setActiveTab] = useState<'registrations' | 'ric' | 'tickets'>('registrations');
+  const [activeTab, setActiveTab] = useState<'registrations' | 'ric' | 'tickets' | 'sideconnect'>('registrations');
   const [ricSheetData, setRicSheetData] = useState<Registration[] | null>(null);
   const [isLoadingRic, setIsLoadingRic] = useState(false);
+
+  // SIDE CONNECT TICKETS state
+  const [scData, setScData] = useState<SideConnectRegistration[] | null>(null);
+  const [isLoadingSc, setIsLoadingSc] = useState(false);
+  const [scSearch, setScSearch] = useState('');
+  const [scSubComp, setScSubComp] = useState('all');
 
   // PDF TICKET RESCUE state
   const [ticketData, setTicketData] = useState<Registration[] | null>(null);
@@ -88,6 +96,20 @@ export default function AdminDashboard({
       }).catch(() => {
         setTicketData([]);
         setIsLoadingTickets(false);
+      });
+    }
+  }, [activeTab]);
+
+  // Fetch ALL Side Connect registrations when SIDE CONNECT tab is active
+  React.useEffect(() => {
+    if (activeTab === 'sideconnect') {
+      setIsLoadingSc(true);
+      fetchAllSideConnectRegistrations().then((data) => {
+        setScData(data);
+        setIsLoadingSc(false);
+      }).catch(() => {
+        setScData([]);
+        setIsLoadingSc(false);
       });
     }
   }, [activeTab]);
@@ -272,6 +294,48 @@ export default function AdminDashboard({
     return acc;
   }, {} as Record<string, number>);
 
+  // ─── SIDE CONNECT LOGIC ─────────────────────────────
+  const refreshSc = () => {
+    setIsLoadingSc(true);
+    fetchAllSideConnectRegistrations().then((data) => {
+      setScData(data);
+      setIsLoadingSc(false);
+    }).catch(() => {
+      setScData([]);
+      setIsLoadingSc(false);
+    });
+  };
+
+  const filteredSc = (scData || []).filter((r) => {
+    const q = String(scSearch || '').toLowerCase().trim();
+    const matchQ = !q ||
+      String(r.teamName || '').toLowerCase().includes(q) ||
+      String(r.refCode || '').toLowerCase().includes(q) ||
+      String(r.leader?.email || '').toLowerCase().includes(q) ||
+      String(r.leader?.name || '').toLowerCase().includes(q) ||
+      String(r.abstractTitle || '').toLowerCase().includes(q);
+    const matchSub = scSubComp === 'all' || String(r.subCompetition) === scSubComp;
+    return matchQ && matchSub;
+  });
+
+  const scSubCounts = (scData || []).reduce((acc, r) => {
+    acc[r.subCompetition] = (acc[r.subCompetition] || 0) + 1;
+    return acc;
+  }, {} as Record<string, number>);
+
+  const handleDownloadScPdf = (reg: SideConnectRegistration) => {
+    try {
+      buildSideConnectPdf(reg);
+      showAlert({
+        message: `Tiket Side Connect ${reg.teamName || reg.leader?.name || ''} (${reg.refCode}) berhasil di-generate dan diunduh.`,
+        type: 'success',
+      });
+    } catch (err) {
+      console.error('[SideConnect] PDF error:', err);
+      showAlert({ message: 'Gagal generate PDF: ' + err, type: 'error' });
+    }
+  };
+
   return (
     <div className="pt-28 pb-20 px-6 max-w-7xl mx-auto space-y-8 select-none">
       
@@ -325,6 +389,13 @@ export default function AdminDashboard({
         >
           <Ticket className="w-3.5 h-3.5" />
           PDF TICKETS
+        </button>
+        <button
+          onClick={() => setActiveTab('sideconnect')}
+          className={`px-5 py-2 text-xs font-mono font-black uppercase rounded-xl transition-all cursor-pointer flex items-center gap-1.5 ${activeTab === 'sideconnect' ? 'bg-[#00FF88] text-black shadow-[0_0_15px_rgba(0,255,136,0.3)]' : 'text-zinc-400 hover:text-white'}`}
+        >
+          <Sparkles className="w-3.5 h-3.5" />
+          SIDE CONNECT
         </button>
 
       </div>
@@ -957,6 +1028,118 @@ function doPost(e) {
             </motion.div>
           )}
         </AnimatePresence>
+        </>)}
+      </>      
+      )}
+
+      {activeTab === 'sideconnect' && (<>
+        <div className="space-y-2">
+          <span className="text-[10px] font-mono text-[#00FF88] tracking-[0.25em] uppercase font-black flex items-center gap-2">
+            <Sparkles className="w-4 h-4" /> SIDE CONNECT // TICKET GENERATOR
+          </span>
+          <h2 className="text-3xl md:text-5xl font-sans font-black tracking-tight text-white uppercase leading-none">
+            SIDE CONNECT <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#00FF88] to-[#0EA5E9]">TICKETS</span>
+          </h2>
+          <p className="text-zinc-500 font-mono text-xs uppercase max-w-2xl leading-relaxed">
+            {t('Generate participation tickets (PDF) for any free side event registration. Side Connect peserta daftar GRATIS di 3 sub-kompetisi.', 'Generate tiket partisipasi (PDF) untuk setiap pendaftaran side event gratis. Side Connect didaftarkan GRATIS di 3 sub-kompetisi.')}
+          </p>
+        </div>
+
+        {!isAdmin && (
+          <div className="p-6 bg-zinc-950 border border-[#00FF88]/30 rounded-3xl flex items-center gap-4">
+            <ShieldCheck className="w-8 h-8 text-[#00FF88] shrink-0" />
+            <div>
+              <h4 className="font-sans font-black text-white uppercase tracking-wider text-sm">ACCESS DENIED</h4>
+              <p className="text-[10px] font-mono text-zinc-400 uppercase mt-1">
+                Hanya administrator resmi (email terdaftar di ADMIN_EMAILS) yang dapat mengakses modul tiket Side Connect.
+              </p>
+            </div>
+          </div>
+        )}
+
+        {isAdmin && (<>
+        {/* Controls: search + sub-competition filter + refresh */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+          <div className="flex items-center gap-2 bg-zinc-950 border border-white/5 rounded-xl px-3 py-2.5 md:col-span-1">
+            <Search className="w-4 h-4 text-zinc-500 shrink-0" />
+            <input
+              type="text"
+              name="sideconnect-search"
+              placeholder="Cari ref code / nama / email / abstract..."
+              value={scSearch}
+              onChange={(e) => setScSearch(e.target.value)}
+              className="w-full bg-transparent text-xs text-white placeholder-zinc-600 focus:outline-none font-mono"
+            />
+          </div>
+          <select
+            value={scSubComp}
+            onChange={(e) => setScSubComp(e.target.value)}
+            className="bg-zinc-950 border border-white/5 rounded-xl px-3 py-2.5 text-xs text-white focus:outline-none focus:border-[#00FF88]/30 font-mono cursor-pointer"
+          >
+            <option value="all">ALL SUB-COMPETITIONS ({scData?.length || 0})</option>
+            {SIDE_CONNECT_DIVISIONS.map((d) => (
+              <option key={d.id} value={d.id}>
+                {d.title.toUpperCase()} ({scSubCounts[d.id] || 0})
+              </option>
+            ))}
+          </select>
+          <button
+            onClick={refreshSc}
+            className="flex items-center justify-center gap-2 px-4 py-2.5 bg-zinc-900 hover:bg-zinc-800 border border-white/5 text-zinc-300 hover:text-white font-mono text-[10px] font-bold uppercase rounded-xl transition-all cursor-pointer"
+          >
+            <RefreshCw className={`w-3.5 h-3.5 ${isLoadingSc ? 'animate-spin' : ''}`} />
+            REFRESH DATA
+          </button>
+        </div>
+
+        {/* List */}
+        {isLoadingSc && !scData ? (
+          <div className="p-10 text-center text-zinc-500 text-sm font-mono">Loading Side Connect registrations...</div>
+        ) : !scData || filteredSc.length === 0 ? (
+          <div className="p-10 bg-zinc-950 border border-dashed border-white/10 rounded-3xl text-center space-y-3">
+            <Sparkles className="w-10 h-10 text-zinc-600 mx-auto" />
+            <p className="text-sm font-sans font-black text-zinc-500 uppercase">
+              {scData ? 'No Side Connect registrations match the filter.' : 'No registrations loaded.'}
+            </p>
+            <p className="text-[10px] font-mono text-zinc-600 uppercase">
+              {scData ? 'Coba ubah kata kunci pencarian atau filter sub-kompetisi.' : 'Pastikan GAS SideConnect aktif & data tersedia di sheet.'}
+            </p>
+          </div>
+        ) : (
+          <div className="space-y-3">
+            {filteredSc.map((reg, i) => {
+              const scDiv = SIDE_CONNECT_DIVISIONS.find(d => d.id === reg.subCompetition);
+              return (
+                <div key={`${reg.id || reg.refCode || 'scrow'}-${i}`} className="bg-zinc-950 border border-white/5 rounded-2xl p-4 flex flex-col md:flex-row md:items-center gap-3">
+                  <div className="flex items-center gap-3 flex-1 min-w-0">
+                    <div className="w-9 h-9 rounded-xl border flex items-center justify-center shrink-0 bg-[#00FF88]/10 border-[#00FF88]/25">
+                      <Sparkles className={`w-4 h-4 ${reg.subCompetition === 'creative-innovation' ? 'text-[#00FF88]' : reg.subCompetition === 'research-innovation' ? 'text-[#0EA5E9]' : 'text-[#C5A059]'}`} />
+                    </div>
+                    <div className="min-w-0">
+                      <h4 className="font-sans font-black text-white uppercase tracking-tight truncate">
+                        {reg.teamName || reg.leader?.name || 'UNTITLED'}
+                      </h4>
+                      <p className="text-[9px] font-mono text-zinc-500 truncate">
+                        REF: <span className="text-[#00FF88] font-bold">{reg.refCode}</span> | {scDiv?.title || reg.subCompetition} | {reg.participationType.toUpperCase()} | {reg.leader?.name || '-'} | {reg.leader?.email || '-'}
+                      </p>
+                      {reg.abstractTitle && (
+                        <p className="text-[9px] font-mono text-zinc-600 truncate">ABSTRACT: {reg.abstractTitle}</p>
+                      )}
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2 shrink-0 flex-wrap">
+                    <button
+                      onClick={() => handleDownloadScPdf(reg)}
+                      className="px-3 py-1.5 bg-[#00FF88]/10 border border-[#00FF88]/25 hover:bg-[#00FF88]/20 rounded-lg text-[9px] font-mono text-[#00FF88] font-bold uppercase transition-all cursor-pointer flex items-center gap-1.5"
+                    >
+                      <Download className="w-3 h-3" /> PDF
+                    </button>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        )}
         </>)}
       </>      
       )}
