@@ -10,21 +10,19 @@ import { useAlert } from './AlertModal';
 import { COMPETITION_DIVISIONS, SIDE_CONNECT_DIVISIONS } from '../data';
 import { Registration, ADMIN_EMAILS, SideConnectRegistration } from '../types';
 
-import * as XLSX from 'xlsx';
 import { 
   Trophy, Terminal, Download, 
-  FileSpreadsheet, Database, ArrowLeft, X,
-  CreditCard, Users, Globe, ExternalLink,
+  Database, ArrowLeft, X,
+  CreditCard, Users,
   FileText, Lock, Check, Eye, Unlock,
   Ticket, Mail, Send, Search, RefreshCw, KeyRound, ShieldCheck, Sparkles
 } from 'lucide-react';
-import { getGoogleScriptUrl, setGoogleScriptUrl, syncToGoogleSheet, fetchAllRegistrations } from '../lib/googleSheet';
+import { syncToGoogleSheet, fetchAllRegistrations } from '../lib/googleSheet';
 import { reconstructRic } from '../lib/supabase';
 import { generateRegistrationPDF, registrationPdfSafeName } from '../lib/generatePDF';
 import { sendTicketEmail, getAdminToken, setAdminToken, normalizeRegistration } from '../lib/ticketRescue';
 import { fetchAllSideConnectRegistrations } from '../lib/sideConnect';
 import { buildSideConnectPdf } from '../lib/generateSideConnectPDF';
-import gasScriptRaw from '../../google-apps-script.js?raw';
 
 interface AdminDashboardProps {
   currentUser: { name: string; email: string; method: string } | null;
@@ -116,107 +114,11 @@ export default function AdminDashboard({
 
   const isAdmin = !!currentUser && ADMIN_EMAILS.map(e => e.toLowerCase().trim()).includes(currentUser.email.toLowerCase().trim());
 
-  // Google Sheets integration state
-  const [googleScriptUrl, setGoogleScriptUrlState] = useState(getGoogleScriptUrl());
-  const [showScriptGuide, setShowScriptGuide] = useState(false);
-  const [copiedText, setCopiedText] = useState('');
-
-  const saveGoogleScriptUrl = (url: string) => {
-    setGoogleScriptUrlState(url);
-    setGoogleScriptUrl(url);
-  };
-
   // Statistics calculation
   const totalTeams = registrations.length;
   const totalRosterMembers = registrations.reduce((acc, reg) => acc + 1 + reg.members.length, 0);
   const paidTeams = registrations.filter(r => r.paymentStatus === 'PAID').length;
   const activeDivisionsCount = Array.from(new Set(registrations.map(r => r.divisionId))).length;
-
-  // Export to Excel divided by sheets per arena
-  const downloadExcelLedger = () => {
-    const wb = XLSX.utils.book_new();
-
-    COMPETITION_DIVISIONS.forEach((division) => {
-      const divisionRegs = registrations.filter(r => r.divisionId === division.id);
-      const sheetRows: any[] = [];
-
-      if (divisionRegs.length > 0) {
-        divisionRegs.forEach((reg, index) => {
-          const row: any = {
-            'No': index + 1,
-            'Reference Code': reg.refCode,
-            'Team Name': reg.teamName,
-            'Sub Category': reg.subCategory || '-',
-            'Level': reg.level || '-',
-            'Leader Name': reg.leader.name,
-            'Leader Email': reg.leader.email,
-            'Leader WhatsApp': reg.leader.whatsapp,
-            'Institution': reg.leader.institution,
-            'Leader Address': reg.leader.address || '-',
-            'Leader Congenital Disease': reg.leader.congenitalDisease || 'None',
-            'Leader ID Card Link': reg.leader.idCardUrl || '-',
-            'Leader Twibbon Link': reg.leader.twibbonUrl || '-',
-            'Lecturer Name': reg.lecturerName || '-',
-            'Lecturer Email': reg.lecturerEmail || '-',
-            'Lecturer WhatsApp': reg.lecturerWhatsapp || '-',
-            'Lecturer Congenital Disease': reg.lecturerCongenitalDisease || 'None',
-            'Lecturer ID Card Link': reg.lecturerIdCardUrl || '-',
-            'Lecturer Twibbon Link': reg.lecturerTwibbonUrl || '-',
-            'Payment Gateway': reg.paymentMethod,
-            'Billing Status': reg.paymentStatus,
-            'Amount Paid': reg.amount || (COMPETITION_DIVISIONS.find(d => d.id === reg.divisionId)?.price || 'IDR 250,000'),
-            'Payment Proof File': reg.paymentProofName || '-',
-            'Payment Proof Data': reg.paymentProofUrl ? '(Base64 Data Present)' : '-',
-            'Roster size': reg.members.length + 1
-          };
-
-          for (let i = 0; i < 5; i++) {
-            const member = reg.members[i];
-            row[`Member ${i + 1} Name`] = member ? member.name : '';
-            row[`Member ${i + 1} WhatsApp`] = member ? member.whatsapp : '';
-            row[`Member ${i + 1} Congenital Disease`] = member ? member.congenitalDisease || 'None' : '';
-            row[`Member ${i + 1} ID Card Link`] = member ? member.idCardUrl || '-' : '';
-            row[`Member ${i + 1} Twibbon Link`] = member ? member.twibbonUrl || '-' : '';
-          }
-
-          sheetRows.push(row);
-        });
-      } else {
-        sheetRows.push({
-          'No': '-',
-          'Reference Code': '-',
-          'Team Name': '-',
-          'Sub Category': '-',
-          'Level': '-',
-          'Leader Name': '(No entries registered in this division yet)',
-          'Leader Email': '-',
-          'Leader WhatsApp': '-',
-          'Institution': '-',
-          'Lecturer Name': '-',
-          'Lecturer Email': '-',
-          'Lecturer WhatsApp': '-',
-          'Payment Gateway': '-',
-          'Billing Status': '-',
-          'Amount Paid': '-',
-          'Payment Proof File': '-',
-          'Payment Proof Data': '-',
-          'Roster size': 0
-        });
-      }
-
-      const ws = XLSX.utils.json_to_sheet(sheetRows);
-
-      ws['!cols'] = [
-        { wch: 6 }, { wch: 18 }, { wch: 25 }, { wch: 15 }, { wch: 15 }, { wch: 22 }, { wch: 28 },
-        { wch: 18 }, { wch: 30 }, { wch: 22 }, { wch: 25 }, { wch: 18 }, { wch: 16 }, { wch: 15 }, { wch: 15 }, { wch: 25 }, { wch: 25 }, { wch: 12 }
-      ];
-
-      const titleCleaned = division.title.replace(/[\\\/\?\*\:\[\]]/g, '').substring(0, 31);
-      XLSX.utils.book_append_sheet(wb, ws, titleCleaned);
-    });
-
-    XLSX.writeFile(wb, `ERIC_2026_Live_Registrations_${new Date().toISOString().slice(0, 10)}.xlsx`);
-  };
 
   // ─── PDF TICKET RESCUE LOGIC ─────────────────────────────
   const refreshTickets = () => {
@@ -444,85 +346,8 @@ export default function AdminDashboard({
         </div>
       </div>
 
-      {/* Controls Grid (Excel, Google Sheets Sync, Database Info) */}
+      {/* Controls Grid (Database Info) */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        
-        {/* Excel compilation module */}
-        <div className="p-6 bg-zinc-950 border border-white/5 rounded-3xl space-y-4 flex flex-col justify-between">
-          <div className="space-y-4">
-            <div className="flex items-center gap-3">
-              <FileSpreadsheet className="w-6 h-6 text-[#FFD700]" />
-              <h4 className="font-sans font-black text-white uppercase tracking-wider text-sm">
-                OFFICIAL XLSX LEDGER GENERATION
-              </h4>
-            </div>
-            <p className="text-xs font-mono text-zinc-400 uppercase leading-relaxed">
-              {t('Compile and download a real-time, comprehensive Excel workbook containing all registered team records.', 'Kompilasi dan unduh workbook Excel real-time yang berisi semua catatan tim yang terdaftar.')}
-            </p>
-          </div>
-          <button
-            onClick={downloadExcelLedger}
-            className="w-full mt-6 py-3.5 bg-gradient-to-r from-[#FFD700] to-[#FFE44D] text-black font-sans font-black text-xs tracking-wider uppercase rounded-xl hover:scale-101 transition-transform cursor-pointer flex justify-center items-center gap-2 shadow-[0_0_15px_rgba(255, 215, 0, 0.2)]"
-          >
-            <Download className="w-4 h-4" />
-            <span>DOWNLOAD FULL EXCEL LEDGER</span>
-          </button>
-        </div>
-
-        {/* Google Sheets Real-Time Sync Module */}
-        <div className="p-6 bg-zinc-950 border border-white/5 rounded-3xl space-y-4 flex flex-col justify-between">
-          <div className="space-y-4">
-            <div className="flex items-center gap-3">
-              <Globe className="w-6 h-6 text-[#4D90FE]" />
-              <h4 className="font-sans font-black text-white uppercase tracking-wider text-sm">
-                GOOGLE SHEETS INSTANT SYNC
-              </h4>
-            </div>
-            <p className="text-xs font-mono text-zinc-400 uppercase leading-relaxed">
-              {t('Configure an automated link with your live Google Spreadsheet. Participants submit, and records instantly append as rows.', 'Konfigurasikan tautan otomatis dengan Spreadsheet Google Anda. Peserta mendaftar, dan data langsung ditambahkan sebagai baris.')}
-            </p>
-            
-            <div className="space-y-2">
-              <div className="flex justify-between items-center text-[10px] font-mono">
-                <span className="text-zinc-500 uppercase">WEB APP URL</span>
-                {googleScriptUrl ? (
-                  <span className="text-[#FFD700] font-bold uppercase flex items-center gap-1">
-                    <span className="w-1 h-1 bg-[#FFD700] rounded-full animate-pulse" />
-                    ACTIVE SYNC
-                  </span>
-                ) : (
-                  <span className="text-amber-500 font-bold uppercase">INACTIVE</span>
-                )}
-              </div>
-              <input
-                type="text"
-                placeholder="https://script.google.com/macros/s/.../exec"
-                value={googleScriptUrl}
-                onChange={(e) => saveGoogleScriptUrl(e.target.value)}
-                className="w-full bg-zinc-900 border border-white/5 hover:border-white/10 rounded-xl px-3 py-2.5 text-[11px] font-mono text-white placeholder-zinc-600 focus:outline-none focus:border-[#4D90FE]/30 transition-all"
-              />
-            </div>
-          </div>
-          
-          <div className="grid grid-cols-2 gap-2 mt-4">
-            <button
-              onClick={() => setShowScriptGuide(true)}
-              className="py-2.5 bg-zinc-900 hover:bg-zinc-800 border border-white/5 text-zinc-300 hover:text-white font-mono text-[9px] font-bold uppercase rounded-xl transition-all flex items-center justify-center gap-1.5 cursor-pointer"
-            >
-              <Terminal className="w-3.5 h-3.5 text-[#C5A059]" />
-              <span>HOW TO SETUP</span>
-            </button>
-            <a
-              href="https://docs.google.com/spreadsheets/d/12ouLbtyguh2VWYX0_DQlJUU_KCCEZ4qQBtH0RL2UFP8/edit?usp=sharing"
-              target="_blank"
-              rel="noreferrer"
-              className="py-2.5 bg-[#4D90FE]/10 hover:bg-[#4D90FE]/15 border border-[#4D90FE]/20 text-[#4D90FE] font-mono text-[9px] font-bold uppercase rounded-xl transition-all flex items-center justify-center gap-1.5 cursor-pointer text-center"
-            >
-              <ExternalLink className="w-3.5 h-3.5" />
-              <span>OPEN SHEET</span>
-            </a>
-          </div>
-        </div>
 
         {/* Database Info Node */}
         <div className="p-6 bg-zinc-950 border border-white/5 rounded-3xl space-y-4">
@@ -542,94 +367,6 @@ export default function AdminDashboard({
         </div>
 
       </div>
-
-      {/* OVERLAY DIALOG: GOOGLE APPS SCRIPT SETUP GUIDE */}
-      <AnimatePresence>
-        {showScriptGuide && (
-          <motion.div
-            key="guide-dialog"
-            initial={{ opacity: 0, scale: 0.98 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/95 backdrop-blur-md overflow-y-auto"
-          >
-            <div className="absolute inset-0 cursor-default" onClick={() => setShowScriptGuide(false)} />
-            <div className="bg-[#0C0C0C] border border-white/10 rounded-3xl p-6 md:p-8 max-w-2xl w-full relative z-10 overflow-hidden shadow-[0_30px_70px_rgba(0,0,0,0.95)]">
-              <div className="flex justify-between items-center border-b border-white/5 pb-4">
-                <div className="space-y-0.5">
-                  <span className="text-[9px] font-mono text-[#4D90FE] uppercase tracking-widest block font-black">
-                    INTEGRATION HANDBOOK
-                  </span>
-                  <h4 className="text-lg font-sans font-black text-white uppercase tracking-tight">
-                    GOOGLE SHEETS SETUP GUIDE
-                  </h4>
-                </div>
-                <button
-                  onClick={() => setShowScriptGuide(false)}
-                  className="p-1.5 bg-zinc-900 border border-white/5 text-zinc-400 hover:text-white rounded-lg cursor-pointer"
-                >
-                  <X className="w-4 h-4" />
-                </button>
-              </div>
-
-              <div className="space-y-5 pt-4 max-h-[420px] overflow-y-auto pr-1 custom-scrollbar">
-                <div className="space-y-2 text-xs font-mono text-zinc-400 uppercase leading-relaxed">
-                  <p className="text-white font-bold">Follow these steps to link your live Google Sheet:</p>
-                  <ol className="list-decimal pl-4 space-y-1.5">
-                    <li>Open your Google Sheet: <a href="https://docs.google.com/spreadsheets/d/12ouLbtyguh2VWYX0_DQlJUU_KCCEZ4qQBtH0RL2UFP8/edit" target="_blank" rel="noreferrer" className="text-[#4D90FE] hover:underline inline-flex items-center gap-1">Open Sheet <ExternalLink className="w-3 h-3" /></a></li>
-                    <li>In the top menu, go to <span className="text-white font-bold">Extensions</span> &rarr; <span className="text-white font-bold">Apps Script</span>.</li>
-                    <li>Copy the pre-made integration script below entirely.</li>
-                    <li>Paste it into <code className="text-white bg-zinc-900 px-1 py-0.5 rounded">Code.gs</code>, saving any changes.</li>
-                    <li>In the top-right corner, click <span className="text-white font-bold">Deploy</span> &rarr; <span className="text-white font-bold">New deployment</span>.</li>
-                    <li>Click the gear icon, select <span className="text-white font-bold">Web app</span>.</li>
-                    <li>Set "Who has access" to <span className="text-[#FFD700] font-bold">Anyone</span> (crucial to allow direct submissions).</li>
-                    <li>Click <span className="text-white font-bold">Deploy</span>, approve requested Google permissions.</li>
-                    <li>Copy the resulting Web App URL and paste it in the field on your left.</li>
-                  </ol>
-                </div>
-
-                <div className="space-y-2">
-                  <div className="flex justify-between items-center">
-                    <span className="text-[9px] font-mono text-zinc-500 uppercase font-bold">Code.gs Script</span>
-                    <button
-                      onClick={() => {
-                        navigator.clipboard.writeText(gasScriptRaw);
-                        setCopiedText('COPIED!');
-                        setTimeout(() => setCopiedText(''), 2000);
-                        setCopiedText('COPIED!');
-                        setTimeout(() => setCopiedText(''), 2000);
-                      }}
-                      className="px-3 py-1 bg-[#4D90FE]/10 border border-[#4D90FE]/20 hover:bg-[#4D90FE]/20 text-[9px] font-mono text-[#4D90FE] font-black rounded uppercase cursor-pointer"
-                    >
-                      {copiedText || 'COPY TO CLIPBOARD'}
-                    </button>
-                  </div>
-                  <pre className="p-4 bg-zinc-950 border border-white/5 rounded-2xl text-[10.5px] font-mono text-zinc-400 overflow-x-auto max-h-[180px] custom-scrollbar select-all">
-{`const SPREADSHEET_ID = "12ouLbtyguh2VWYX0_DQlJUU_KCCEZ4qQBtH0RL2UFP8";
-
-function doPost(e) {
-  const data = JSON.parse(e.postData.contents);
-  // action = "sync" | "sendTicket" | "deleteRegistration"
-  // ... full Code.gs (incl. handleSendTicket) is in google-apps-script.js
-  //     and copied via the button above. Re-deploy after every change.`}
-                  </pre>
-                </div>
-              </div>
-
-              <div className="pt-4 flex justify-end border-t border-white/5">
-                <button
-                  onClick={() => setShowScriptGuide(false)}
-                  className="px-5 py-2 bg-[#4D90FE] text-black font-sans font-black text-xs tracking-wider uppercase rounded-xl hover:scale-101 transition-transform cursor-pointer font-bold"
-                >
-                  GOT IT!
-                </button>
-              </div>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-
       </>      
       )}
 
