@@ -840,11 +840,11 @@ function doPost(e) {
               setSendSecret(e.target.value);
               setAdminToken(e.target.value);
             }}
-            placeholder="Masukkan admin token (dari setupSecurity GAS)"
+            placeholder="Password kirim tiket (opsional)"
             className="flex-1 min-w-0 bg-zinc-900 border border-white/5 focus:border-[#FF3B30]/40 rounded-xl px-3 py-2 text-[11px] font-mono text-white placeholder-zinc-600 focus:outline-none"
           />
           <p className="text-[8.5px] font-mono text-zinc-600 uppercase leading-relaxed">
-            Token tersimpan di device ini. Tanpa token, semua aksi admin ke Google Sheet DITOLAK (termasuk kirim tiket). Jalankan setupSecurity() sekali di Apps Script utk menyetel token.
+            Opsional. GAS utama sekarang terbuka tanpa token (revert hardening). Isi hanya jika alur kirim tiket masih membatasi password.
           </p>
         </div>
 

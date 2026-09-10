@@ -20,78 +20,23 @@
  * 
  * PDF TICKET RESCUE (SEND TICKET VIA EMAIL):
  * - Admin Dashboard generate PDF dari data peserta, POST base64 ke web app ini
- *   dengan action="sendTicket", token rahasia, refCode, toEmail, subject, body, pdfBase64.
- * - Jika token cocok, PDF dikirim via MailApp dan kolom "Ticket Email Status"/"Ticket Email Date"
+ *   dengan action="sendTicket", refCode, toEmail, subject, body, pdfBase64.
+ * - PDF dikirim via MailApp dan kolom "Ticket Email Status"/"Ticket Email Date"
  *   di baris peserta di-update menjadi SENT.
- * - Token admin (ADMIN_TOKEN) di Script Properties — set lewat setupSecurity()
- *   dan isikan di Admin Dashboard (field ADMIN TOKEN) agar sama persis.
  */
 
 const SPREADSHEET_ID = "12ouLbtyguh2VWYX0_DQlJUU_KCCEZ4qQBtH0RL2UFP8";
 
 // ============================================================
-// SECURITY HARDENING 2026-09-07
-// Semua aksi >read/elektif (<getRegistrations>, <debugHeaders>,
-// <sendTicket>) mewajibkan admin token. Token BUKAN hardcoded di
-// kode — disimpan di Script Properties (PropertiesService) dan
-// diset SEKALI saat deploy:
-//
-//   1) Buka Extensions > Apps Script editor
-//   2) Toolbar: pilih fungsi "setupSecurity" lalu klik Run ONCE
-//      (akan diminta akses + Anda memasukkan token admin sendiri)
-//   3) Atau jalankan di editor konsol: 
-//      PropertiesService.getScriptProperties().setProperty('ADMIN_TOKEN', 'GANTI_DENGAN_TOKEN_AMAN_PANJANG')
-//
-// Seluruh deployment Web App memakai token yang sama di Script
-// Properties => ganti token = invalidate semua sesi admin instan.
+// CATATAN 2026-09-10: GATE ADMIN TOKEN DIHAPUS (REVERT HARDENING)
+// Atas permintaan user, proteksi token admin (ADMIN_TOKEN di Script
+// Properties) untuk aksi getRegistrations / debugHeaders / sendTicket
+// DIHAPUS agar dashboard admin kembali bekerja tanpa repot token.
+// Mapping kolom dinamis + dedupe (v23) TETAP dipertahankan.
+// PERINGATAN: tanpa token, siapa pun yang tahu URL web app bisa
+// membaca seluruh data peserta (PII). JANGAN re-aktifkan token
+// sebelum backend auth yang benar tersedia.
 // ============================================================
-function getAdminToken() {
-  try {
-    return PropertiesService.getScriptProperties().getProperty('ADMIN_TOKEN') || '';
-  } catch (e) {
-    return '';
-  }
-}
-
-function tokenIsValid(token) {
-  if (!token) return false;
-  const valid = getAdminToken();
-  if (!valid) return false;
-  // Timing-safe compare
-  if (String(token).length !== String(valid).length) return false;
-  let diff = 0;
-  for (let i = 0; i < String(token).length; i++) {
-    diff |= String(token).charCodeAt(i) ^ String(valid).charCodeAt(i);
-  }
-  return diff === 0;
-}
-
-/**
- * ONE-TIME SETUP — jalankan SEKALI dari editor Apps Script agar
- * Script Properties berisi token admin. Token akan diminta lewat
- * UI prompt (prompt()). JANGAN commit token ke kode/repo.
- */
-function setupSecurity() {
-  const current = getAdminToken();
-  const ui = SpreadsheetApp.getUi();
-  const res = ui.prompt(
-    'ERIC Security Setup',
-    'Masukkan ADMIN TOKEN (panjang, acak, minimal 16 karakter).' +
-    (current ? ' Saat ini sudah ada token. Kosongkan untuk mempertahankan.' : ''),
-    ui.ButtonSet.OK_CANCEL
-  );
-  if (res.getSelectedButton() !== ui.Button.OK) {
-    Logger.log('Setup dibatalkan.');
-    return;
-  }
-  const input = String(res.getResponseText() || '').trim();
-  if (input) {
-    PropertiesService.getScriptProperties().setProperty('ADMIN_TOKEN', input);
-    Logger.log('ADMIN_TOKEN disimpan. Token sekarang aktif utk semua deployment.');
-  } else if (!current) {
-    Logger.log('Tidak ada token di-set. Akses admin akan DITOLAK sampai Anda set token.');
-  }
-}
 
 // Helper JSON response
 function jsonResp(obj) {
@@ -187,10 +132,6 @@ function doPost(e) {
 
         // PDF TICKET RESCUE: kirim tiket via email (admin action)
         if (data.action === "sendTicket") {
-            if (!tokenIsValid(data.token)) {
-                return ContentService.createTextOutput(JSON.stringify({ status: "error", message: "Invalid admin token." }))
-                    .setMimeType(ContentService.MimeType.JSON);
-            }
             const result = handleSendTicket(data);
             return ContentService.createTextOutput(JSON.stringify(result))
                 .setMimeType(ContentService.MimeType.JSON);
@@ -310,7 +251,7 @@ function ensureTicketLogColumns(sheet) {
  * Dipanggil dari doPost dengan data.action === "sendTicket".
  */
 function handleSendTicket(data) {
-    // Token telah diverifikasi di doPost (tokenIsValid). Cukup cek payload.
+    // Cek payload wajib sebelum kirim.
     if (!data.pdfBase64 || !data.toEmail) {
         return { status: "error", message: "Missing pdf attachment or recipient email." };
     }
@@ -397,25 +338,13 @@ function doGet(e) {
         const action = e.parameter.action;
         const email = (e.parameter.email || '').toLowerCase().trim();
         const callback = e.parameter.callback;
-        const token = e.parameter.token || '';
 
-        // KEBIJAKAN AKSES:
-        //  - getRegistrations TANPA email (admin dump SEMUA data peserta + PII)
-        //    => WAJIB admin token.
+        // KEBIJAKAN AKSES (revert 2026-09-10 — token gate dihapus):
+        //  - getRegistrations TANPA email (admin dump) => terbuka.
         //  - getRegistrations DENGAN email (data milik pengguna itu sendiri)
-        //    => diizinkan, tapi dipersempit ke pencocokan email PERSIS (bukan includes)
+        //    => dipersempit ke pencocokan email PERSIS (bukan includes)
         //      agar pengguna tidak bisa menarik data pengguna lain.
-        //  - debugHeaders => WAJIB admin token.
-        const isAllDump = (action === "getRegistrations" && !email) ||
-                          action === "debugHeaders";
-        if (isAllDump && !tokenIsValid(token)) {
-            const err = JSON.stringify({ status: "error", message: "Forbidden: invalid access token." });
-            if (callback) {
-                return ContentService.createTextOutput(callback + '(' + err + ')')
-                    .setMimeType(ContentService.MimeType.JAVASCRIPT);
-            }
-            return ContentService.createTextOutput(err).setMimeType(ContentService.MimeType.JSON);
-        }
+        //  - debugHeaders => terbuka.
 
         const ss = SpreadsheetApp.openById(SPREADSHEET_ID);
         const allSheets = ss.getSheets();
