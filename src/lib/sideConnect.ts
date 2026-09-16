@@ -9,7 +9,7 @@ import { SideConnectRegistration } from '../types';
 
 // Deployment URL for google-apps-script-sideconnect-v2.js
 // Or set via localStorage key 'eric_sideconnect_gas_url'
-const GAS_URL = 'https://script.google.com/macros/s/AKfycbwkth-KlyqDJ2u1BCQ0jK670FAsHA4wjfzdlidRorp0y0aYjGq3udUY6txwck-fjfQn7Q/exec';
+const GAS_URL = 'https://script.google.com/macros/s/AKfycbzRSpAkIw_akA3bzIZRjCcTHR12n07wCqWeFd902GQWPT3gSXgVMHx0TWhVltbDDNYc9A/exec';
 
 const MAX_FILE_MB = 8;
 
