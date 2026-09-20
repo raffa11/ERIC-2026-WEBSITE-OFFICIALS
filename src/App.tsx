@@ -246,6 +246,13 @@ function AppContent() {
       showAlert({ message: 'Side Connect registration is temporarily closed. Please check back soon!', type: 'warning' });
       return;
     }
+    // Sign-in required so the stored email is the Google login email — this is how
+    // each participant's tickets are matched back in My Registrations.
+    if (!currentUser) {
+      showAlert({ message: 'Please sign in first to register for Side Connect.', type: 'warning' });
+      setIsLoginModalOpen(true);
+      return;
+    }
     setIsSideConnectModalOpen(true);
   };
 
@@ -341,6 +348,7 @@ function AppContent() {
         <SideConnectModal
           isOpen={isSideConnectModalOpen}
           onClose={() => setIsSideConnectModalOpen(false)}
+          currentUser={currentUser}
         />
 
       </div>

@@ -13,7 +13,7 @@ import { SIDE_CONNECT_DIVISIONS, COUNTRY_CODES, MAIN_WHATSAPP_GROUP } from '../d
 import { SideConnectRegistration } from '../types';
 import {
   Lightbulb, BookOpen, Compass, Send, CheckCircle2,
-  ArrowRight, ArrowLeft, X, User, Users, Plus, Trash2, Download, UploadCloud, FileText, MessageCircle
+  ArrowRight, ArrowLeft, X, User, Users, Plus, Trash2, Download, UploadCloud, FileText, MessageCircle, Lock
 } from 'lucide-react';
 import { syncSideConnectToSheet, uploadSideConnectFiles } from '../lib/sideConnect';
 import { generateSideConnectPDF } from '../lib/generateSideConnectPDF';
@@ -22,9 +22,16 @@ const ICON_MAP: Record<string, React.FC<{ className?: string }>> = {
   Lightbulb, BookOpen, Compass,
 };
 
+interface CurrentUser {
+  name: string;
+  email: string;
+  method: string;
+}
+
 interface SideConnectModalProps {
   isOpen: boolean;
   onClose: () => void;
+  currentUser?: CurrentUser | null;
 }
 
 function generateId() {
@@ -38,7 +45,7 @@ function generatePin() {
   return pin;
 }
 
-export default function SideConnectModal({ isOpen, onClose }: SideConnectModalProps) {
+export default function SideConnectModal({ isOpen, onClose, currentUser }: SideConnectModalProps) {
   const { t } = useLanguage();
   const { showAlert } = useAlert();
 
@@ -64,6 +71,17 @@ export default function SideConnectModal({ isOpen, onClose }: SideConnectModalPr
   const [doneRefCode, setDoneRefCode] = useState('');
   const [doneReg, setDoneReg] = useState<SideConnectRegistration | null>(null);
   const [reportFiles, setReportFiles] = useState<File[]>([]);
+
+  // Lock the participant email to the signed-in Google account. My Registrations
+  // matches tickets by the login email, so the stored email MUST be this one.
+  React.useEffect(() => {
+    if (isOpen && currentUser?.email && leaderEmail !== currentUser.email) {
+      setLeaderEmail(currentUser.email);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isOpen, currentUser]);
+
+  const leaderEmailLocked = !!currentUser?.email;
 
   const maxMembers = participationType === 'team' ? 2 : 0;
 
@@ -425,8 +443,31 @@ export default function SideConnectModal({ isOpen, onClose }: SideConnectModalPr
                   <div className="grid grid-cols-2 gap-3">
                     <div>
                       <label className="text-[9px] font-mono text-zinc-500 uppercase tracking-widest block mb-1.5">Email *</label>
-                      <input type="email" required value={leaderEmail} onChange={(e) => setLeaderEmail(e.target.value)} placeholder="john@email.com"
-                        className="w-full bg-zinc-900 border border-white/5 focus:border-[#00FF88] rounded-xl px-3 py-2.5 text-xs text-white focus:outline-none" />
+                      <div className="relative">
+                        <input
+                          type="email"
+                          required
+                          name="leader-email"
+                          value={leaderEmail}
+                          onChange={(e) => {
+                            if (!leaderEmailLocked) setLeaderEmail(e.target.value);
+                          }}
+                          readOnly={leaderEmailLocked}
+                          placeholder="john@email.com"
+                          className={`w-full bg-zinc-900 border border-white/5 focus:border-[#00FF88] rounded-xl px-3 py-2.5 text-xs text-white focus:outline-none ${leaderEmailLocked ? 'opacity-80 cursor-not-allowed pr-9' : ''}`}
+                        />
+                        {leaderEmailLocked && (
+                          <span className="absolute right-3 top-1/2 -translate-y-1/2">
+                            <Lock className="w-3.5 h-3.5 text-[#00FF88]/70" />
+                          </span>
+                        )}
+                      </div>
+                      {leaderEmailLocked && (
+                        <p className="text-[10px] text-[#00FF88]/60 mt-1 flex items-center gap-1">
+                          <Lock className="w-2.5 h-2.5" />
+                          {t('Uses your sign-in email', 'Memakai email akun login Anda')}
+                        </p>
+                      )}
                     </div>
                     <div>
                       <label className="text-[9px] font-mono text-zinc-500 uppercase tracking-widest block mb-1.5">WhatsApp *</label>
