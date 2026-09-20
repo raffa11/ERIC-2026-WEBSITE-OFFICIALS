@@ -60,20 +60,22 @@ function getDivisionSheetName(divisionId) {
     return DIVISION_MAP[divisionId] || divisionId;
 }
 
+// Urutan header baku (order yang dipakai penulis lama posisi-per-posisi).
+// Dipakai oleh repairShiftedRows untuk memetakan kembali baris yang bergeser.
+const FULL_HEADERS = [
+    "ID", "Timestamp", "Division", "Sub Category", "Level", "Team Name",
+    "Leader Name", "Leader Email", "Leader WhatsApp", "Leader Institution", "Leader Address", "Leader Congenital Disease",
+    "Leader ID Card", "Leader Twibbon",
+    "Member 1 Name", "Member 1 WhatsApp", "Member 1 Disease", "Member 1 ID Card", "Member 1 Twibbon",
+    "Member 2 Name", "Member 2 WhatsApp", "Member 2 Disease", "Member 2 ID Card", "Member 2 Twibbon",
+    "Lecturer Name", "Lecturer Email", "Lecturer WhatsApp", "Lecturer Disease", "Lecturer ID Card", "Lecturer Twibbon",
+    "Payment Method", "Payment Status", "Amount Paid", "Ref Code", "Payment Proof",
+    "Ticket Email Status", "Ticket Email Date"
+];
+
 function getOrCreateDivisionSheet(divisionId) {
     const ss = SpreadsheetApp.openById(SPREADSHEET_ID);
     const sheetName = getDivisionSheetName(divisionId);
-
-    const FULL_HEADERS = [
-        "ID", "Timestamp", "Division", "Sub Category", "Level", "Team Name",
-        "Leader Name", "Leader Email", "Leader WhatsApp", "Leader Institution", "Leader Address", "Leader Congenital Disease",
-        "Leader ID Card", "Leader Twibbon",
-        "Member 1 Name", "Member 1 WhatsApp", "Member 1 Disease", "Member 1 ID Card", "Member 1 Twibbon",
-        "Member 2 Name", "Member 2 WhatsApp", "Member 2 Disease", "Member 2 ID Card", "Member 2 Twibbon",
-        "Lecturer Name", "Lecturer Email", "Lecturer WhatsApp", "Lecturer Disease", "Lecturer ID Card", "Lecturer Twibbon",
-        "Payment Method", "Payment Status", "Amount Paid", "Ref Code", "Payment Proof",
-        "Ticket Email Status", "Ticket Email Date"
-    ];
 
     let sheet = ss.getSheetByName(sheetName);
     if (sheet) {
@@ -137,6 +139,24 @@ function doPost(e) {
                 .setMimeType(ContentService.MimeType.JSON);
         }
 
+        // --- Aksi PERBAIKAN & ADMIN (mutasi data sheet) ---
+        // action=deleteRegistration  -> hapus baris by id ATAU refCode.
+        // action=repairShiftedRows  -> realign baris yang bergeser (bug refCode posisi 1).
+        // Keduanya sengaja TANPA token (konsisten dgn keputusan revert 2026-09-10), tapi
+        // DIVISIKAN dari jalur peserta: blok ini harus diletakkan SEBELUM validasi
+        // id/divisionId/leaderEmail. PERINGATAN: action delete bersifat destruktif
+        // dan public — sama kelas risikonya dgn register (lihat catatan keamanan).
+        if (data.action === "deleteRegistration" || data.action === "repairShiftedRows") {
+            let result;
+            if (data.action === "deleteRegistration") {
+                result = handleDeleteRegistration(data);
+            } else {
+                result = handleRepairShiftedRows(data);
+            }
+            return ContentService.createTextOutput(JSON.stringify(result))
+                .setMimeType(ContentService.MimeType.JSON);
+        }
+
         // --- Aksi register / update (jalur PESERTA): tidak pakai token admin
         //     (peserta tidak memilikinya). Perlindungan = validasi ketat +
         //     tolak duplikat id/refCode supaya anonim tidak mudah spam/poison sheet.
@@ -195,24 +215,69 @@ function doPost(e) {
         const lecturerTwibbonUrl = uploadBase64File(data.lecturerTwibbonUrl, "LECTURER_TWIBBON_" + data.teamName + "_" + (data.lecturerTwibbonName || "twibbon"));
         const payProofUrl = uploadBase64File(data.paymentProofUrl, "PAY_PROOF_" + data.teamName + "_" + (data.paymentProofName || "proof"));
 
-        const row = [
-            data.id, new Date().toLocaleString(), data.divisionId, data.subCategory || "-", data.level || "-",
-            data.teamName, data.leaderName, data.leaderEmail, data.leaderWhatsApp, data.leaderInstitution,
-            data.leaderAddress || "-", data.leaderCongenitalDisease || "-", leaderIdUrl, leaderTwibbonUrl,
-            data.m1Name || "-", data.m1WhatsApp || "-", data.m1CongenitalDisease || "-", m1IdUrl, m1TwibbonUrl,
-            data.m2Name || "-", data.m2WhatsApp || "-", data.m2CongenitalDisease || "-", m2IdUrl, m2TwibbonUrl,
-            data.lecturerName || "-", data.lecturerEmail || "-", data.lecturerWhatsApp || "-",
-            data.lecturerCongenitalDisease || "-", lecturerIdUrl, lecturerTwibbonUrl,
-            data.paymentMethod, data.paymentStatus, data.amount || "IDR 150,000", data.refCode, payProofUrl
-        ];
+        // Tulis baris SELARAS DENGAN HEADER ASLI tab (by header name), bukan
+        // posisi tetap. Beberapa tab (Sumobot 500g/3kg) punya kolom "Ref Code"
+        // ditaruh di posisi 2 — appendRow posisional lama membaca/shifting
+        // semua kolom. Ini juga yang membuat refCode terbaca jadi timestamp.
+        const lastCol = Math.max(sheet.getLastColumn(), 1);
+        const actualHeaders = sheet.getRange(1, 1, 1, lastCol).getValues()[0]
+            .map(h => String(h).trim());
+
+        const valueByHeader = {
+            "ID": data.id,
+            "Timestamp": new Date().toLocaleString(),
+            "Division": data.divisionId,
+            "Sub Category": data.subCategory || "-",
+            "Level": data.level || "-",
+            "Team Name": data.teamName,
+            "Leader Name": data.leaderName,
+            "Leader Email": data.leaderEmail,
+            "Leader WhatsApp": data.leaderWhatsApp,
+            "Leader Institution": data.leaderInstitution,
+            "Leader Address": data.leaderAddress || "-",
+            "Leader Congenital Disease": data.leaderCongenitalDisease || "-",
+            "Leader ID Card": leaderIdUrl,
+            "Leader Twibbon": leaderTwibbonUrl,
+            "Member 1 Name": data.m1Name || "-",
+            "Member 1 WhatsApp": data.m1WhatsApp || "-",
+            "Member 1 Disease": data.m1CongenitalDisease || "-",
+            "Member 1 ID Card": m1IdUrl,
+            "Member 1 Twibbon": m1TwibbonUrl,
+            "Member 2 Name": data.m2Name || "-",
+            "Member 2 WhatsApp": data.m2WhatsApp || "-",
+            "Member 2 Disease": data.m2CongenitalDisease || "-",
+            "Member 2 ID Card": m2IdUrl,
+            "Member 2 Twibbon": m2TwibbonUrl,
+            "Lecturer Name": data.lecturerName || "-",
+            "Lecturer Email": data.lecturerEmail || "-",
+            "Lecturer WhatsApp": data.lecturerWhatsApp || "-",
+            "Lecturer Disease": data.lecturerCongenitalDisease || "-",
+            "Lecturer ID Card": lecturerIdUrl,
+            "Lecturer Twibbon": lecturerTwibbonUrl,
+            "Payment Method": data.paymentMethod,
+            "Payment Status": data.paymentStatus,
+            "Amount Paid": data.amount || "IDR 150,000",
+            "Ref Code": data.refCode,
+            "Payment Proof": payProofUrl,
+            "Ticket Email Status": "",
+            "Ticket Email Date": ""
+        };
+
+        const row = actualHeaders.map(h => {
+            if (h === "" || h === "-") return "";
+            if (Object.prototype.hasOwnProperty.call(valueByHeader, h)) return valueByHeader[h];
+            return "";
+        });
 
         sheet.appendRow(row);
 
         // Force WhatsApp columns as plain text to prevent "Formula parse error"
         const lastRow = sheet.getLastRow();
-        // 1-indexed columns: 9=LeaderWA, 16=Member1WA, 21=Member2WA, 27=LecturerWA
-        [9, 16, 21, 27].forEach(col => {
-            sheet.getRange(lastRow, col).setNumberFormat('@STRING@');
+        const waCols = ["Leader WhatsApp", "Member 1 WhatsApp", "Member 2 WhatsApp", "Lecturer WhatsApp"];
+        actualHeaders.forEach(function (h, i) {
+            if (waCols.indexOf(h) >= 0) {
+                sheet.getRange(lastRow, i + 1).setNumberFormat('@STRING@');
+            }
         });
 
         return ContentService.createTextOutput(JSON.stringify({ status: "success", id: data.id }))
@@ -315,6 +380,145 @@ function updateTicketLog(refCode, status, dateStr) {
         }
     }
     return updated;
+}
+
+/**
+ * PERBAIKAN BARIS BERGESER (bug "Ref Code" posisi 1 di tab sumobot).
+ * Beberapa tab (Sumobot 500g / Sumobot 3kg) punya kolom "Ref Code" DITARUH
+ * di posisi kolom ke-2 (index 1), sementara penulis lama melakukan appendRow
+ * dengan urutan FULL_HEADERS (Ref Code di index 33). Akibatnya semua kolom
+ * di baris itu bergeser satu posisi dan refCode terbaca sebagai timestamp.
+ *
+ * Strategi: untuk tiap tab divisi, baca header asli, lalu untuk tiap baris
+ * yang "jauh dari pola" (deteksi: cell di posisi Ref Code TIDAK berbentuk
+ * ERIC-REG-XXX padahal salah satu kolom lain MENGANDUNG pola tsb / atau
+ * kolom ID tidak terisi di kolom 1 tapi refCode terdeteksi di kolom lain),
+ * kita realign dengan memetakan ulang tiap kolom memakai nama header.
+ *
+ * Mapping dilakukan SETIAP BARIS: nilai tiap kolom dibaca menurut NAMA
+ * header yang sekarang ia tuduh, lalu ditulis ulang ke kolom yang benar
+ * menurut FULL_HEADERS. Ini aman untuk baris sehat maupun bergeser asalkan
+ * header tab dikenali.
+ */
+function handleRepairShiftedRows(data) {
+    const ss = SpreadsheetApp.openById(SPREADSHEET_ID);
+    const allSheets = ss.getSheets();
+    const repaired = []; // { tab, rows }
+    let totalRows = 0;
+
+    // Pola ref code: ERIC-REG-<divisi>-<suffix> (case-insensitive)
+    const REF_PATTERN = /^ERIC-REG-/i;
+
+    for (let s = 0; s < allSheets.length; s++) {
+        const sheet = allSheets[s];
+        const sheetName = sheet.getName();
+        if (/^Copy of/i.test(sheetName)) continue;
+        if (sheet.getLastRow() <= 1 || sheet.getLastColumn() < 1) continue;
+
+        const headers = sheet.getRange(1, 1, 1, sheet.getLastColumn()).getValues()[0]
+            .map(h => String(h).trim());
+        const refIdx = headers.indexOf("Ref Code");
+        if (refIdx < 0) continue; // tab tanpa kolom Ref Code — lewati
+
+        const data = sheet.getDataRange().getValues();
+        const sheetRepaired = [];
+        for (let i = 1; i < data.length; i++) {
+            const row = data[i];
+
+            // Deteksi baris bergeser: cell di kolom "Ref Code" sekarang BUKAN
+            // berbentuk ref code ERIC-REG-..., TAPI ada nilai berbentuk ref code
+            // di posisi lain (kolom "Timestamp"/"Division" dulu menampungnya).
+            const currentAtRef = String(row[refIdx] === undefined ? '' : row[refIdx]).trim();
+            let foundRefElsewhere = false;
+            for (let c = 0; c < row.length; c++) {
+                if (c === refIdx) continue;
+                const v = String(row[c] === undefined ? '' : row[c]).trim();
+                if (REF_PATTERN.test(v)) { foundRefElsewhere = true; break; }
+            }
+            const looksShifted = !REF_PATTERN.test(currentAtRef) && foundRefElsewhere;
+            if (!looksShifted) continue;
+
+            // Realign: nilai tiap kolom kini fisiknya ada di slot FULL_HEADERS
+            // (penulis lama appendRow sesuai urutan FULL_HEADERS). Pindahkan
+            // setiap nilai dari slot FULL_HEADERS ke kolom yang header-nya cocok.
+            const newRow = [];
+            for (let c = 0; c < headers.length; c++) {
+                const h = headers[c];
+                const sourcePos = FULL_HEADERS.indexOf(h);
+                if (sourcePos >= 0 && sourcePos < row.length) {
+                    newRow[c] = row[sourcePos];
+                } else {
+                    // Kolom header di luar FULL_HEADERS (kolom kustom) — pertahankan apa adanya.
+                    newRow[c] = c < row.length ? row[c] : '';
+                }
+            }
+
+            sheet.getRange(i + 1, 1, 1, newRow.length).setValues([newRow]);
+            sheetRepaired.push(i + 1);
+        }
+        if (sheetRepaired.length > 0) {
+            repaired.push({ tab: sheetName, rows: sheetRepaired.length });
+            totalRows += sheetRepaired.length;
+        }
+    }
+
+    return { status: "success", message: "Repaired " + totalRows + " shifted row(s).", repaired: repaired };
+}
+
+/**
+ * HAPUS baris registrasi by id ATAU refCode (bisa dua-duanya; wajib satu).
+ * Mencari di SEMUA tab (termasuk tab divisi + main tab).
+ */
+function handleDeleteRegistration(data) {
+    const id = String(data.id || '').trim();
+    const refCode = String(data.refCode || '').trim();
+    if (!id && !refCode) {
+        return { status: "error", message: "Provide id and/or refCode to delete." };
+    }
+    const ss = SpreadsheetApp.openById(SPREADSHEET_ID);
+    const allSheets = ss.getSheets();
+    let deleted = 0;
+    const deletedIn = [];
+
+    for (let s = 0; s < allSheets.length; s++) {
+        const sheet = allSheets[s];
+        const sheetName = sheet.getName();
+        if (/^Copy of/i.test(sheetName)) continue;
+        if (sheet.getLastRow() <= 1) continue;
+
+        const headers = sheet.getRange(1, 1, 1, sheet.getLastColumn()).getValues()[0]
+            .map(h => String(h).trim());
+        const idIdx = headers.indexOf("ID");
+        const refIdx = headers.indexOf("Ref Code");
+        if (idIdx < 0 && refIdx < 0) continue;
+        const emailIdx = headers.indexOf("Leader Email");
+
+        const dataGrid = sheet.getDataRange().getValues();
+        const targets = [];
+        for (let i = 1; i < dataGrid.length; i++) {
+            const row = dataGrid[i];
+            const rowId = idIdx >= 0 ? String(row[idIdx] === undefined ? '' : row[idIdx]).trim() : '';
+            const rowRef = refIdx >= 0 ? String(row[refIdx] === undefined ? '' : row[refIdx]).trim() : '';
+            const rowEmail = emailIdx >= 0 ? String(row[emailIdx] === undefined ? '' : row[emailIdx]).trim().toLowerCase() : '';
+
+            const matchId = id && rowId.toLowerCase() === id.toLowerCase();
+            const matchRef = refCode && rowRef.toLowerCase() === refCode.toLowerCase();
+            // Proteksi ekstra: demi menghindari salah hapus massal, jika TIDAK ada
+            // email pengguna yang cocok (data milik orang lain) tapi id/ref cocok,
+            // tetap lanjut — id/ref adalah kunci teknis unik. Pencocokan persis.
+            if (matchId || matchRef) {
+                targets.push(i);
+            }
+        }
+
+        for (let t = targets.length - 1; t >= 0; t--) {
+            sheet.deleteRow(targets[t] + 1);
+            deleted++;
+        }
+        if (targets.length > 0) deletedIn.push(sheetName);
+    }
+
+    return { status: "success", message: "Deleted " + deleted + " row(s).", deleted: deleted, tabs: deletedIn };
 }
 
 /**
