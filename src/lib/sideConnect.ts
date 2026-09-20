@@ -74,17 +74,28 @@ export function flatToSideConnectRegistration(
   };
 }
 
+export interface SideConnectFetchResult {
+  ok: boolean;
+  data: SideConnectRegistration[];
+  message?: string;
+}
+
 /**
  * Ambil registrasi Side Connect milik satu pengguna (public, tanpa token).
  * GAS hanya membalas baris di mana Leader Email cocok PERSIS.
+ *
+ * Return `{ ok: true, data }` saat berhasil (data boleh kosong — artinya user
+ * memang belum daftar), dan `{ ok: false }` saat fetch/PARSING gagal sehingga
+ * UI bisa membedakan "fetch error" dari "belum ada pendaftaran" (tidak lagi
+ * diam-diam menelan kegagalan sebagai data kosong).
  */
 export async function fetchSideConnectRegistrations(
   email: string
-): Promise<SideConnectRegistration[]> {
+): Promise<SideConnectFetchResult> {
   const url = getSideConnectUrl();
   if (!url || url.includes('PASTE_YOUR')) {
     console.warn('[SideConnect] GAS URL not configured. Fetch skipped.');
-    return [];
+    return { ok: false, data: [], message: 'GAS URL not configured' };
   }
   try {
     const res = await fetch(
@@ -92,19 +103,42 @@ export async function fetchSideConnectRegistrations(
       { mode: 'cors' }
     );
     const text = await res.text();
-    let data: { success?: boolean; data?: Record<string, unknown>[] } = {};
+    let parsed: unknown = null;
     try {
-      data = text ? JSON.parse(text) : {};
+      parsed = text ? JSON.parse(text) : null;
     } catch {
       console.error('[SideConnect] Fetch: GAS returned non-JSON:', text.slice(0, 200));
+      return { ok: false, data: [], message: 'GAS returned non-JSON response' };
     }
-    if (!data.success || !Array.isArray(data.data)) return [];
-    return data.data
-      .map(flatToSideConnectRegistration)
+
+    // Kontrak v2: { success: true, data: [...] }. Kontrak lama (array flat) juga
+    // tetap diterima agar tidak rusak bila deployment GAS masih versi lama.
+    let rows: unknown[] | null = null;
+    let message: string | undefined;
+    if (Array.isArray(parsed)) {
+      rows = parsed;
+    } else if (parsed && typeof parsed === 'object' && Array.isArray((parsed as Record<string, unknown>).data)) {
+      const obj = parsed as { success?: boolean; data?: unknown[]; message?: string };
+      if (obj.success === false) {
+        message = obj.message || 'GAS rejected the request';
+      } else {
+        rows = obj.data || [];
+      }
+    } else {
+      message = 'Unknown response shape';
+    }
+
+    if (!rows) {
+      console.error('[SideConnect] Fetch rejected:', message || text.slice(0, 200));
+      return { ok: false, data: [], message };
+    }
+    const data = rows
+      .map((r) => flatToSideConnectRegistration(r as Record<string, unknown>))
       .filter((r): r is SideConnectRegistration => !!r);
+    return { ok: true, data };
   } catch (err) {
     console.error('[SideConnect] Fetch registrations failed:', err);
-    return [];
+    return { ok: false, data: [], message: err instanceof Error ? err.message : 'Fetch failed' };
   }
 }
 

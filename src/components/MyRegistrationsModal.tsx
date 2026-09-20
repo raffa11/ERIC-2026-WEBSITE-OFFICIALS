@@ -8,7 +8,7 @@ import { motion, AnimatePresence } from 'motion/react';
 import { useLanguage } from './LanguageContext';
 import { COMPETITION_DIVISIONS, SIDE_CONNECT_DIVISIONS, MAIN_WHATSAPP_GROUP } from '../data';
 import { Registration, SideConnectRegistration } from '../types';
-import { Trophy, X, MessageCircle, CheckCircle, Download, Users, Sparkles } from 'lucide-react';
+import { Trophy, X, MessageCircle, CheckCircle, Download, Users, Sparkles, RefreshCw } from 'lucide-react';
 import { generateRegistrationPDF } from '../lib/generatePDF';
 import RICSubmissionPanel from './RICSubmissionPanel';
 import { fetchSideConnectRegistrations } from '../lib/sideConnect';
@@ -21,6 +21,7 @@ interface MyRegistrationsModalProps {
   registrations: Registration[];
   onUpdateRegistrations: (newRegs: Registration[]) => void;
   onRegisterNewTeamClick: () => void;
+  onRefreshRegistrations?: (email?: string) => void | Promise<void>;
 }
 
 export default function MyRegistrationsModal({
@@ -30,26 +31,49 @@ export default function MyRegistrationsModal({
   registrations,
   onUpdateRegistrations,
   onRegisterNewTeamClick,
+  onRefreshRegistrations,
 }: MyRegistrationsModalProps) {
   const { t } = useLanguage();
 
   // Side Connect registrations (fetched per-user, no admin token needed)
   const [scRegs, setScRegs] = useState<SideConnectRegistration[] | null>(null);
   const [scLoading, setScLoading] = useState(false);
+  const [scError, setScError] = useState(false);
+  // Main event: refreshing from the global source (Google Sheets) — not local cache
+  const [mainRefreshing, setMainRefreshing] = useState(false);
 
   const loadSc = React.useCallback(() => {
     if (!currentUser) return;
-    setScRegs(null);
     setScLoading(true);
-    fetchSideConnectRegistrations(currentUser.email).then((rows) => {
-      setScRegs(rows);
+    setScError(false);
+    fetchSideConnectRegistrations(currentUser.email).then((res) => {
+      setScError(res.ok ? false : true);
+      setScRegs(res.ok ? res.data : []);
       setScLoading(false);
     });
   }, [currentUser]);
 
+  // Global re-sync of main-event registrations (updates shared state via App),
+  // so participants who registered anywhere see their tickets fresh from the sheet.
+  const refreshMain = React.useCallback(() => {
+    if (!currentUser) return;
+    setMainRefreshing(true);
+    const p = Promise.resolve(onRefreshRegistrations?.(currentUser.email));
+    const minDelay = new Promise((r) => setTimeout(r, 1500));
+    Promise.allSettled([p, minDelay]).then(() => setMainRefreshing(false));
+  }, [currentUser, onRefreshRegistrations]);
+
+  const refreshAll = React.useCallback(() => {
+    refreshMain();
+    loadSc();
+  }, [refreshMain, loadSc]);
+
   React.useEffect(() => {
-    if (isOpen && currentUser) loadSc();
-  }, [isOpen, currentUser, loadSc]);
+    if (isOpen && currentUser) {
+      refreshMain();
+      loadSc();
+    }
+  }, [isOpen, currentUser, refreshMain, loadSc]);
 
   if (!isOpen || !currentUser) return null;
 
@@ -90,6 +114,20 @@ export default function MyRegistrationsModal({
 
           {/* List */}
           <div className="py-6 space-y-6">
+            <div className="flex items-center justify-between gap-3">
+              <span className="text-[9px] font-mono text-zinc-500 uppercase tracking-widest">
+                {t('MAIN EVENT REGISTRATIONS', 'PENDAFTARAN MAIN EVENT')}
+              </span>
+              <button
+                onClick={refreshAll}
+                disabled={scLoading || mainRefreshing}
+                className="inline-flex items-center gap-2 px-3 py-1.5 bg-zinc-900 border border-white/10 hover:border-white/25 disabled:opacity-60 rounded-lg text-[10px] font-mono text-zinc-300 hover:text-white transition-all cursor-pointer"
+              >
+                <RefreshCw className={`w-3.5 h-3.5 ${scLoading || mainRefreshing ? 'animate-spin' : ''}`} />
+                <span>{t('SYNC TICKETS', 'SINKRON TIKET')}</span>
+              </button>
+            </div>
+
             {myRegistrations.length === 0 ? (
               <div className="text-center py-12 border border-dashed border-white/10 rounded-2xl space-y-4">
                 <Trophy className="w-10 h-10 text-zinc-600 mx-auto animate-pulse" />
@@ -121,7 +159,7 @@ export default function MyRegistrationsModal({
                     onUpdateRegistrations(newRegs);
                   };
                   return (
-                    <div key={reg.id} className={`p-5 bg-zinc-950 border border-white/5 rounded-2xl space-y-4 relative overflow-hidden group ${isRIC ? 'sm:col-span-2' : ''}`}>
+                    <div key={reg.id || reg.refCode || 'reg'} className={`p-5 bg-zinc-950 border border-white/5 rounded-2xl space-y-4 relative overflow-hidden group ${isRIC ? 'sm:col-span-2' : ''}`}>
                       <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-[#FFD700] to-[#0047AB]" />
                       
                       <div className="flex items-center gap-2">
@@ -202,19 +240,36 @@ export default function MyRegistrationsModal({
                 <div className="p-6 bg-zinc-950 border border-white/5 rounded-2xl text-center text-[10px] font-mono text-zinc-500">
                   Loading Side Connect registrations...
                 </div>
+              ) : scError ? (
+                <div className="p-6 bg-zinc-950 border border-dashed border-red-500/30 rounded-2xl text-center space-y-2">
+                  <p className="text-[10px] font-mono text-red-400 uppercase">
+                    Gagal memuat data Side Connect — mungkin jaringan / server sibuk.
+                  </p>
+                  <button
+                    onClick={refreshAll}
+                    className="px-4 py-2 bg-[#00FF88]/10 hover:bg-[#00FF88]/20 border border-[#00FF88]/20 text-[10px] font-mono text-[#00FF88] rounded-xl cursor-pointer font-bold"
+                  >
+                    RETRY ALL
+                  </button>
+                </div>
               ) : scRegs === null ? (
                 <div className="p-6 bg-zinc-950 border border-dashed border-white/10 rounded-2xl text-center space-y-2">
                   <p className="text-[10px] font-mono text-zinc-500 uppercase">
                     Tidak dapat memuat data Side Connect.
                   </p>
                   <button
-                    onClick={loadSc}
+                    onClick={refreshAll}
                     className="px-4 py-2 bg-[#00FF88]/10 hover:bg-[#00FF88]/20 border border-[#00FF88]/20 text-[10px] font-mono text-[#00FF88] rounded-xl cursor-pointer font-bold"
                   >
-                    RETRY
+                    RETRY ALL
                   </button>
                 </div>
               ) : scRegs.length === 0 ? (
+                scLoading ? (
+                  <div className="p-6 bg-zinc-950 border border-white/5 rounded-2xl text-center text-[10px] font-mono text-zinc-500">
+                    Loading Side Connect registrations...
+                  </div>
+                ) : (
                 <div className="p-6 bg-zinc-950 border border-dashed border-white/10 rounded-2xl text-center space-y-1">
                   <p className="text-[10px] font-mono text-zinc-400 uppercase">
                     Belum ada pendaftaran Side Connect untuk akun ini.
@@ -223,6 +278,7 @@ export default function MyRegistrationsModal({
                     Side connect adalah side event GRATIS (Creative / Research / Drone Innovation).
                   </p>
                 </div>
+                )
               ) : (
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-h-[420px] overflow-y-auto pr-1">
                   {scRegs.map((reg, i) => {

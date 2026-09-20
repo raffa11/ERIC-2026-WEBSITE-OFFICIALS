@@ -65,6 +65,21 @@ function AppContent() {
 
 
 
+  // Registration state filter: keep any row that is a real registration
+  // (has an id OR a refCode) belonging to a leader email — so participants
+  // whose sheet row lacks an id (legacy rows) still get their ticket shown.
+  const applyFilter = (data: Registration[]) => {
+    const filtered = data.filter((r: any) => {
+      if (!r || !r.leader || !r.leader.email) return false;
+      const hasId = !!r.id;
+      const hasRef = !!r.refCode;
+      if (!hasId && !hasRef) return false;
+      if (hasId && String(r.id).toString().startsWith('seed-')) return false;
+      return true;
+    });
+    setRegistrations(filtered);
+  };
+
   // Load state on mount
   useEffect(() => {
     const init = async () => {
@@ -104,8 +119,7 @@ function AppContent() {
       // 3. Load registrations (from localStorage + Supabase)
       try {
         const data = await dbFetchRegistrations(userEmail);
-        const filtered = data.filter((r: any) => r && r.id && r.leader && r.leader.email && !r.id.toString().startsWith('seed-'));
-        setRegistrations(filtered);
+        applyFilter(data);
       } catch (err) {
         console.error('Failed to load registrations:', err);
       }
@@ -117,16 +131,11 @@ function AppContent() {
 
   // Re-fetch registrations when user logs in — with background merge support
   const refreshRegistrations = useCallback(async (email?: string) => {
-    const applyData = (data: Registration[]) => {
-      const filtered = data.filter((r: any) => r && r.id && r.leader && r.leader.email && !r.id.toString().startsWith('seed-'));
-      setRegistrations(filtered);
-    };
-
     try {
       const data = await dbFetchRegistrations(email, (merged) => {
-        applyData(merged);
+        applyFilter(merged);
       });
-      applyData(data);
+      applyFilter(data);
     } catch (err) {
       console.error('Failed to refresh registrations:', err);
     }
@@ -320,6 +329,7 @@ function AppContent() {
           currentUser={currentUser}
           registrations={registrations}
           onUpdateRegistrations={handleUpdateRegistrations}
+          onRefreshRegistrations={refreshRegistrations}
           onRegisterNewTeamClick={() => {
             const divisionsSection = document.querySelector('#divisions-section');
             if (divisionsSection) {
