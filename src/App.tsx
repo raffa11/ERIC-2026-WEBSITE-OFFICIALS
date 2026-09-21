@@ -243,7 +243,7 @@ function AppContent() {
   // Side Connect registration click — blocked when Side Connect registration is closed
   const handleSideConnectRegisterClick = () => {
     if (SIDE_CONNECT_REGISTRATION_CLOSED) {
-      showAlert({ message: 'Side Connect registration is temporarily closed. Please check back soon!', type: 'warning' });
+      showAlert({ message: 'Side Connect registration is now closed. Thank you for your interest!', type: 'warning' });
       return;
     }
     // Sign-in required so the stored email is the Google login email — this is how
