@@ -22,7 +22,7 @@ import { reconstructRic } from '../lib/supabase';
 import { generateRegistrationPDF, registrationPdfSafeName } from '../lib/generatePDF';
 import { sendTicketEmail, getAdminToken, setAdminToken, normalizeRegistration } from '../lib/ticketRescue';
 import { fetchAllSideConnectRegistrations } from '../lib/sideConnect';
-import { buildSideConnectPdf } from '../lib/generateSideConnectPDF';
+import { generateSideConnectPDF } from '../lib/generateSideConnectPDF';
 
 interface AdminDashboardProps {
   currentUser: { name: string; email: string; method: string } | null;
@@ -224,19 +224,19 @@ export default function AdminDashboard({
     acc[r.subCompetition] = (acc[r.subCompetition] || 0) + 1;
     return acc;
   }, {} as Record<string, number>);
-
-  const handleDownloadScPdf = (reg: SideConnectRegistration) => {
-    try {
-      buildSideConnectPdf(reg);
-      showAlert({
-        message: `Tiket Side Connect ${reg.teamName || reg.leader?.name || ''} (${reg.refCode}) berhasil di-generate dan diunduh.`,
-        type: 'success',
-      });
-    } catch (err) {
-      console.error('[SideConnect] PDF error:', err);
-      showAlert({ message: 'Gagal generate PDF: ' + err, type: 'error' });
-    }
-  };
+const handleDownloadScPdf = (reg: SideConnectRegistration) => {
+      try {
+        generateSideConnectPDF(reg);
+        showAlert({
+          message: `Tiket Side Connect ${reg.teamName || reg.leader?.name || ''} (${reg.refCode}) berhasil di-generate 
+dan diunduh.`,
+          type: 'success',
+        });
+      } catch (err) {
+        console.error('[SideConnect] PDF error:', err);
+        showAlert({ message: 'Gagal generate PDF: ' + err, type: 'error' });
+      }
+    };
 
   return (
     <div className="pt-28 pb-20 px-6 max-w-7xl mx-auto space-y-8 select-none">

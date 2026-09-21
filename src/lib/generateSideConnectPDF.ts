@@ -275,7 +275,9 @@ export function buildSideConnectPdf(reg: SideConnectRegistration): jsPDF {
 }
 
 export function sideConnectPdfSafeName(reg: SideConnectRegistration) {
-  return reg.teamName.replace(/[^a-zA-Z0-9]/g, '_');
+  const base = (reg.teamName && reg.teamName.trim() ? reg.teamName : reg.leader?.name || '')
+    .replace(/[^a-zA-Z0-9]/g, '_');
+  return base.replace(/^_+|_+$/g, '') || 'SideConnect';
 }
 
 export function generateSideConnectPDF(reg: SideConnectRegistration) {
